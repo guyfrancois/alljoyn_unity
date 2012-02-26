@@ -151,6 +151,11 @@ const char* alljoyn_interfacedescription_getname(const alljoyn_interfacedescript
     return ((const ajn::InterfaceDescription*)iface)->GetName();
 }
 
+extern AJ_API const char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent)
+{
+    return (((const ajn::InterfaceDescription*)iface)->Introspect(indent).c_str());
+}
+
 QC_BOOL alljoyn_interfacedescription_issecure(const alljoyn_interfacedescription iface)
 {
     return ((const ajn::InterfaceDescription*)iface)->IsSecure();

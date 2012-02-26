@@ -16,7 +16,7 @@
 Import('env')
 sample_env = env.Clone()
 
-sample_env.Prepend(LIBS = env['ALLJOYN_UNITY_DYLIB'])
+sample_env.Prepend(LIBS = env['ALLJOYN_C_LIB_STATIC'])
 
 # Sample Programs
 progs = [

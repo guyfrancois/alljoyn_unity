@@ -205,6 +205,16 @@ extern AJ_API QC_BOOL alljoyn_interfacedescription_hasproperties(const alljoyn_i
 extern AJ_API const char* alljoyn_interfacedescription_getname(const alljoyn_interfacedescription iface);
 
 /**
+ * Returns a description of the interface in introspection XML format
+ * @return The interface description in introspection XML format.
+ *
+ * @param iface      Interface to query
+ * @param indent   Number of space chars to use in XML indentation.
+ * @return The XML introspection data.
+ */
+extern AJ_API const char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent);
+
+/**
  * Indicates if this interface is secure. Secure interfaces require end-to-end authentication.
  * The arguments for methods calls made to secure interfaces and signals emitted by secure
  * interfaces are encrypted.

@@ -47,7 +47,11 @@ env.Append(CPPPATH = [env.Dir('src')])
 libs = env.SConscript('$OBJDIR/SConscript')
 dlibs = env.Install('$DISTDIR/lib', libs)
 env.Append(LIBPATH = [env.Dir('$DISTDIR/lib')])
-env['ALLJOYN_UNITY_DYLIB'] = dlibs
+env['ALLJOYN_C_LIB_SHARED'] = dlibs[0]
+env['ALLJOYN_C_LIB_STATIC'] = dlibs[1]
+
+# Build unit Tests
+env.SConscript('unit_test/SConscript', variant_dir='$OBJDIR/unittest', duplicate=0)
 
 # Sample programs
 progs = env.SConscript('$OBJDIR/samples/SConscript')

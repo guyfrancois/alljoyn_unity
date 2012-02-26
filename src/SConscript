@@ -18,9 +18,11 @@ Import('env')
 # AllJoyn Sources
 srcs = env.Glob('*.cc')
 
-objs = env.SharedObject(srcs)
+objs = env.Object(srcs)
+objs_shared = env.SharedObject(srcs)
 
 # AllJoyn Library
-liballjoyn_unity = env.SharedLibrary('alljoyn_unity', objs)
+liballjoyn_c = env.StaticLibrary('alljoyn_c', objs)
+liballjoyn_c_shared = env.SharedLibrary('alljoyn_c', objs_shared)
 
-Return('liballjoyn_unity')
+Return('liballjoyn_c_shared', 'liballjoyn_c')
