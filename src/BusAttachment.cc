@@ -42,9 +42,19 @@ void alljoyn_busattachment_destroy(alljoyn_busattachment bus)
     delete (ajn::BusAttachment*)bus;
 }
 
+QStatus alljoyn_busattachment_start(alljoyn_busattachment bus)
+{
+    return ((ajn::BusAttachment*)bus)->Start();
+}
+
 QStatus alljoyn_busattachment_stop(alljoyn_busattachment bus)
 {
     return ((ajn::BusAttachment*)bus)->Stop();
+}
+
+extern AJ_API QStatus alljoyn_busattachment_join(alljoyn_busattachment bus)
+{
+    return ((ajn::BusAttachment*)bus)->Join();
 }
 
 QStatus alljoyn_busattachment_createinterface(alljoyn_busattachment bus,
@@ -57,11 +67,6 @@ QStatus alljoyn_busattachment_createinterface(alljoyn_busattachment bus,
     *iface = (alljoyn_interfacedescription)ifaceObj;
 
     return ret;
-}
-
-QStatus alljoyn_busattachment_start(alljoyn_busattachment bus)
-{
-    return ((ajn::BusAttachment*)bus)->Start();
 }
 
 QStatus alljoyn_busattachment_connect(alljoyn_busattachment bus, const char* connectSpec)

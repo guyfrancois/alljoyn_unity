@@ -17,32 +17,6 @@
 #include <alljoyn_c/BusAttachment.h>
 #include <alljoyn_c/InterfaceDescription.h>
 
-//TODO move into BusAttachmentTest when BusAttachmentTest is created
-TEST(InterfaceDescriptionTest, createinterface) {
-    QStatus status = ER_OK;
-    alljoyn_busattachment bus = NULL;
-    bus = alljoyn_busattachment_create("InterfaceDescriptionTest", QC_FALSE);
-    ASSERT_TRUE(bus != NULL);
-    alljoyn_interfacedescription testIntf = NULL;
-    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.InterfaceDescription", &testIntf, QC_FALSE);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    alljoyn_busattachment_destroy(bus);
-}
-
-//TODO move into BusAttachmentTest when BusAttachmentTest is created
-TEST(InterfaceDescriptionTest, deleteinterface) {
-    QStatus status = ER_OK;
-    alljoyn_busattachment bus = NULL;
-    bus = alljoyn_busattachment_create("InterfaceDescriptionTest", QC_FALSE);
-    ASSERT_TRUE(bus != NULL);
-    alljoyn_interfacedescription testIntf = NULL;
-    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.InterfaceDescription", &testIntf, QC_FALSE);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    status = alljoyn_busattachment_deleteinterface(bus, testIntf);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    alljoyn_busattachment_destroy(bus);
-}
-
 TEST(InterfaceDescriptionTest, addmember) {
     QStatus status = ER_OK;
     alljoyn_busattachment bus = NULL;
@@ -101,5 +75,21 @@ TEST(InterfaceDescriptionTest, introspect) {
 
     snprintf(introspect, 512, "%s", alljoyn_interfacedescription_introspect(testIntf, 0));
     EXPECT_STREQ(expectedIntrospect, introspect);
+    alljoyn_busattachment_destroy(bus);
+}
+
+TEST(InterfaceDescriptionTest, issecure) {
+    QStatus status = ER_OK;
+    alljoyn_busattachment bus = NULL;
+    bus = alljoyn_busattachment_create("InterfaceDescriptionTest", QC_FALSE);
+    alljoyn_interfacedescription testIntf = NULL;
+    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.InterfaceDescription", &testIntf, QC_TRUE);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    EXPECT_EQ(QC_TRUE, alljoyn_interfacedescription_issecure(testIntf));
+    status = alljoyn_busattachment_deleteinterface(bus, testIntf);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.InterfaceDescription", &testIntf, QC_FALSE);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    EXPECT_EQ(QC_FALSE, alljoyn_interfacedescription_issecure(testIntf));
     alljoyn_busattachment_destroy(bus);
 }

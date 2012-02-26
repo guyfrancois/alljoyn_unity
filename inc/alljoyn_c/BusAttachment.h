@@ -62,7 +62,119 @@ extern AJ_API alljoyn_busattachment alljoyn_busattachment_create(const char* app
 extern AJ_API void alljoyn_busattachment_destroy(alljoyn_busattachment bus);
 
 /**
- * Stop the message bus.
+ * @brief Start the process of spinning up the independent threads used in
+ * the bus attachment, preparing it for action.
+ *
+ * This method only begins the process of starting the bus. Sending and
+ * receiving messages cannot begin until the bus is Connect()ed.
+ *
+ * There are two ways to determine whether the bus is currently connected:
+ *    -# alljoyn_busattachment() returns QC_TRUE
+ *    -# alljoyn_busobject_callback object_registered is called by the bus
+ *
+ * In most cases, it is not required to understand the threading model of
+ * the bus attachment, with one important exception: The bus attachment may
+ * send callbacks to registered listeners using its own internal threads.
+ * This means that any time a listener of any kind is used in a program, the
+ * implication is that a the overall program is multithreaded, irrespective
+ * of whether or not threads are explicitly used.  This, in turn, means that
+ * any time shared state is accessed in listener methods, that state must be
+ * protected.
+ *
+ * As soon as Start() is called, clients of a bus attachment with listeners
+ * must be prepared to receive callbacks on those listeners in the context
+ * of a thread that will be different from the thread running the main
+ * program or any other thread in the client.
+ *
+ * Although intimate knowledge of the details of the threading model are not
+ * required to use a bus attachment (beyond the caveat above) we do provide
+ * methods on the bus attachment that help users reason about more complex
+ * threading situations.  This will apply to situations where clients of the
+ * bus attachment are multithreaded and need to interact with the
+ * multithreaded bus attachment.  These methods can be especially useful
+ * during shutdown, when the two separate threading systems need to be
+ * gracefully brought down together.
+ *
+ * The BusAttachment methods Start(), Stop() and Join() all work together to
+ * manage the autonomous activities that can happen in a BusAttachment.
+ * These activities are carried out by so-called hardware threads.  POSIX
+ * defines functions used to control hardware threads, which it calls
+ * pthreads.  Many threading packages use similar constructs.
+ *
+ * In a threading package, a start method asks the underlying system to
+ * arrange for the start of thread execution.  Threads are not necessarily
+ * running when the start method returns, but they are being *started*.  Some time later,
+ * a thread of execution appears in a thread run function, at which point the
+ * thread is considered *running*.  At some later time, executing a stop method asks the
+ * underlying system to arrange for a thread to end its execution.  The system
+ * typically sends a message to the thread to ask it to stop doing what it is doing.
+ * The thread is running until it responds to the stop message, at which time the
+ * run method exits and the thread is considered *stopping*.
+ *
+ * Note that neither of Start() nor Stop() are synchronous in the sense that
+ * one has actually accomplished the desired effect upon the return from a
+ * call.  Of particular interest is the fact that after a call to Stop(),
+ * threads will still be *running* for some non-deterministic time.
+ *
+ * In order to wait until all of the threads have actually stopped, a
+ * blocking call is required.  In threading packages this is typically
+ * called join, and our corresponding method is called Join().
+ *
+ * A Start() method call should be thought of as mapping to a threading
+ * package start function.  it causes the activity threads in the
+ * BusAttachment to be spun up and gets the attachment ready to do its main
+ * job.  As soon as Start() is called, the user should be prepared for one
+ * or more of these threads of execution to pop out of the bus attachment
+ * and into a listener callback.
+ *
+ * The Stop() method call should be thought of as mapping to a threading
+ * package stop function.  It asks the BusAttachment to begin shutting down
+ * its various threads of execution, but does not wait for any threads to exit.
+ *
+ * A call to the Join() method should be thought of as mapping to a
+ * threading package join function call.  It blocks and waits until all of
+ * the threads in the BusAttachment have in fact exited their Run functions,
+ * gone through the stopping state and have returned their status.  When
+ * the Join() method returns, one may be assured that no threads are running
+ * in the bus attachment, and therefore there will be no callbacks in
+ * progress and no further callbacks will ever come out of a particular
+ * instance of a bus attachment.
+ *
+ * It is important to understand that since Start(), Stop() and Join() map
+ * to threads concepts and functions, one should not expect them to clean up
+ * any bus attachment state when they are called.  These functions are only
+ * present to help in orderly termination of complex threading systems.
+ *
+ * @see alljoyn_busattachment_stop()
+ * @see alljoyn_busattachment_join()
+ *
+ * @param bus The BusAttachment to start.
+ *
+ * @return
+ *      - #ER_OK if successful.
+ *      - #ER_BUS_BUS_ALREADY_STARTED if already started
+ *      - Other error status codes indicating a failure
+ */
+extern AJ_API QStatus alljoyn_busattachment_start(alljoyn_busattachment bus);
+
+/**
+ * @brief Ask the threading subsystem in the bus attachment to begin the
+ * process of ending the execution of its threads.
+ *
+ * The Stop() method call on a bus attachment should be thought of as
+ * mapping to a threading package stop function.  It asks the BusAttachment
+ * to begin shutting down its various threads of execution, but does not
+ * wait for any threads to exit.
+ *
+ * A call to Stop() is implied as one of the first steps in the destruction
+ * of a bus attachment.
+ *
+ * @warning There is no guarantee that a listener callback may begin executing
+ * after a call to Stop().  To achieve that effect, the Stop() must be followed
+ * by a Join().
+ *
+ * @see alljoyn_busattachment_start()
+ * @see alljoyn_busattachment_join()
  *
  * @param bus                 BusAttachment to stop.
  *
@@ -72,6 +184,38 @@ extern AJ_API void alljoyn_busattachment_destroy(alljoyn_busattachment bus);
  */
 extern AJ_API QStatus alljoyn_busattachment_stop(alljoyn_busattachment bus);
 
+/**
+ * @brief Wait for all of the threads spawned by the bus attachment to be
+ * completely exited.
+ *
+ * A call to the Join() method should be thought of as mapping to a
+ * threading package join function call.  It blocks and waits until all of
+ * the threads in the BusAttachment have, in fact, exited their Run functions,
+ * gone through the stopping state and have returned their status.  When
+ * the Join() method returns, one may be assured that no threads are running
+ * in the bus attachment, and therefore there will be no callbacks in
+ * progress and no further callbacks will ever come out of the instance of a
+ * bus attachment on which Join() was called.
+ *
+ * A call to Join() is implied as one of the first steps in the destruction
+ * of a bus attachment.  Thus, when a bus attachment is destroyed, it is
+ * guaranteed that before it completes its destruction process, there will be
+ * no callbacks in process.
+ *
+ * @warning If Join() is called without a previous Stop() it will result in
+ * blocking "forever."
+ *
+ * @see alljoyn_busattachment_start()
+ * @see alljoyn_busattachment_stop()
+ *
+ * @param bus BusAttachment to join.
+ *
+ * @return
+ *      - #ER_OK if successful.
+ *      - #ER_BUS_BUS_ALREADY_STARTED if already started
+ *      - Other error status codes indicating a failure
+ */
+extern AJ_API QStatus alljoyn_busattachment_join(alljoyn_busattachment bus);
 /**
  * Create an interface description with a given name.
  *
@@ -89,25 +233,6 @@ extern AJ_API QStatus alljoyn_busattachment_stop(alljoyn_busattachment bus);
  */
 extern AJ_API QStatus alljoyn_busattachment_createinterface(alljoyn_busattachment bus, const char* name,
                                                             alljoyn_interfacedescription* iface, QC_BOOL secure);
-
-/**
- * Start the message bus.
- *
- * This method only begins the process of starting the bus. Sending and receiving messages
- * cannot begin until the bus is connected.
- *
- * There are two ways to determine whether the bus is currently connected:
- *    -# BusAttachment::IsConnected() returns true
- *    -# BusObject::ObjectRegistered() is called by the bus
- *
- * @param bus The BusAttachment to start.
- *
- * @return
- *      - #ER_OK if successful.
- *      - #ER_BUS_BUS_ALREADY_STARTED if already started
- *      - Other error status codes indicating a failure
- */
-extern AJ_API QStatus alljoyn_busattachment_start(alljoyn_busattachment bus);
 
 /**
  * Connect to a remote bus address.
