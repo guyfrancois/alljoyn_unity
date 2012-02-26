@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/InterfaceDescription.h>
-#include <alljoyn_unity/InterfaceDescription.h>
+#include <alljoyn_c/InterfaceDescription.h>
 #include <Status.h>
 
 #define QCC_MODULE "ALLJOYN"
@@ -66,7 +66,7 @@ size_t alljoyn_interfacedescription_getmembers(const alljoyn_interfacedescriptio
 {
     const ajn::InterfaceDescription::Member** tempMembers = NULL;
     if (members != NULL) {
-        tempMembers = new const ajn::InterfaceDescription::Member*[numMembers];
+        tempMembers = new const ajn::InterfaceDescription::Member *[numMembers];
     }
     size_t ret = ((const ajn::InterfaceDescription*)iface)->GetMembers(tempMembers, numMembers);
     for (size_t i = 0; i < numMembers; i++) {
@@ -112,7 +112,7 @@ size_t alljoyn_interfacedescription_getproperties(const alljoyn_interfacedescrip
 {
     const ajn::InterfaceDescription::Property** tempProps = NULL;
     if (props != NULL) {
-        tempProps = new const ajn::InterfaceDescription::Property*[numProps];
+        tempProps = new const ajn::InterfaceDescription::Property *[numProps];
     }
     size_t ret = ((const ajn::InterfaceDescription*)iface)->GetProperties(tempProps, numProps);
     for (size_t i = 0; i < numProps; i++) {

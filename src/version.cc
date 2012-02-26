@@ -20,7 +20,7 @@
  ******************************************************************************/
 
 #include <alljoyn/version.h>
-#include <alljoyn_unity/version.h>
+#include <alljoyn_c/version.h>
 
 const char* alljoyn_getversion()
 {

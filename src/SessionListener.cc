@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/SessionListener.h>
-#include <alljoyn_unity/SessionListener.h>
+#include <alljoyn_c/SessionListener.h>
 #include <string.h>
 #include <assert.h>
 #include "DeferredCallback.h"

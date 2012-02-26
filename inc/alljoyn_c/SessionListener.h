@@ -22,8 +22,8 @@
 #ifndef _ALLJOYN_UNITY_SESSIONLISTENER_H
 #define _ALLJOYN_UNITY_SESSIONLISTENER_H
 
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/Session.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/Session.h>
 
 #ifdef __cplusplus
 extern "C" {

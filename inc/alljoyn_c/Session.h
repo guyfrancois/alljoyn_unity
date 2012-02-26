@@ -22,8 +22,8 @@
  ******************************************************************************/
 
 #include <qcc/platform.h>
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/TransportMask.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/TransportMask.h>
 
 #ifdef __cplusplus
 extern "C" {

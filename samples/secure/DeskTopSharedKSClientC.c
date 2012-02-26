@@ -29,8 +29,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <alljoyn_unity/BusAttachment.h>
-#include <alljoyn_unity/version.h>
+#include <alljoyn_c/BusAttachment.h>
+#include <alljoyn_c/version.h>
 #include <Status.h>
 
 /** Static top level message bus object */

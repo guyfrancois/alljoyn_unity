@@ -22,7 +22,7 @@
 
 #include <assert.h>
 #include <alljoyn/ProxyBusObject.h>
-#include <alljoyn_unity/ProxyBusObject.h>
+#include <alljoyn_c/ProxyBusObject.h>
 
 #define QCC_MODULE "ALLJOYN"
 

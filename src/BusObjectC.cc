@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/BusObject.h>
-#include <alljoyn_unity/BusObject.h>
+#include <alljoyn_c/BusObject.h>
 #include <map>
 #include "DeferredCallback.h"
 

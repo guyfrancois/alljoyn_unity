@@ -35,7 +35,7 @@ env.VariantDir('$OBJDIR', 'src', duplicate = 0)
 env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
 
 # Install headers
-env.Install('$DISTDIR/inc/alljoyn_unity', env.Glob('inc/alljoyn_unity/*.h'))
+env.Install('$DISTDIR/inc/alljoyn_c', env.Glob('inc/alljoyn_c/*.h'))
 
 # Header file includes
 env.Append(CPPPATH = [env.Dir('inc')])

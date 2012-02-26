@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/BusListener.h>
-#include <alljoyn_unity/BusListener.h>
+#include <alljoyn_c/BusListener.h>
 #include <string.h>
 #include <assert.h>
 #include "DeferredCallback.h"

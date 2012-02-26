@@ -30,10 +30,10 @@
 #include <string.h>
 
 #include <alljoyn/DBusStd.h>
-#include <alljoyn_unity/BusAttachment.h>
-#include <alljoyn_unity/BusObject.h>
-#include <alljoyn_unity/MsgArg.h>
-#include <alljoyn_unity/version.h>
+#include <alljoyn_c/BusAttachment.h>
+#include <alljoyn_c/BusObject.h>
+#include <alljoyn_c/MsgArg.h>
+#include <alljoyn_c/version.h>
 
 #include <Status.h>
 

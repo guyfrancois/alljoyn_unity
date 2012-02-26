@@ -22,9 +22,9 @@
 #ifndef _ALLJOYN_UNITY_SESSIONPORTLISTENER_H
 #define _ALLJOYN_UNITY_SESSIONPORTLISTENER_H
 
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/Session.h>
-#include <alljoyn_unity/SessionListener.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/Session.h>
+#include <alljoyn_c/SessionListener.h>
 
 #ifdef __cplusplus
 extern "C" {

@@ -23,16 +23,16 @@
 
 #include <qcc/platform.h>
 
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/KeyStoreListener.h>
-#include <alljoyn_unity/AuthListener.h>
-#include <alljoyn_unity/BusListener.h>
-#include <alljoyn_unity/BusObject.h>
-#include <alljoyn_unity/ProxyBusObject.h>
-#include <alljoyn_unity/InterfaceDescription.h>
-#include <alljoyn_unity/Session.h>
-#include <alljoyn_unity/SessionListener.h>
-#include <alljoyn_unity/SessionPortListener.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/KeyStoreListener.h>
+#include <alljoyn_c/AuthListener.h>
+#include <alljoyn_c/BusListener.h>
+#include <alljoyn_c/BusObject.h>
+#include <alljoyn_c/ProxyBusObject.h>
+#include <alljoyn_c/InterfaceDescription.h>
+#include <alljoyn_c/Session.h>
+#include <alljoyn_c/SessionListener.h>
+#include <alljoyn_c/SessionPortListener.h>
 #include <Status.h>
 
 #ifdef __cplusplus

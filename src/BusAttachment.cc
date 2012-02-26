@@ -21,7 +21,7 @@
 #include <assert.h>
 
 #include <alljoyn/BusAttachment.h>
-#include <alljoyn_unity/BusAttachment.h>
+#include <alljoyn_c/BusAttachment.h>
 
 #define QCC_MODULE "ALLJOYN"
 

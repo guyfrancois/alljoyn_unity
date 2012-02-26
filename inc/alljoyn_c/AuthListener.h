@@ -21,8 +21,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/Message.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/Message.h>
 
 #ifdef __cplusplus
 extern "C" {

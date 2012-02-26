@@ -27,8 +27,8 @@
 
 #include <alljoyn/Message.h>
 #include <alljoyn/MsgArg.h>
-#include <alljoyn_unity/Message.h>
-#include <alljoyn_unity/MsgArg.h>
+#include <alljoyn_c/Message.h>
+#include <alljoyn_c/MsgArg.h>
 
 #define QCC_MODULE "ALLJOYN"
 

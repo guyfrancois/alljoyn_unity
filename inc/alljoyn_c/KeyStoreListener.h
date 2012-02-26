@@ -21,7 +21,7 @@
 #ifndef _ALLJOYN_UNITY_KEYSTORE_LISTENER_H
 #define _ALLJOYN_UNITY_KEYSTORE_LISTENER_H
 
-#include <alljoyn_unity/AjAPI.h>
+#include <alljoyn_c/AjAPI.h>
 #include <Status.h>
 
 #ifdef __cplusplus

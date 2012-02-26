@@ -21,8 +21,8 @@
 
 #include <alljoyn/MsgArg.h>
 #include <alljoyn/Session.h>
-#include <alljoyn_unity/MsgArg.h>
-#include <alljoyn_unity/Session.h>
+#include <alljoyn_c/MsgArg.h>
+#include <alljoyn_c/Session.h>
 
 #define QCC_MODULE "ALLJOYN"
 

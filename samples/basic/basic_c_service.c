@@ -33,8 +33,8 @@
 #include <stdlib.h>
 
 #include <alljoyn/DBusStd.h>
-#include <alljoyn_unity/BusAttachment.h>
-#include <alljoyn_unity/version.h>
+#include <alljoyn_c/BusAttachment.h>
+#include <alljoyn_c/version.h>
 #include <Status.h>
 
 #include <Status.h>

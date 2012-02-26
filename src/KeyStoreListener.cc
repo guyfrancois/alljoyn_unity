@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/KeyStoreListener.h>
-#include <alljoyn_unity/KeyStoreListener.h>
+#include <alljoyn_c/KeyStoreListener.h>
 #include <string.h>
 #include <assert.h>
 

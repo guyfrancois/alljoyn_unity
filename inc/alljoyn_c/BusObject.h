@@ -25,11 +25,11 @@
  ******************************************************************************/
 
 #include <qcc/platform.h>
-#include <alljoyn_unity/AjAPI.h>
-#include <alljoyn_unity/InterfaceDescription.h>
-#include <alljoyn_unity/MsgArg.h>
-#include <alljoyn_unity/MessageReceiver.h>
-#include <alljoyn_unity/Session.h>
+#include <alljoyn_c/AjAPI.h>
+#include <alljoyn_c/InterfaceDescription.h>
+#include <alljoyn_c/MsgArg.h>
+#include <alljoyn_c/MessageReceiver.h>
+#include <alljoyn_c/Session.h>
 #include <Status.h>
 
 #ifdef __cplusplus

@@ -21,7 +21,7 @@
  ******************************************************************************/
 
 #include <alljoyn/SessionPortListener.h>
-#include <alljoyn_unity/SessionPortListener.h>
+#include <alljoyn_c/SessionPortListener.h>
 #include <string.h>
 #include <assert.h>
 #include "DeferredCallback.h"

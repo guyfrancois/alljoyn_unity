@@ -22,7 +22,7 @@
  ******************************************************************************/
 
 #include <qcc/platform.h>
-#include <alljoyn_unity/AjAPI.h>
+#include <alljoyn_c/AjAPI.h>
 #include <stdarg.h>
 #include <Status.h>
 

@@ -17,7 +17,7 @@
  *    limitations under the License.
  ******************************************************************************/
 
-#include <alljoyn_unity/AjAPI.h>
+#include <alljoyn_c/AjAPI.h>
 #include <list>
 #include <signal.h>
 #include <pthread.h>

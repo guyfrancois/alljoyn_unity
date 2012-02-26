@@ -22,7 +22,7 @@
  ******************************************************************************/
 
 #include <qcc/platform.h>
-#include <alljoyn_unity/AjAPI.h>
+#include <alljoyn_c/AjAPI.h>
 
 /** Bitmask of all transport types */
 typedef uint16_t alljoyn_transportmask;
