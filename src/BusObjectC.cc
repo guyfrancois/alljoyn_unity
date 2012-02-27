@@ -54,7 +54,7 @@ class BusObjectC : public BusObject {
     {
         return MethodReply(*((Message*)msg), status);
     }
-#if 0
+
     QStatus SignalC(const char* destination,
                     alljoyn_sessionid sessionId,
                     const InterfaceDescription::Member& signal,
@@ -63,9 +63,15 @@ class BusObjectC : public BusObject {
                     uint16_t timeToLive,
                     uint8_t flags)
     {
-
+        return this->Signal(destination,
+                            *(ajn::SessionId*)&sessionId,
+                            signal,
+                            (const ajn::MsgArg*)args,
+                            numArgs,
+                            timeToLive,
+                            flags);
     }
-#endif
+
     QStatus AddInterfaceC(const alljoyn_interfacedescription iface)
     {
         return AddInterface(*(const InterfaceDescription*)iface);
@@ -219,3 +225,21 @@ QStatus alljoyn_busobject_methodreply_status(alljoyn_busobject bus, alljoyn_mess
     return ((ajn::BusObjectC*)bus)->MethodReplyC(msg, status);
 }
 
+QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
+                                 const char* destination,
+                                 alljoyn_sessionid sessionId,
+                                 const alljoyn_interfacedescription_member signal,
+                                 const alljoyn_msgargs args,
+                                 size_t numArgs,
+                                 uint16_t timeToLive,
+                                 uint8_t flags)
+{
+    return ((ajn::BusObjectC*)bus)->SignalC(
+               destination,
+               sessionId,
+               *((ajn::InterfaceDescription*)signal.iface)->GetMember(signal.name),
+               args,
+               numArgs,
+               timeToLive,
+               flags);
+}

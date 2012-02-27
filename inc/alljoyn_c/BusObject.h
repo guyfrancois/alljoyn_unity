@@ -184,6 +184,36 @@ extern AJ_API QStatus alljoyn_busobject_methodreply_err(alljoyn_busobject bus, a
  */
 extern AJ_API QStatus alljoyn_busobject_methodreply_status(alljoyn_busobject bus, alljoyn_message msg, QStatus status);
 
+/**
+ * Send a signal.
+ *
+ * @param bus              The bus used to send the signal
+ * @param destination      The unique or well-known bus name or the signal recipient (NULL for broadcast signals)
+ * @param sessionId        A unique SessionId for this AllJoyn session instance
+ * @param signal           Interface member of signal being emitted.
+ * @param args             The arguments for the signal (can be NULL)
+ * @param numArgs          The number of arguments
+ * @param timeToLive       If non-zero this specifies in milliseconds the useful lifetime for this
+ *                         signal. If delivery of the signal is delayed beyond the timeToLive due to
+ *                         network congestion or other factors the signal may be discarded. There is
+ *                         no guarantee that expired signals will not still be delivered.
+ * @param flags            Logical OR of the message flags for this signals. The following flags apply to signals:
+ *                         - If ::ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be forwarded across bus-to-bus connections.
+ *                         - If ::ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+ *                         - If ::ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+ * @return
+ *      - #ER_OK if successful
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
+                                               const char* destination,
+                                               alljoyn_sessionid sessionId,
+                                               const alljoyn_interfacedescription_member signal,
+                                               const alljoyn_msgargs args,
+                                               size_t numArgs,
+                                               uint16_t timeToLive,
+                                               uint8_t flags);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif
