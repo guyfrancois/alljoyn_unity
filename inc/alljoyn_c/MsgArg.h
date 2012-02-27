@@ -47,6 +47,15 @@ extern AJ_API alljoyn_msgargs alljoyn_msgargs_create(size_t numArgs);
 extern AJ_API void alljoyn_msgargs_destroy(alljoyn_msgargs arg);
 
 /**
+ * Returns an XML string representation of this type
+ *
+ * @param indent  Number of spaces to indent the generated xml
+ *
+ * @return  The XML string
+ */
+extern AJ_API const char* alljoyn_msgargs_tostring(alljoyn_msgargs arg, size_t indent);
+
+/**
  * Set an array of MsgArgs by applying the Set() method to each MsgArg in turn.
  *
  * @param args        An array of MsgArgs to set.

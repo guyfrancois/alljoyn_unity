@@ -64,6 +64,10 @@ QStatus alljoyn_msgargs_set(alljoyn_msgargs args, size_t argOffset, size_t* numA
     return status;
 }
 
+const char* alljoyn_msgargs_tostring(alljoyn_msgargs arg, size_t indent)
+{
+    return ((ajn::MsgArg*)arg)->ToString(indent).c_str();
+}
 #define _IMPLEMENT_MSGARG_TYPE_ACCESSOR(rt, nt, mt) \
     rt alljoyn_msgargs_as_ ## nt(const alljoyn_msgargs args, size_t idx) \
     { \
