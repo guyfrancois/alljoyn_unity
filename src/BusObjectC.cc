@@ -93,7 +93,6 @@ class BusObjectC : public BusObject {
         return ret;
     }
 
-
   protected:
     virtual QStatus Get(const char* ifcName, const char* propName, MsgArg& val)
     {
@@ -234,6 +233,7 @@ QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
                                  uint16_t timeToLive,
                                  uint8_t flags)
 {
+    /* must call the Signal Method through BusObjectC since Signal is a protected Method */
     return ((ajn::BusObjectC*)bus)->SignalC(
                destination,
                sessionId,

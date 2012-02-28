@@ -23,6 +23,7 @@
 #include <assert.h>
 #include <alljoyn/ProxyBusObject.h>
 #include <alljoyn_c/ProxyBusObject.h>
+#include "BusAttachmentC.h"
 
 #define QCC_MODULE "ALLJOYN"
 
@@ -33,7 +34,7 @@ struct _alljoyn_proxybusobject_handle {
 alljoyn_proxybusobject alljoyn_proxybusobject_create(alljoyn_busattachment bus, const char* service,
                                                      const char* path, alljoyn_sessionid sessionId)
 {
-    ajn::ProxyBusObject* ret = new ajn::ProxyBusObject(*((ajn::BusAttachment*)bus), service, path, sessionId);
+    ajn::ProxyBusObject* ret = new ajn::ProxyBusObject(*((ajn::BusAttachmentC*)bus), service, path, sessionId);
     return (alljoyn_proxybusobject)ret;
 }
 

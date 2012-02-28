@@ -630,6 +630,47 @@ extern AJ_API const char* alljoyn_busattachment_getuniquename(const alljoyn_busa
  */
 extern AJ_API const char* alljoyn_busattachment_getglobalguidstring(const alljoyn_busattachment bus);
 
+
+/**
+ * Register a signal handler.
+ *
+ * Signals are forwarded to the signalHandler if sender, interface, member and path
+ * qualifiers are ALL met.
+ *
+ * @param bus            The BusAttachment to register the signal handler with
+ * @param receiver       The object receiving the signal.
+ * @param signalHandler  The signal handler method.
+ * @param member         The interface/member of the signal.
+ * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
+ * @return #ER_OK
+ */
+/*
+ * may need to create another registersignalhandler that takes a MessageReceiver
+ * type.
+ */
+extern AJ_API QStatus alljoyn_busattachment_registersignalhandler(alljoyn_busattachment bus,
+                                                                  alljoyn_busobject receiver,
+                                                                  alljoyn_messagereceiver_signalhandler_ptr signal_handler,
+                                                                  const alljoyn_interfacedescription_member member,
+                                                                  const char* srcPath);
+
+/**
+ * Unregister a signal handler.
+ *
+ * Remove the signal handler that was registered with the given parameters.
+ *
+ * @param bus            The BusAttachment to unregister the signal handler with
+ * @param receiver       The object receiving the signal.
+ * @param signalHandler  The signal handler method.
+ * @param member         The interface/member of the signal.
+ * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
+ * @return #ER_OK
+ */
+extern AJ_API QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busattachment bus,
+                                                                    alljoyn_busobject receiver,
+                                                                    alljoyn_messagereceiver_signalhandler_ptr signal_handler,
+                                                                    const alljoyn_interfacedescription_member member,
+                                                                    const char* srcPath);
 /**
  * Set a key store listener to listen for key store load and store requests.
  * This overrides the internal key store listener.

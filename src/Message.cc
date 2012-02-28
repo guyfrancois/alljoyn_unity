@@ -26,14 +26,14 @@
 #include <ctype.h>
 
 #include <alljoyn/Message.h>
-#include <alljoyn/BusAttachment.h>
+#include "BusAttachmentC.h"
 #include <alljoyn_c/Message.h>
 #include <alljoyn_c/BusAttachment.h>
 
 #define QCC_MODULE "ALLJOYN"
 
 struct _alljoyn_message_handle {
-    _alljoyn_message_handle(ajn::BusAttachment& bus) : msg(bus) { }
+    _alljoyn_message_handle(ajn::BusAttachmentC& bus) : msg(bus) { }
     _alljoyn_message_handle(const ajn::_Message& other) : msg(other) { }
 
     ajn::Message msg;
@@ -41,7 +41,7 @@ struct _alljoyn_message_handle {
 
 alljoyn_message alljoyn_message_create(alljoyn_busattachment bus)
 {
-    return new struct _alljoyn_message_handle (*((ajn::BusAttachment*)bus));
+    return new struct _alljoyn_message_handle (*((ajn::BusAttachmentC*)bus));
 }
 
 void alljoyn_message_destroy(alljoyn_message msg)

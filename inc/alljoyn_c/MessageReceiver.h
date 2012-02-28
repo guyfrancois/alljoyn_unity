@@ -68,8 +68,7 @@ typedef void (*alljoyn_messagereceiver_replyhandler_ptr)(alljoyn_busobject bus,
  * @param srcPath   Object path of signal emitter.
  * @param message   The received message.
  */
-typedef void (*alljoyn_messagereceiver_signalhandler_ptr)(alljoyn_busobject bus,
-                                                          const alljoyn_interfacedescription_member* member,
+typedef void (*alljoyn_messagereceiver_signalhandler_ptr)(const alljoyn_interfacedescription_member* member,
                                                           const char* srcPath, alljoyn_message message);
 
 #ifdef __cplusplus
