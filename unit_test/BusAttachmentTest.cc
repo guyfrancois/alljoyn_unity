@@ -84,11 +84,13 @@ TEST(BusAttachmentTest, isstarted_isstopping) {
  */
 bool registersignalhandler_flag;
 bool registersignalhandler_flag2;
+char sourcePath1[256];
+char sourcePath2[256];
 
 void registersignalHandler_Handler(const alljoyn_interfacedescription_member* member,
                                    const char* srcPath,
                                    alljoyn_message message) {
-    EXPECT_STREQ("/org/alljoyn/test/signal", srcPath);
+    EXPECT_STREQ(sourcePath1, srcPath);
     EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag = true;
 }
@@ -96,7 +98,7 @@ void registersignalHandler_Handler(const alljoyn_interfacedescription_member* me
 void registersignalHandler_Handler2(const alljoyn_interfacedescription_member* member,
                                     const char* srcPath,
                                     alljoyn_message message) {
-    EXPECT_STREQ("/org/alljoyn/test/signal", srcPath);
+    EXPECT_STREQ(sourcePath2, srcPath);
     EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag2 = true;
 }
@@ -105,6 +107,8 @@ TEST(BusAttachmentTest, registersignalhandler_basic) {
     QStatus status = ER_OK;
     registersignalhandler_flag = false;
     registersignalhandler_flag2 = false;
+
+    snprintf(sourcePath1, 256, "/org/alljoyn/test/signal");
 
     alljoyn_busattachment bus = NULL;
     bus = alljoyn_busattachment_create("BusAttachmentTest", QC_TRUE);
@@ -176,6 +180,9 @@ TEST(BusAttachmentTest, registersignalhandler_multiple_signals) {
     QStatus status = ER_OK;
     registersignalhandler_flag = false;
 
+    snprintf(sourcePath1, 256, "/org/alljoyn/test/signal");
+    snprintf(sourcePath2, 256, "/org/alljoyn/test/signal");
+
     alljoyn_busattachment bus = NULL;
     bus = alljoyn_busattachment_create("BusAttachmentTest", QC_TRUE);
 
@@ -203,7 +210,7 @@ TEST(BusAttachmentTest, registersignalhandler_multiple_signals) {
         NULL
     };
 
-    alljoyn_busobject testObj = alljoyn_busobject_create(bus, "/org/alljoyn/test/signal", QC_FALSE, &busObjCbs, NULL);
+    alljoyn_busobject testObj = alljoyn_busobject_create(bus, sourcePath1, QC_FALSE, &busObjCbs, NULL);
 
     status = alljoyn_busobject_addinterface(testObj, testIntf);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -250,6 +257,9 @@ TEST(BusAttachmentTest, unregistersignalhandler) {
     registersignalhandler_flag = false;
     registersignalhandler_flag2 = false;
 
+    snprintf(sourcePath1, 256, "/org/alljoyn/test/signal");
+    snprintf(sourcePath2, 256, "/org/alljoyn/test/signal");
+
     alljoyn_busattachment bus = NULL;
     bus = alljoyn_busattachment_create("BusAttachmentTest", QC_TRUE);
 
@@ -277,7 +287,7 @@ TEST(BusAttachmentTest, unregistersignalhandler) {
         NULL
     };
 
-    alljoyn_busobject testObj = alljoyn_busobject_create(bus, "/org/alljoyn/test/signal", QC_FALSE, &busObjCbs, NULL);
+    alljoyn_busobject testObj = alljoyn_busobject_create(bus, sourcePath1, QC_FALSE, &busObjCbs, NULL);
 
     status = alljoyn_busobject_addinterface(testObj, testIntf);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -330,7 +340,7 @@ TEST(BusAttachmentTest, unregistersignalhandler) {
     }
 
     //wait a little longer to make sure the signal still did not come through
-    qcc::Sleep(100);
+    qcc::Sleep(50);
     EXPECT_TRUE(registersignalhandler_flag);
     EXPECT_FALSE(registersignalhandler_flag2);
 
@@ -339,3 +349,172 @@ TEST(BusAttachmentTest, unregistersignalhandler) {
     status = alljoyn_busattachment_join(bus);
     alljoyn_busattachment_destroy(bus);
 }
+
+TEST(BusAttachmentTest, register_unregister_signalhandler_with_sourcePath) {
+    QStatus status = ER_OK;
+    registersignalhandler_flag = false;
+    registersignalhandler_flag2 = false;
+
+    snprintf(sourcePath1, 256, "/org/alljoyn/test/signal/A");
+    snprintf(sourcePath2, 256, "/org/alljoyn/test/signal/B");
+
+    alljoyn_busattachment bus = NULL;
+    bus = alljoyn_busattachment_create("BusAttachmentTest", QC_TRUE);
+
+    status = alljoyn_busattachment_start(bus);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    status = alljoyn_busattachment_connect(bus, ajn::getConnectArg().c_str());
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+
+    alljoyn_interfacedescription testIntf = NULL;
+
+    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.BusAttachment", &testIntf, QC_FALSE);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    if (status == ER_OK) {
+        //alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_SIGNAL, "my_signal", "a{ys}", NULL, NULL, 0);
+        status = alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_SIGNAL, "testSignal", "s", NULL, "newName", 0);
+        EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+        alljoyn_interfacedescription_activate(testIntf);
+    }
+    /* Set up bus object */
+    alljoyn_busobject_callbacks busObjCbs = {
+        NULL,
+        NULL,
+        NULL,
+        NULL
+    };
+
+    alljoyn_busobject testObjA = alljoyn_busobject_create(bus, sourcePath1, QC_FALSE, &busObjCbs, NULL);
+    alljoyn_busobject testObjB = alljoyn_busobject_create(bus, sourcePath2, QC_FALSE, &busObjCbs, NULL);
+
+    status = alljoyn_busobject_addinterface(testObjA, testIntf);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_busobject_addinterface(testObjB, testIntf);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_interfacedescription_member my_signal_member;
+    QC_BOOL foundMember = alljoyn_interfacedescription_getmember(testIntf, "testSignal", &my_signal_member);
+    ASSERT_EQ(QC_TRUE, foundMember);
+
+
+    status = alljoyn_busattachment_addmatch(bus, "type='signal',interface='org.alljoyn.test.BusAttachment',member='testSignal'");
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //register signal handler with corresponding sourcePath
+    status = alljoyn_busattachment_registersignalhandler(bus, testObjA, &registersignalHandler_Handler, my_signal_member, sourcePath1);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    status = alljoyn_busattachment_registersignalhandler(bus, testObjB, &registersignalHandler_Handler2, my_signal_member, sourcePath2);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    size_t numArgs = 1;
+    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //send Two signals one for each path
+    status = alljoyn_busobject_signal(testObjA, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_busobject_signal(testObjB, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //Wait upto 2 seconds for the signal to complete.
+    for (int i = 0; i < 200; ++i) {
+
+        if (registersignalhandler_flag && registersignalhandler_flag2) {
+            break;
+        }
+        qcc::Sleep(10);
+    }
+    EXPECT_TRUE(registersignalhandler_flag);
+    EXPECT_TRUE(registersignalhandler_flag2);
+
+    //Test sending only the signal with the first sourcePath
+    registersignalhandler_flag = false;
+    registersignalhandler_flag2 = false;
+
+    //send only one signal for sourcePath1
+    status = alljoyn_busobject_signal(testObjA, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //Wait upto 2 seconds for the signal to complete.
+    for (int i = 0; i < 200; ++i) {
+
+        if (registersignalhandler_flag) {
+            break;
+        }
+        qcc::Sleep(10);
+    }
+
+    //wait a little longer to make sure the signal still did not come through
+    qcc::Sleep(50);
+    EXPECT_TRUE(registersignalhandler_flag);
+    EXPECT_FALSE(registersignalhandler_flag2);
+
+    //test sending only the signal with the second sourcePath
+    registersignalhandler_flag = false;
+    registersignalhandler_flag2 = false;
+
+    //send only one signal for sourcePath2
+    status = alljoyn_busobject_signal(testObjB, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //Wait upto 2 seconds for the signal to complete.
+    for (int i = 0; i < 200; ++i) {
+
+        if (registersignalhandler_flag2) {
+            break;
+        }
+        qcc::Sleep(10);
+    }
+
+    //wait a little longer to make sure the signal still did not come through
+    qcc::Sleep(50);
+    EXPECT_FALSE(registersignalhandler_flag);
+    EXPECT_TRUE(registersignalhandler_flag2);
+
+    //unregister signal using sourcePath
+    registersignalhandler_flag = false;
+    registersignalhandler_flag2 = false;
+
+    //unregistersignalhandler using wronge sourcePath
+    status = alljoyn_busattachment_unregistersignalhandler(bus, testObjB, &registersignalHandler_Handler2, my_signal_member, sourcePath1);
+    EXPECT_EQ(ER_FAIL, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //unregistersignalhandler using right sourcePath
+    status = alljoyn_busattachment_unregistersignalhandler(bus, testObjB, &registersignalHandler_Handler2, my_signal_member, sourcePath2);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_busobject_signal(testObjA, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_busobject_signal(testObjB, NULL, 0, my_signal_member, arg, 1, 0, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    //Wait upto 2 seconds for the signal to complete.
+    for (int i = 0; i < 200; ++i) {
+
+        if (registersignalhandler_flag) {
+            break;
+        }
+        qcc::Sleep(10);
+    }
+
+    //wait a little longer to make sure the signal still did not come through
+    qcc::Sleep(50);
+    EXPECT_TRUE(registersignalhandler_flag);
+    EXPECT_FALSE(registersignalhandler_flag2);
+
+    //unregistersignalhandler that has already been unregistered using sourcePath
+    status = alljoyn_busattachment_unregistersignalhandler(bus, testObjB, &registersignalHandler_Handler2, my_signal_member, sourcePath2);
+    EXPECT_EQ(ER_FAIL, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_busattachment_stop(bus);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    status = alljoyn_busattachment_join(bus);
+    alljoyn_busattachment_destroy(bus);
+}
+
+

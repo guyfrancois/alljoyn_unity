@@ -8,12 +8,18 @@
 using namespace std;
 using namespace qcc;
 
+
+typedef struct {
+    alljoyn_messagereceiver_signalhandler_ptr handler;
+    const char* sourcePath;
+}signalCallbackMapEntry;
+
 /*
  * signalCallbackMap used to map a AllJoyn signal (Member*) to a 'C' style signal handler.
  * Since the same signal can be used by multiple signal handlers we require a multimap that
  * can handle have multiple entries with the same key.
  */
-std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr> signalCallbackMap;
+std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry> signalCallbackMap;
 /* Lock to prevent two threads from changing the signalCallbackMap at the same time.*/
 qcc::Mutex signalCallbackMapLock;
 
@@ -23,7 +29,7 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_busobject receiver, alljo
 {
     QStatus ret = ER_OK;
     const ajn::InterfaceDescription::Member* cpp_member = (const ajn::InterfaceDescription::Member*)(member.internal_member);
-
+    signalCallbackMapEntry entry = { signalHandler, srcPath };
     /*
      * a local multimap connecting the signal to each possible 'C' signal handler is being maintained
      * we only need to Register a new SignalHandler if the signal is a new signal
@@ -34,13 +40,13 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_busobject receiver, alljo
         ret = RegisterSignalHandler((ajn::BusObject*)receiver,
                                     static_cast<ajn::MessageReceiver::SignalHandler>(&BusAttachmentC::SignalHandlerRemap),
                                     cpp_member,
-                                    srcPath);
+                                    NULL);
     }
     if (ret == ER_OK) {
         signalCallbackMapLock.Lock(MUTEX_CONTEXT);
-        signalCallbackMap.insert(pair<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>(
+        signalCallbackMap.insert(pair<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>(
                                      cpp_member,
-                                     signalHandler));
+                                     entry));
         signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
     }
     return ret;
@@ -58,17 +64,19 @@ QStatus BusAttachmentC::UnregisterSignalHandlerC(alljoyn_busobject receiver, all
      * (i.e. InterfaceDescription::Member*).
      */
     /*look up the C callback via map and remove */
-    std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator it;
-    pair<std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator,
-         std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator> ret;
+    std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator it;
+    pair<std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator,
+         std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator> ret;
 
     signalCallbackMapLock.Lock(MUTEX_CONTEXT);
     ret = signalCallbackMap.equal_range(cpp_member);
     if (ret.first != ret.second) {
         for (it = ret.first; it != ret.second; ++it) {
-            if (signalHandler == it->second) {
-                signalCallbackMap.erase(it);
-                return_status = ER_OK;
+            if (signalHandler == it->second.handler) {
+                if (srcPath == NULL || strcmp(it->second.sourcePath, srcPath) == 0) {
+                    signalCallbackMap.erase(it);
+                    return_status = ER_OK;
+                }
             }
         }
     }
@@ -97,16 +105,23 @@ void BusAttachmentC::SignalHandlerRemap(const InterfaceDescription::Member* memb
     c_member.internal_member = member;
 
     /*look up the C callback via map and invoke */
-    std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator it;
-    pair<std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator,
-         std::multimap<const ajn::InterfaceDescription::Member*, alljoyn_messagereceiver_signalhandler_ptr>::iterator> ret;
+    std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator it;
+    pair<std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator,
+         std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator> ret;
 
     signalCallbackMapLock.Lock(MUTEX_CONTEXT);
     ret = signalCallbackMap.equal_range(member);
     if (ret.first != ret.second) {
         for (it = ret.first; it != ret.second; ++it) {
-            alljoyn_messagereceiver_signalhandler_ptr remappedHandler = it->second;
-            remappedHandler(&c_member, srcPath, (alljoyn_message) & message);
+            /*
+             * only remap the recived signal if the sourcePath received matches the
+             * the sourcePath specified when the signal was registered,
+             * or the sourcePath is not specified (i.e. NULL)
+             */
+            if (it->second.sourcePath == NULL || strcmp(it->second.sourcePath, srcPath) == 0) {
+                alljoyn_messagereceiver_signalhandler_ptr remappedHandler = it->second.handler;
+                remappedHandler(&c_member, srcPath, (alljoyn_message) & message);
+            }
         }
     }
     signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
