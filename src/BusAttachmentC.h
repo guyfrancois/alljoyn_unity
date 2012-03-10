@@ -46,6 +46,7 @@ class BusAttachmentC : public BusAttachment {
   public:
     BusAttachmentC(const char* applicationName, bool allowRemoteMessages = false) :
         BusAttachment(applicationName, allowRemoteMessages) { }
+
     /**
      * Take a 'C' style SignalHandler and map it to a 'C++' style SignalHandler
      * Register the 'C++' SignalHandler with the 'C++' code.
