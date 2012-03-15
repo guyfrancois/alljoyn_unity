@@ -37,13 +37,19 @@ class MsgArgC : public MsgArg {
     MsgArgC() : MsgArg() { }
 
     /**
+     * copy constructor
+     */
+    MsgArgC(const MsgArgC& other) : MsgArg(static_cast<MsgArg>(other)) { }
+
+    /**
      * Constructor
      *
      * @param typeId  The type for the MsgArg
      */
     MsgArgC(AllJoynTypeId typeId) : MsgArg(typeId) { }
 
-    QStatus MsgArgUtilsSetVC(MsgArg* args, size_t& numArgs, const char* signature, va_list* argp);
+    void SetOwnershipDeepC();
+    static QStatus MsgArgUtilsSetVC(MsgArg* args, size_t& numArgs, const char* signature, va_list* argp);
 
     static QStatus VBuildArgsC(const char*& signature, size_t sigLen, MsgArg* arg, size_t maxArgs, va_list* argp, size_t* count = NULL);
     static QStatus VParseArgsC(const char*& signature, size_t sigLen, const MsgArg* argList, size_t numArgs, va_list* argp);

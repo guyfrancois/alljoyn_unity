@@ -25,6 +25,8 @@
 #include <cstdarg>
 #include <assert.h>
 
+#include <stdio.h>
+
 #include <alljoyn/Message.h>
 #include <alljoyn/MsgArg.h>
 #include <alljoyn_c/Message.h>
@@ -37,12 +39,17 @@ struct _alljoyn_msgarg_handle {
     /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
 };
 
+struct _alljoyn_msgarg_array_handle {
+    /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
+};
+
 alljoyn_msgarg alljoyn_msgarg_create() {
     ajn::MsgArgC* arg = new ajn::MsgArgC;
     return (alljoyn_msgarg)arg;
 }
 
-alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature, ...) {
+alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature, ...)
+{
     ajn::MsgArgC* arg = new ajn::MsgArgC(ajn::ALLJOYN_INVALID);
     va_list argp;
     va_start(argp, signature);
@@ -62,53 +69,95 @@ alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature, ...) {
     return (alljoyn_msgarg)arg;
 }
 
-void alljoyn_msgarg_destroy(alljoyn_msgarg arg) {
+void alljoyn_msgarg_destroy(alljoyn_msgarg arg)
+{
     if (arg != NULL) {
         delete (ajn::MsgArgC*)arg;
     }
 }
 
-QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signature, ...) {
-    if (arg != NULL) {
-        va_list argp;
-        va_start(argp, signature);
-        QStatus status = ER_OK;
+alljoyn_msgarg_array alljoyn_msgarg_array_create(size_t size)
+{
+    ajn::MsgArgC* args = new ajn::MsgArgC[size];
+    for (size_t i = 0; i < size; i++) {
+        args[i].Clear();
+    }
+    return (alljoyn_msgarg_array)args;
+}
 
-        ((ajn::MsgArgC*)arg)->Clear();
-        size_t sigLen = (signature ? strlen(signature) : 0);
-        if ((sigLen < 1) || (sigLen > 255)) {
-            status = ER_BUS_BAD_SIGNATURE;
-        } else {
-            status = ((ajn::MsgArgC*)arg)->VBuildArgsC(signature, sigLen, ((ajn::MsgArgC*)arg), 1, &argp);
-            if ((status == ER_OK) && (*signature != 0)) {
-                status = ER_BUS_NOT_A_COMPLETE_TYPE;
-            }
-        }
-        va_end(argp);
-        return status;
-    } else {
-        return ER_BAD_ARG_1;
+void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg)
+{
+    if (arg != NULL) {
+        delete [] (ajn::MsgArgC*)arg;
     }
 }
 
-QStatus alljoyn_msgarg_get(alljoyn_msgarg arg, const char* signature, ...) {
-    if (arg != NULL) {
-        size_t sigLen = (signature ? strlen(signature) : 0);
-        if (sigLen == 0) {
-            return ER_BAD_ARG_2;
-        }
-        va_list argp;
-        va_start(argp, signature);
-        QStatus status = ((ajn::MsgArgC*)arg)->VParseArgsC(signature, sigLen, ((ajn::MsgArgC*)arg), 1, &argp);
-        va_end(argp);
-        return status;
-    } else {
-        return ER_BAD_ARG_1;
+alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg_array arg, size_t index)
+{
+    if (!arg) {
+        return NULL;
     }
+    ajn::MsgArgC* array_arg = (ajn::MsgArgC*)arg;
+    return (alljoyn_msgarg)(&array_arg[index]);
 }
 
+QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signature, ...)
+{
+    if (!arg) {
+        return ER_BAD_ARG_1;
+    }
+    va_list argp;
+    va_start(argp, signature);
+    QStatus status = ER_OK;
 
-QStatus alljoyn_msgarg_set_array(alljoyn_msgarg* args, size_t* numArgs, const char* signature, ...) {
+    ((ajn::MsgArgC*)arg)->Clear();
+    size_t sigLen = (signature ? strlen(signature) : 0);
+    if ((sigLen < 1) || (sigLen > 255)) {
+        status = ER_BUS_BAD_SIGNATURE;
+    } else {
+        status = ((ajn::MsgArgC*)arg)->VBuildArgsC(signature, sigLen, ((ajn::MsgArgC*)arg), 1, &argp);
+        if ((status == ER_OK) && (*signature != 0)) {
+            status = ER_BUS_NOT_A_COMPLETE_TYPE;
+        }
+    }
+    va_end(argp);
+    return status;
+}
+
+QStatus alljoyn_msgarg_get(alljoyn_msgarg arg, const char* signature, ...)
+{
+    if (!arg) {
+        return ER_BAD_ARG_1;
+    }
+    size_t sigLen = (signature ? strlen(signature) : 0);
+    if (sigLen == 0) {
+        return ER_BAD_ARG_2;
+    }
+    va_list argp;
+    va_start(argp, signature);
+    QStatus status = ((ajn::MsgArgC*)arg)->VParseArgsC(signature, sigLen, ((ajn::MsgArgC*)arg), 1, &argp);
+    va_end(argp);
+    return status;
+}
+
+alljoyn_msgarg alljoyn_msgarg_copy(const alljoyn_msgarg source)
+{
+    if (!source) {
+        return NULL;
+    }
+    return (alljoyn_msgarg) new ajn::MsgArgC(*(ajn::MsgArgC*)source);
+}
+
+QC_BOOL alljoyn_msgarg_equal(alljoyn_msgarg lhv, alljoyn_msgarg rhv)
+{
+    if (!lhv || !rhv) {
+        return QC_FALSE;
+    }
+    return (*(ajn::MsgArgC*)lhv) == (*(ajn::MsgArgC*)rhv);
+}
+
+QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t* numArgs, const char* signature, ...)
+{
     if (!args) {
         return ER_BAD_ARG_1;
     }
@@ -119,7 +168,8 @@ QStatus alljoyn_msgarg_set_array(alljoyn_msgarg* args, size_t* numArgs, const ch
     return status;
 }
 
-QStatus alljoyn_msgarg_get_array(const alljoyn_msgarg* args, size_t numArgs, const char* signature, ...) {
+QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg_array args, size_t numArgs, const char* signature, ...)
+{
     if (!args) {
         return ER_BAD_ARG_1;
     }
@@ -139,8 +189,119 @@ QStatus alljoyn_msgarg_get_array(const alljoyn_msgarg* args, size_t numArgs, con
 
 const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent)
 {
+    if (!arg) {
+        return NULL;
+    }
     return ((ajn::MsgArgC*)arg)->ToString(indent).c_str();
 }
+
+const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg_array args, size_t numArgs, size_t indent)
+{
+    if (!args) {
+        return NULL;
+    }
+    return ((ajn::MsgArgC*)args)->ToString((ajn::MsgArgC*)args, numArgs, indent).c_str();
+}
+
+const char* alljoyn_msgarg_signature(alljoyn_msgarg arg)
+{
+    if (!arg) {
+        return NULL;
+    }
+    return ((ajn::MsgArgC*)arg)->Signature().c_str();
+}
+
+const char* alljoyn_msgarg_array_signature(alljoyn_msgarg_array values, size_t numValues)
+{
+    if (!values) {
+        return NULL;
+    }
+    return ((ajn::MsgArgC*)values)->Signature((ajn::MsgArgC*)values, numValues).c_str();
+}
+
+QC_BOOL alljoyn_msgarg_hassignature(alljoyn_msgarg arg, const char* signature)
+{
+    if (!arg) {
+        return QC_FALSE;
+    }
+    return ((ajn::MsgArgC*)arg)->HasSignature(signature);
+}
+
+QStatus alljoyn_msgarg_getdictelement(alljoyn_msgarg arg, const char* elemSig, ...)
+{
+    if (!arg) {
+        return ER_BAD_ARG_1;
+    }
+    size_t sigLen = (elemSig ? strlen(elemSig) : 0);
+    if (sigLen < 4) {
+        return ER_BAD_ARG_2;
+    }
+
+    /* Check this MsgArg is an array of dictionary entries */
+    if ((((ajn::MsgArgC*)arg)->typeId != ajn::ALLJOYN_ARRAY || ((ajn::MsgArgC*)arg)->v_array.GetElemSig()[0] != '{')) {
+        return ER_BUS_NOT_A_DICTIONARY;
+    }
+    /* Check key has right type */
+    if (((ajn::MsgArgC*)arg)->v_array.GetElemSig()[1] != elemSig[1]) {
+        return ER_BUS_SIGNATURE_MISMATCH;
+    }
+    va_list argp;
+    va_start(argp, elemSig);
+    /* Get the key as a MsgArg */
+    ajn::MsgArgC key;
+    size_t numArgs;
+    ++elemSig;
+    QStatus status = ((ajn::MsgArgC*)arg)->VBuildArgsC(elemSig, 1, &key, 1, &argp, &numArgs);
+    if (status == ER_OK) {
+        status = ER_BUS_ELEMENT_NOT_FOUND;
+        /* Linear search to match the key */
+        const ajn::MsgArg* entry = ((ajn::MsgArgC*)arg)->v_array.GetElements();
+        for (size_t i = 0; i < ((ajn::MsgArgC*)arg)->v_array.GetNumElements(); ++i, ++entry) {
+            if (*entry->v_dictEntry.key == key) {
+                status = ER_OK;
+                break;
+            }
+        }
+        if (status == ER_OK) {
+            status = ((ajn::MsgArgC*)arg)->VParseArgsC(elemSig, sigLen - 3, entry->v_dictEntry.val, 1, &argp);
+        }
+    }
+    va_end(argp);
+    return status;
+}
+
+void alljoyn_msgarg_clear(alljoyn_msgarg arg)
+{
+    if (!arg) {
+        return;
+    }
+    ((ajn::MsgArgC*)arg)->Clear();
+}
+
+AllJoynTypeId alljoyn_msgarg_gettype(alljoyn_msgarg arg)
+{
+    if (!arg) {
+        return ALLJOYN_INVALID;
+    }
+    return (AllJoynTypeId)((ajn::MsgArgC*)arg)->typeId;
+}
+
+void alljoyn_msgarg_stabilize(alljoyn_msgarg arg)
+{
+    if (!arg) {
+        return;
+    }
+    ((ajn::MsgArgC*)arg)->Stabilize();
+}
+
+#if 0
+extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t flags, QC_BOOL deep) {
+    ((ajn::MsgArgC*)arg)->flags |= (flags & (((ajn::MsgArgC*)arg)->OwnsData | ((ajn::MsgArgC*)arg)->OwnsArgs));
+    if (deep) {
+        ((ajn::MsgArgC*)arg)->SetOwnershipDeepC();
+    }
+}
+#endif
 
 /*******************************************************************************
  * work with the alljoyn_msgargs (NOTE plural MsgArg).  This set of functions

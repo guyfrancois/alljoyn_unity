@@ -25,6 +25,10 @@
 
 namespace ajn {
 
+void MsgArgC::SetOwnershipDeepC() {
+    SetOwnershipDeep();
+}
+
 QStatus MsgArgC::MsgArgUtilsSetVC(MsgArg* args, size_t& numArgs, const char* signature, va_list* argp) {
     return MsgArgUtils::SetV(args, numArgs, signature, argp);
 }

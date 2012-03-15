@@ -30,6 +30,47 @@
 extern "C" {
 #endif
 typedef struct _alljoyn_msgarg_handle* alljoyn_msgarg;
+typedef struct _alljoyn_msgarg_array_handle* alljoyn_msgarg_array;
+
+
+typedef enum {
+    ALLJOYN_INVALID          =  0,     ///< AllJoyn INVALID typeId
+    ALLJOYN_ARRAY            = 'a',    ///< AllJoyn array container type
+    ALLJOYN_BOOLEAN          = 'b',    ///< AllJoyn boolean basic type, @c 0 is @c FALSE and @c 1 is @c TRUE - Everything else is invalid
+    ALLJOYN_DOUBLE           = 'd',    ///< AllJoyn IEEE 754 double basic type
+    ALLJOYN_DICT_ENTRY       = 'e',    ///< AllJoyn dictionary or map container type - an array of key-value pairs
+    ALLJOYN_SIGNATURE        = 'g',    ///< AllJoyn signature basic type
+    ALLJOYN_HANDLE           = 'h',    ///< AllJoyn socket handle basic type
+    ALLJOYN_INT32            = 'i',    ///< AllJoyn 32-bit signed integer basic type
+    ALLJOYN_INT16            = 'n',    ///< AllJoyn 16-bit signed integer basic type
+    ALLJOYN_OBJECT_PATH      = 'o',    ///< AllJoyn Name of an AllJoyn object instance basic type
+    ALLJOYN_UINT16           = 'q',    ///< AllJoyn 16-bit unsigned integer basic type
+    ALLJOYN_STRUCT           = 'r',    ///< AllJoyn struct container type
+    ALLJOYN_STRING           = 's',    ///< AllJoyn UTF-8 NULL terminated string basic type
+    ALLJOYN_UINT64           = 't',    ///< AllJoyn 64-bit unsigned integer basic type
+    ALLJOYN_UINT32           = 'u',    ///< AllJoyn 32-bit unsigned integer basic type
+    ALLJOYN_VARIANT          = 'v',    ///< AllJoyn variant container type
+    ALLJOYN_INT64            = 'x',    ///< AllJoyn 64-bit signed integer basic type
+    ALLJOYN_BYTE             = 'y',    ///< AllJoyn 8-bit unsigned integer basic type
+
+    ALLJOYN_STRUCT_OPEN      = '(', /**< Never actually used as a typeId: specified as ALLJOYN_STRUCT */
+    ALLJOYN_STRUCT_CLOSE     = ')', /**< Never actually used as a typeId: specified as ALLJOYN_STRUCT */
+    ALLJOYN_DICT_ENTRY_OPEN  = '{', /**< Never actually used as a typeId: specified as ALLJOYN_DICT_ENTRY */
+    ALLJOYN_DICT_ENTRY_CLOSE = '}', /**< Never actually used as a typeId: specified as ALLJOYN_DICT_ENTRY */
+
+    ALLJOYN_BOOLEAN_ARRAY    = ('b' << 8) | 'a',   ///< AllJoyn array of booleans
+    ALLJOYN_DOUBLE_ARRAY     = ('d' << 8) | 'a',   ///< AllJoyn array of IEEE 754 doubles
+    ALLJOYN_INT32_ARRAY      = ('i' << 8) | 'a',   ///< AllJoyn array of 32-bit signed integers
+    ALLJOYN_INT16_ARRAY      = ('n' << 8) | 'a',   ///< AllJoyn array of 16-bit signed integers
+    ALLJOYN_UINT16_ARRAY     = ('q' << 8) | 'a',   ///< AllJoyn array of 16-bit unsigned integers
+    ALLJOYN_UINT64_ARRAY     = ('t' << 8) | 'a',   ///< AllJoyn array of 64-bit unsigned integers
+    ALLJOYN_UINT32_ARRAY     = ('u' << 8) | 'a',   ///< AllJoyn array of 32-bit unsigned integers
+    ALLJOYN_INT64_ARRAY      = ('x' << 8) | 'a',   ///< AllJoyn array of 64-bit signed integers
+    ALLJOYN_BYTE_ARRAY       = ('y' << 8) | 'a',   ///< AllJoyn array of 8-bit unsigned integers
+
+    ALLJOYN_WILDCARD         = '*'     ///< This never appears in a signature but is used for matching arbitrary message args
+
+} AllJoynTypeId;
 
 /**
  * Create a new message argument.
@@ -58,6 +99,27 @@ extern AJ_API alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature
  */
 extern AJ_API void alljoyn_msgarg_destroy(alljoyn_msgarg arg);
 
+/**
+ * Create an array of message arguments
+ *
+ * @return the created array of message arguments
+ */
+extern AJ_API alljoyn_msgarg_array alljoyn_msgarg_array_create(size_t size);
+
+/**
+ * Destroy a message argument array
+ *
+ * @param arg the message argument array to destory
+ */
+extern AJ_API void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg);
+
+/*
+ * when working with an array of message arguments this will return the nth item
+ * in the array.
+ *
+ * @param index the index number of the element we wish to access.
+ */
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg_array arg, size_t index);
 
 /**
  * Set value of a message arg from a signature and a list of values. Note that any values or
@@ -234,6 +296,28 @@ extern AJ_API QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signatu
 extern AJ_API QStatus alljoyn_msgarg_get(alljoyn_msgarg arg, const char* signature, ...);
 
 /**
+ * create a copy of a message argument.  This will create a new alljoyn_msgarg and
+ * must be cleaned up using alljoyn_msgarg_detroy.
+ *
+ * @param source      the alljoyn_msgarg to be copied
+ *
+ * @return copy of the source message argument is returned
+ */
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_copy(const alljoyn_msgarg source);
+
+/**
+ * Equality operator.
+ *
+ * @param lhv  The alljoyn_msgarg to compare.
+ * @param rhv  The other alljoyn_msgarg to compare
+ *
+ * @return  Returns true if the two message args have the same signatures and values.
+ */
+extern AJ_API QC_BOOL alljoyn_msgarg_equal(alljoyn_msgarg lhv, alljoyn_msgarg rhv);
+
+
+
+/**
  * Set an array of MsgArgs by applying the alljoyn_msgarg_set() function to each MsgArg in turn.
  *
  * @param args     An array of MsgArgs to set.
@@ -249,7 +333,7 @@ extern AJ_API QStatus alljoyn_msgarg_get(alljoyn_msgarg arg, const char* signatu
  *       - #ER_BUS_TRUNCATED if the signature was longer than expected.
  *       - Other error status codes indicating a failure.
  */
-extern AJ_API QStatus alljoyn_msgarg_set_array(alljoyn_msgarg* args, size_t* numArgs, const char* signature, ...);
+extern AJ_API QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t* numArgs, const char* signature, ...);
 
 /**
  * Unpack an array of MsgArgs by applying the alljoyn_msgarg_get() function to each MsgArg in turn.
@@ -264,7 +348,7 @@ extern AJ_API QStatus alljoyn_msgarg_set_array(alljoyn_msgarg* args, size_t* num
  *      - #ER_BUS_SIGNATURE_MISMATCH if the signature did not match.
  *      - Other error status codes indicating a failure.
  */
-extern AJ_API QStatus alljoyn_msgarg_get_array(const alljoyn_msgarg* args, size_t numArgs, const char* signature, ...);
+extern AJ_API QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg_array args, size_t numArgs, const char* signature, ...);
 
 /**
  * Returns an XML string representation of this type
@@ -275,36 +359,6 @@ extern AJ_API QStatus alljoyn_msgarg_get_array(const alljoyn_msgarg* args, size_
  */
 extern AJ_API const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent);
 
-
-#if 0
-/**
- * Returns a string for the signature of this value
- *
- * @return The signature string for this MsgArg
- */
-qcc::String Signature() const {
-    return Signature(this, 1);
-}
-
-/**
- * Returns a string representation of the signature of an array of message args.
- *
- * @param values     A pointer to an array of message arg values
- * @param numValues  Length of the array
- *
- * @return The signature string for the message args.
- */
-static qcc::String Signature(const MsgArg* values, size_t numValues);
-
-/**
- * Returns an XML string representation of this type
- *
- * @param indent  Number of spaces to indent the generated xml
- *
- * @return  The XML string
- */
-qcc::String ToString(size_t indent = 0) const;
-
 /**
  * Returns an XML string representation for an array of message args.
  *
@@ -314,80 +368,36 @@ qcc::String ToString(size_t indent = 0) const;
  *
  * @return The XML string representation of the message args.
  */
-static qcc::String ToString(const MsgArg* args, size_t numArgs, size_t indent = 0);
+extern AJ_API const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg_array args, size_t numArgs, size_t indent);
+
+/**
+ * Returns a string for the signature of this value
+ *
+ * @param arg the argument to read the signature from
+ *
+ * @return The signature string for this MsgArg
+ */
+extern AJ_API const char* alljoyn_msgarg_signature(alljoyn_msgarg arg);
+
+/**
+ * Returns a string representation of the signature of an array of message args.
+ *
+ * @param values     A pointer to an array of message arg values
+ * @param numValues  Length of the array
+ *
+ * @return The signature string for the message args.
+ */
+extern AJ_API const char* alljoyn_msgarg_array_signature(alljoyn_msgarg_array values, size_t numValues);
 
 /**
  * Checks the signature of this arg.
  *
+ * @param arg        The message argument we want to check the signature of
  * @param signature  The signature to check
  *
  * @return  true if this arg has the specified signature, otherwise returns false.
  */
-bool HasSignature(const char* signature) const;
-
-/**
- * Assignment operator
- *
- * @param other  The source MsgArg for the assignment
- *
- * @return  The assigned MsgArg
- */
-MsgArg& operator=(const MsgArg& other) {
-    if (this != &other) {
-        Clone(*this, other);
-    }
-    return *this;
-}
-
-/**
- * Copy constructor
- *
- * @param other  The source MsgArg for the copy
- */
-MsgArg(const MsgArg &other) : typeId(ALLJOYN_INVALID) {
-    Clone(*this, other);
-}
-
-/**
- * Destructor
- */
-~MsgArg() { Clear(); }
-
-/**
- * Constructor
- *
- * @param typeId  The type for the MsgArg
- */
-MsgArg(AllJoynTypeId typeId) : typeId(typeId), flags(0) {
-    v_invalid.unused[0] = v_invalid.unused[1] = v_invalid.unused[2] = NULL;
-}
-
-/**
- * Constructor to build a message arg. If the constructor fails for any reason the type will be
- * set to #ALLJOYN_INVALID. See the description of the #Set() method for information about the
- * signature and parameters. For initializing complex values it is recommended to use the
- * default constructor and the #Set() method so the success of setting the value can be
- * explicitly checked.
- *
- * @param signature   The signature for MsgArg value.
- * @param ...         One or more values to initialize the MsgArg.
- */
-MsgArg(const char* signature, ...);
-
-/**
- * Unpack an array of MsgArgs by applying the Get() method to each MsgArg in turn.
- *
- * @param args       An array of MsgArgs to unpack.
- * @param numArgs    The size of the MsgArgs array.
- * @param signature  The signature to match against the MsgArg values
- * @param ...         Pointers to return references to the unpacked values.
- *
- * @return
- *      - #ER_OK if the MsgArgs were successfully set.
- *      - #ER_BUS_SIGNATURE_MISMATCH if the signature did not match.
- *      - Other error status codes indicating a failure.
- */
-static QStatus Get(const MsgArg* args, size_t numArgs, const char* signature, ...);
+extern AJ_API QC_BOOL alljoyn_msgarg_hassignature(alljoyn_msgarg arg, const char* signature);
 
 /**
  * Helper function for accessing dictionary elements. The MsgArg must be an array of dictionary
@@ -402,12 +412,13 @@ static QStatus Get(const MsgArg* args, size_t numArgs, const char* signature, ..
  *     uint8_t age;
  *     uint32_t height;
  *     const char* address;
- *     QStatus status = arg.GetElement("{s(yus)}", "fred", &age, &height,  &address);
+ *     QStatus status = alljoyn_msgarg_getdictelement(arg, "{s(yus)}", "fred", &age, &height,  &address);
  *     @endcode
  *
  * This function is particularly useful for extracting specific properties from the array of property
  * values returned by ProxyBusObject::GetAllProperties.
  *
+ * @param arg      a message argument containing an array of dictionary elements
  * @param elemSig  The expected signature for the dictionary element, e.g. "{su}"
  * @param ...      Pointers to return unpacked key values.
  *
@@ -418,41 +429,29 @@ static QStatus Get(const MsgArg* args, size_t numArgs, const char* signature, ..
  *      - #ER_BUS_ELEMENT_NOT_FOUND if the key was not found in the dictionary.
  *      - An error status otherwise
  */
-QStatus GetElement(const char* elemSig, ...) const;
+extern AJ_API QStatus alljoyn_msgarg_getdictelement(alljoyn_msgarg arg, const char* elemSig, ...);
 
-/**
- * Equality operator.
- *
- * @param other  The other MsgArg to compare.
- *
- * @return  Returns true if the two message args have the same signatures and values.
- */
-bool operator==(const MsgArg& other);
 
-/**
- * Inequality operator.
- *
- * @param other  The other MsgArg to compare.
- *
- * @return  Returns true if the two message args do not have the same signatures and values.
- */
-bool operator!=(const MsgArg& other) {
-    return !(*this == other);
-}
+extern AJ_API AllJoynTypeId alljoyn_msgarg_gettype(alljoyn_msgarg arg);
 
 /**
  * Clear the MsgArg setting the type to ALLJOYN_INVALID and freeing any memory allocated for the
  * MsgArg value.
+ *
+ * @param arg the message argument to be cleared.
  */
-void Clear();
+extern AJ_API void alljoyn_msgarg_clear(alljoyn_msgarg arg);
 
 /**
  * Makes a MsgArg stable by completely copying the contents into locally
  * managed memory. After a MsgArg has been stabilized any values used to
  * initialize or set the message arg can be freed.
+ *
+ * @param arg the message argument to stabilize
  */
-void Stabilize();
+extern AJ_API void alljoyn_msgarg_stabilize(alljoyn_msgarg arg);
 
+#if 0
 /**
  * This method sets the ownership flags on this MsgArg, and optionally all
  * MsgArgs subordinate to this MsgArg. By setting the ownership flags the
@@ -466,13 +465,8 @@ void Stabilize();
  * @param flags  A logical or of the applicable ownership flags (OwnsArgs and OwnsData).
  * @param deep   If true recursively sets the ownership flags on all MsgArgs owned by this MsgArg.
  */
-void SetOwnershipFlags(uint8_t flags, bool deep = false) {
-    this->flags |= (flags & (OwnsData | OwnsArgs)); if (deep) {
-        SetOwnershipDeep();
-    }
-}
+extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t flags, QC_BOOL deep);
 #endif
-
 
 /*******************************************************************************
  * work with the alljoyn_msgargs (NOTE plural MsgArg).  This set of functions
