@@ -69,6 +69,13 @@ class BusAttachmentC : public BusAttachment {
      * @return #ER_OK
      */
     QStatus UnregisterSignalHandlerC(alljoyn_busobject receiver, alljoyn_messagereceiver_signalhandler_ptr signalHandler, const alljoyn_interfacedescription_member member, const char* srcPath);
+
+    /**
+     * remove all SignalHandlers associated with the receiver alljoyn_busobject
+     *
+     * @param receiver the object the signals will no longer be registered with.
+     */
+    QStatus UnregisterAllHandlersC(alljoyn_busobject receiver);
   private:
     /**
      * Convert the 'C++' SignalHandler callback to a 'C' callback function

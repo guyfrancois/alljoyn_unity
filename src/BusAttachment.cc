@@ -331,6 +331,11 @@ QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busattachment bus,
                                                                  srcPath);
 }
 
+QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus, alljoyn_busobject receiver)
+{
+    return ((ajn::BusAttachmentC*)bus)->UnregisterAllHandlersC(receiver);
+}
+
 QStatus alljoyn_busattachment_setdaemondebug(alljoyn_busattachment bus, const char* module, uint32_t level)
 {
     return ((ajn::BusAttachmentC*)bus)->SetDaemonDebug(module, level);

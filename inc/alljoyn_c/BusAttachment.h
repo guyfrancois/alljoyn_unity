@@ -671,6 +671,15 @@ extern AJ_API QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busa
                                                                     alljoyn_messagereceiver_signalhandler_ptr signal_handler,
                                                                     const alljoyn_interfacedescription_member member,
                                                                     const char* srcPath);
+
+/**
+ * Unregister all signal and reply handlers for the specified alljoyn_busobject.
+ *
+ * @param bus            The BusAttachment to unregister the signal handler with
+ * @param receiver       The message receiver that is being unregistered.
+ * @return ER_OK if successful.
+ */
+extern AJ_API QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus, alljoyn_busobject receiver);
 /**
  * Set a key store listener to listen for key store load and store requests.
  * This overrides the internal key store listener.
