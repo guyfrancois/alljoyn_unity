@@ -21,33 +21,6 @@
 #include "ajTestCommon.h"
 
 TEST(MsgArgTest, Basic) {
-    QStatus status = ER_OK;
-    alljoyn_msgarg arg = NULL;
-    status = alljoyn_msgarg_set(arg, "i", -9999);
-    EXPECT_EQ(ER_BAD_ARG_1, status) << "  Actual Status: " << QCC_StatusText(status);
-    int32_t i;
-    status = alljoyn_msgarg_get(arg, "i", &i);
-    EXPECT_EQ(ER_BAD_ARG_1, status) << "  Actual Status: " << QCC_StatusText(status);
-
-    arg = alljoyn_msgarg_create();
-    EXPECT_TRUE(arg != NULL);
-
-    status = alljoyn_msgarg_set(arg, "i", -9999);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-
-    status = alljoyn_msgarg_get(arg, "i", &i);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    ASSERT_EQ(i, -9999);
-
-    status = alljoyn_msgarg_set(arg, "s", "hello");
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char* str;
-    status = alljoyn_msgarg_get(arg, "s", &str);
-    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    ASSERT_STREQ("hello", str);
-
-    alljoyn_msgarg_destroy(arg);
-
     /* BYTE */
     static uint8_t y = 0;
     /* BOOLEAN */
@@ -58,7 +31,9 @@ TEST(MsgArgTest, Basic) {
     static uint16_t q = 0xBEBE;
     /* DOUBLE */
     static double d = 3.14159265L;
-    /* INT32 */
+    /* UINT32 */
+    static int32_t i = -9999;
+    /* UINT32 */
     static uint32_t u = 0x32323232;
     /* INT64 */
     static int64_t x = -1LL;
@@ -73,42 +48,117 @@ TEST(MsgArgTest, Basic) {
     /* Array of UINT64 */
     static int64_t at[] = { -8, -88, 888, 8888 };
 
+    /* BYTE */
+    uint8_t yout;
+    /* BOOLEAN */
+    bool bout;
+    /* INT16 */
+    int16_t nout;
+    /* UINT16 */
+    uint16_t qout;
+    /* DOUBLE */
+    double dout;
+    /* INT32 */
+    int32_t iout;
+    /* UINT32 */
+    uint32_t uout;
+    /* INT64 */
+    int64_t xout;
+    /* UINT64 */
+    uint64_t tout;
+    /* STRING */
+    const char* sout;
+    /* OBJECT_PATH */
+    const char* oout;
+    /* SIGNATURE */
+    const char* gout;
+
+    QStatus status = ER_OK;
+    alljoyn_msgarg arg = NULL;
+    status = alljoyn_msgarg_set(arg, "i", -9999);
+    EXPECT_EQ(ER_BAD_ARG_1, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_msgarg_get(arg, "i", &iout);
+    EXPECT_EQ(ER_BAD_ARG_1, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    arg = alljoyn_msgarg_create();
+    EXPECT_TRUE(arg != NULL);
+
+    status = alljoyn_msgarg_set(arg, "i", -9999);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_msgarg_get(arg, "i", &iout);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    EXPECT_EQ(iout, -9999);
+
+    status = alljoyn_msgarg_set(arg, "s", "hello");
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    char* str;
+    status = alljoyn_msgarg_get(arg, "s", &str);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    ASSERT_STREQ("hello", str);
+
+    alljoyn_msgarg_destroy(arg);
+
     alljoyn_msgarg argList = NULL;
     argList = alljoyn_msgarg_create();
     EXPECT_TRUE(argList != NULL);
 
     status = alljoyn_msgarg_set(argList, "(ybnqdiuxtsoqg)", y, b, n, q, d, i, u, x, t, s, o, q, g);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    status = alljoyn_msgarg_get(argList, "(ybnqdiuxtsoqg)", &y, &b, &n, &q, &d, &i, &u, &x, &t, &s, &o, &q, &g);
+    status = alljoyn_msgarg_get(argList, "(ybnqdiuxtsoqg)", &yout, &bout, &nout, &qout, &dout, &iout, &uout, &xout, &tout, &sout, &oout, &qout, &gout);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    ASSERT_EQ(y, 0);
-    ASSERT_EQ(b, true);
-    ASSERT_EQ(n, 42);
-    ASSERT_EQ(q, 0xBEBE);
-    ASSERT_EQ(i, -9999);
+    EXPECT_EQ(yout, 0);
+    EXPECT_EQ(bout, true);
+    EXPECT_EQ(nout, 42);
+    EXPECT_EQ(qout, 0xBEBE);
+    EXPECT_EQ(iout, -9999);
 
-    ASSERT_EQ(u, 0x32323232u);
-    ASSERT_EQ(x, -1LL);
-    ASSERT_EQ(t, 0x6464646464646464ULL);
-    ASSERT_STREQ(s, "this is a string");
-    ASSERT_STREQ(o, "/org/foo/bar");
-    ASSERT_EQ(q, 0xBEBE);
-    ASSERT_STREQ(g, "a{is}d(siiux)");
+    EXPECT_EQ(uout, 0x32323232u);
+    EXPECT_EQ(xout, -1LL);
+    EXPECT_EQ(tout, 0x6464646464646464ULL);
+    ASSERT_STREQ(sout, "this is a string");
+    ASSERT_STREQ(oout, "/org/foo/bar");
+    EXPECT_EQ(qout, 0xBEBE);
+    ASSERT_STREQ(gout, "a{is}d(siiux)");
+
+    alljoyn_msgarg_destroy(argList);
+
+    argList = alljoyn_msgarg_create();
+    EXPECT_TRUE(argList != NULL);
 
     /*  Structs */
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    status = alljoyn_msgarg_set(argList, "((ydx)(its))", y, &d, &x, i, &t, s);
+    status = alljoyn_msgarg_set(argList, "((ydx)(its))", y, d, x, i, t, s);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    status = alljoyn_msgarg_get(argList, "((ydx)(its))", &y, &d, &x, &i, &t, &s);
+    status = alljoyn_msgarg_get(argList, "((ydx)(its))", &yout, &dout, &xout, &iout, &tout, &sout);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    EXPECT_EQ(yout, 0);
+    EXPECT_EQ(xout, -1LL);
+    EXPECT_EQ(iout, -9999);
+    EXPECT_EQ(tout, 0x6464646464646464ULL);
+    EXPECT_STREQ(sout, "this is a string");
+
+    alljoyn_msgarg_destroy(argList);
+
+    argList = alljoyn_msgarg_create();
+    EXPECT_TRUE(argList != NULL);
 
     status = alljoyn_msgarg_set(argList, "((iuiu)(yd)at)", i, u, i, u, y, d, sizeof(at) / sizeof(at[0]), at);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     int64_t*p64;
     size_t p64len;
-    status = alljoyn_msgarg_get(argList, "((iuiu)(yd)at)", &i, &u, &i, &u, &y, &d, &p64len, &p64);
+    status = alljoyn_msgarg_get(argList, "((iuiu)(yd)at)", &iout, &uout, &iout, &uout, &yout, &dout, &p64len, &p64);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    alljoyn_msgarg_destroy(arg);
+    EXPECT_EQ(iout, -9999);
+    EXPECT_EQ(uout, 0x32323232u);
+    EXPECT_EQ(yout, 0);
+    EXPECT_EQ(p64len, sizeof(at) / sizeof(at[0]));
+    for (size_t k = 0; k < p64len; ++k) {
+        EXPECT_EQ(at[k], p64[k]) << "index " << k;
+    }
+    alljoyn_msgarg_destroy(argList);
 }
 
 TEST(MsgArgTest, Variants)
