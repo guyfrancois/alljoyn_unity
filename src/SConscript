@@ -22,6 +22,9 @@ objs = env.Object(srcs)
 objs_shared = env.SharedObject(srcs)
 
 # AllJoyn Library
+# suppress the creation of static import lib, and and export (.exp) when building
+# using Microsoft Visual Studio using env.SharedLibrary
+env['no_import_lib'] = 1;
 liballjoyn_c = env.StaticLibrary('alljoyn_c', objs)
 liballjoyn_c_shared = env.SharedLibrary('alljoyn_c', objs_shared)
 

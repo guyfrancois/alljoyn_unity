@@ -83,9 +83,15 @@ namespace AllJoynUnity
 				}
 			}
 			#endregion
+			public QStatus AddMember(Message.Type type, string name, string inputSignature,
+				string outputSignature, string argNames)
+			{
+				return alljoyn_interfacedescription_addmember(_interfaceDescription,
+					(int)type, name, inputSignature, outputSignature, argNames, (byte)AnnotationFlags.Default);
+			}
 
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
-				string outputSignature, string argNames, AnnotationFlags annotation = AnnotationFlags.Default)
+				string outputSignature, string argNames, AnnotationFlags annotation)
 			{
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
