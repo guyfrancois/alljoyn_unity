@@ -19,7 +19,7 @@ namespace AllJoynUnity
 
 			public QStatus CreateInterface(string interfaceName, bool secure, out InterfaceDescription iface)
 			{
-				IntPtr interfaceDescription;
+				IntPtr interfaceDescription = new IntPtr();
 				int qstatus = alljoyn_busattachment_createinterface(_busAttachment,
 					interfaceName, ref interfaceDescription, secure ? 1 : 0);
 				if(qstatus == 0)
@@ -266,7 +266,7 @@ namespace AllJoynUnity
 
 			public QStatus GetPeerGuid(string name, out string guid)
 			{
-				UIntPtr guidSz;
+				UIntPtr guidSz = new UIntPtr();
 				QStatus ret = alljoyn_busattachment_getpeerguid(_busAttachment, name,
 					IntPtr.Zero, ref guidSz);
 				if(!ret)
