@@ -318,7 +318,7 @@ TEST(MsgArgTest, arrays_of_nonscalars)
     status = alljoyn_msgarg_set(arg, "as", sizeof(as) / sizeof(as[0]), as);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgarg_array pas;
+    alljoyn_msgarg pas;
     char*str[4];
     size_t las;
     status = alljoyn_msgarg_get(arg, "as", &las, &pas);
@@ -336,7 +336,7 @@ TEST(MsgArgTest, arrays_of_nonscalars)
 
     status = alljoyn_msgarg_set(arg, "ag", sizeof(ag) / sizeof(ag[0]), ag);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    alljoyn_msgarg_array pag;
+    alljoyn_msgarg pag;
     char* str_ag[4];
     size_t lag;
     status = alljoyn_msgarg_get(arg, "ag", &lag, &pag);
@@ -351,7 +351,7 @@ TEST(MsgArgTest, arrays_of_nonscalars)
 
     status = alljoyn_msgarg_set(arg, "ao", sizeof(ao) / sizeof(ao[0]), ao);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    alljoyn_msgarg_array pao;
+    alljoyn_msgarg pao;
     char* str_ao[4];
     size_t lao;
     status = alljoyn_msgarg_get(arg, "ao", &lao, &pao);
@@ -371,7 +371,7 @@ TEST(MsgArgTest, Dictionary)
     QStatus status = ER_OK;
     const char*keys[] = { "red", "green", "blue", "yellow" };
     //size_t numEntries = sizeof(keys) / sizeof(keys[0]);
-    alljoyn_msgarg_array dictEntries;
+    alljoyn_msgarg dictEntries;
     dictEntries = alljoyn_msgarg_array_create(sizeof(keys) / sizeof(keys[0]));
 
     status = alljoyn_msgarg_set(alljoyn_msgarg_array_element(dictEntries, 0), "{iv}", 1, alljoyn_msgarg_create_and_set("s", keys[0]));
@@ -387,7 +387,7 @@ TEST(MsgArgTest, Dictionary)
     status = alljoyn_msgarg_set(dict, "a{iv}", sizeof(keys) / sizeof(keys[0]), dictEntries);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgarg_array entries;
+    alljoyn_msgarg entries;
     size_t num;
     status = alljoyn_msgarg_get(dict, "a{iv}", &num, &entries);
     EXPECT_EQ(num, sizeof(keys) / sizeof(keys[0]));
@@ -412,13 +412,13 @@ TEST(MsgArgTest, Dictionary)
         }
         EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     }
-    alljoyn_msgarg_array_destroy(dictEntries);
+    alljoyn_msgarg_destroy(dictEntries);
     alljoyn_msgarg_destroy(dict);
 }
 
 TEST(MsgArgTest, alljoyn_msgarg_array_set_get) {
     QStatus status = ER_OK;
-    alljoyn_msgarg_array arg;
+    alljoyn_msgarg arg;
     arg = alljoyn_msgarg_array_create(4);
     size_t numArgs = 4;
     status = alljoyn_msgarg_array_set(arg, &numArgs, "issi", 1, "two", "three", 4);
@@ -452,12 +452,12 @@ TEST(MsgArgTest, alljoyn_msgarg_array_set_get) {
     EXPECT_STREQ("three", out3);
     EXPECT_EQ(4, out4);
 
-    alljoyn_msgarg_array_destroy(arg);
+    alljoyn_msgarg_destroy(arg);
 }
 
 TEST(MsgArgTest, tostring) {
     QStatus status = ER_OK;
-    alljoyn_msgarg_array arg;
+    alljoyn_msgarg arg;
     arg = alljoyn_msgarg_array_create(4);
     size_t numArgs = 4;
     status = alljoyn_msgarg_array_set(arg, &numArgs, "issi", 1, "two", "three", 4);
@@ -467,7 +467,7 @@ TEST(MsgArgTest, tostring) {
     EXPECT_STREQ("<int32>1</int32>\n<string>two</string>\n<string>three</string>\n<int32>4</int32>\n",
                  alljoyn_msgarg_array_tostring(arg, 4, 0));
 
-    alljoyn_msgarg_array_destroy(arg);
+    alljoyn_msgarg_destroy(arg);
 }
 
 TEST(MsgArgTest, signature) {
@@ -475,7 +475,7 @@ TEST(MsgArgTest, signature) {
     EXPECT_STREQ("i", alljoyn_msgarg_signature(arg1));
 
     QStatus status = ER_OK;
-    alljoyn_msgarg_array arg2;
+    alljoyn_msgarg arg2;
     arg2 = alljoyn_msgarg_array_create(4);
     size_t numArgs = 4;
     status = alljoyn_msgarg_array_set(arg2, &numArgs, "issi", 1, "two", "three", 4);
@@ -483,7 +483,7 @@ TEST(MsgArgTest, signature) {
     EXPECT_STREQ("issi", alljoyn_msgarg_array_signature(arg2, 4));
 
     alljoyn_msgarg_destroy(arg1);
-    alljoyn_msgarg_array_destroy(arg2);
+    alljoyn_msgarg_destroy(arg2);
 }
 
 TEST(MsgArgTest, hassignature) {
@@ -520,7 +520,7 @@ TEST(MsgArgTest, copy) {
 
 TEST(MsgArgTest, getdictelement) {
     QStatus status = ER_OK;
-    alljoyn_msgarg_array dictEntries;
+    alljoyn_msgarg dictEntries;
     dictEntries = alljoyn_msgarg_array_create(3);
 
     status = alljoyn_msgarg_set(alljoyn_msgarg_array_element(dictEntries, 0), "{s(yus)}", "amy", 21, 151, "somewhere");
@@ -554,7 +554,7 @@ TEST(MsgArgTest, getdictelement) {
     EXPECT_EQ(ER_BUS_NOT_A_DICTIONARY, status) << "  Actual Status: " << QCC_StatusText(status);
 
     alljoyn_msgarg_destroy(arg);
-    alljoyn_msgarg_array_destroy(dictEntries);
+    alljoyn_msgarg_destroy(dictEntries);
     alljoyn_msgarg_destroy(dict);
 }
 
@@ -598,11 +598,11 @@ TEST(MsgArgTest, stabilize) {
 TEST(MsgArgTest, null_pointer_test) {
     alljoyn_msgarg arg = NULL;
     alljoyn_msgarg arg2 = NULL;
-    alljoyn_msgarg_array arg_array = NULL;
+    alljoyn_msgarg arg_array = NULL;
     QStatus status = ER_OK;
 
     EXPECT_NO_FATAL_FAILURE(alljoyn_msgarg_destroy(arg));
-    EXPECT_NO_FATAL_FAILURE(alljoyn_msgarg_array_destroy(arg_array));
+    EXPECT_NO_FATAL_FAILURE(alljoyn_msgarg_destroy(arg_array));
 
     EXPECT_NO_FATAL_FAILURE(alljoyn_msgarg_array_element(arg_array, 1));
 

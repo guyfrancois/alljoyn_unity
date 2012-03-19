@@ -187,23 +187,23 @@ int main(int argc, char** argv, char** envArg)
         alljoyn_proxybusobject_addinterface(remoteObj, alljoynTestIntf);
 
         alljoyn_message reply = alljoyn_message_create(g_msgBus);
-        alljoyn_msgargs inputs = alljoyn_msgargs_create(2);
+        alljoyn_msgarg inputs = alljoyn_msgarg_array_create(2);
         size_t numArgs = 2;
-        status = alljoyn_msgargs_set(inputs, 0, &numArgs, "ss", "Hello ", "World!");
+        status = alljoyn_msgarg_array_set(inputs, &numArgs, "ss", "Hello ", "World!");
         if (ER_OK != status) {
             printf("Arg assignment failed: %s\n", QCC_StatusText(status));
         }
         status = alljoyn_proxybusobject_methodcall_synch(remoteObj, SERVICE_NAME, "cat", inputs, 2, reply, 5000, 0);
         if (ER_OK == status) {
             printf("%s.%s ( path=%s) returned \"%s\"\n", SERVICE_NAME, "cat",
-                   SERVICE_PATH, alljoyn_msgargs_as_string(alljoyn_message_getarg(reply, 0), 0));
+                   SERVICE_PATH, alljoyn_msgarg_as_string(alljoyn_message_getarg(reply, 0), 0));
         } else {
             printf("MethodCall on %s.%s failed\n", SERVICE_NAME, "cat");
         }
 
         alljoyn_proxybusobject_destroy(remoteObj);
         alljoyn_message_destroy(reply);
-        alljoyn_msgargs_destroy(inputs);
+        alljoyn_msgarg_destroy(inputs);
     }
 
     /* Deallocate bus */

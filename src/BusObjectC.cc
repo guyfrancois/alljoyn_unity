@@ -40,7 +40,7 @@ class BusObjectC : public BusObject {
         memcpy(&callbacks, callbacks_in, sizeof(alljoyn_busobject_callbacks));
     }
 
-    QStatus MethodReplyC(alljoyn_message msg, const alljoyn_msgargs args, size_t numArgs)
+    QStatus MethodReplyC(alljoyn_message msg, const alljoyn_msgarg args, size_t numArgs)
     {
         return MethodReply(*((Message*)msg), (const MsgArg*)args, numArgs);
     }
@@ -58,7 +58,7 @@ class BusObjectC : public BusObject {
     QStatus SignalC(const char* destination,
                     alljoyn_sessionid sessionId,
                     const InterfaceDescription::Member& signal,
-                    const alljoyn_msgargs args,
+                    const alljoyn_msgarg args,
                     size_t numArgs,
                     uint16_t timeToLive,
                     uint8_t flags)
@@ -98,8 +98,8 @@ class BusObjectC : public BusObject {
     {
         QStatus ret = ER_BUS_NO_SUCH_PROPERTY;
         if (callbacks.property_get != NULL) {
-            DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgargs>* dcb =
-                new DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgargs>(callbacks.property_get, context, ifcName, propName, (alljoyn_msgargs)(&val));
+            DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgarg>* dcb =
+                new DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgarg>(callbacks.property_get, context, ifcName, propName, (alljoyn_msgarg)(&val));
             ret = DEFERRED_CALLBACK_EXECUTE(dcb);
         }
         return ret;
@@ -109,8 +109,8 @@ class BusObjectC : public BusObject {
     {
         QStatus ret = ER_BUS_NO_SUCH_PROPERTY;
         if (callbacks.property_set != NULL) {
-            DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgargs>* dcb =
-                new DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgargs>(callbacks.property_set, context, ifcName, propName, (alljoyn_msgargs)(&val));
+            DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgarg>* dcb =
+                new DeferredCallback_4<QStatus, const void*, const char*, const char*, alljoyn_msgarg>(callbacks.property_set, context, ifcName, propName, (alljoyn_msgarg)(&val));
             ret = DEFERRED_CALLBACK_EXECUTE(dcb);
         }
         return ret;
@@ -208,7 +208,7 @@ QStatus alljoyn_busobject_addmethodhandlers(alljoyn_busobject bus, const alljoyn
 }
 
 QStatus alljoyn_busobject_methodreply_args(alljoyn_busobject bus, alljoyn_message msg,
-                                           const alljoyn_msgargs args, size_t numArgs)
+                                           const alljoyn_msgarg args, size_t numArgs)
 {
     return ((ajn::BusObjectC*)bus)->MethodReplyC(msg, args, numArgs);
 }
@@ -228,7 +228,7 @@ QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
                                  const char* destination,
                                  alljoyn_sessionid sessionId,
                                  const alljoyn_interfacedescription_member signal,
-                                 const alljoyn_msgargs args,
+                                 const alljoyn_msgarg args,
                                  size_t numArgs,
                                  uint16_t timeToLive,
                                  uint8_t flags)

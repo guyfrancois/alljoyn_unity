@@ -44,12 +44,12 @@ typedef struct _alljoyn_busobject_handle*                   alljoyn_busobject;
 /*
  * Callback for property get method.
  */
-typedef QStatus (*alljoyn_busobject_prop_get_ptr)(const void* context, const char* ifcName, const char* propName, alljoyn_msgargs val);
+typedef QStatus (*alljoyn_busobject_prop_get_ptr)(const void* context, const char* ifcName, const char* propName, alljoyn_msgarg val);
 
 /*
  * Callback for property set method.
  */
-typedef QStatus (*alljoyn_busobject_prop_set_ptr)(const void* context, const char* ifcName, const char* propName, alljoyn_msgargs val);
+typedef QStatus (*alljoyn_busobject_prop_set_ptr)(const void* context, const char* ifcName, const char* propName, alljoyn_msgarg val);
 
 /*
  * Callback for ObjectRegistered and ObjectUnregistered
@@ -158,7 +158,7 @@ extern AJ_API QStatus alljoyn_busobject_addmethodhandlers(alljoyn_busobject bus,
  *      - An error status otherwise
  */
 extern AJ_API QStatus alljoyn_busobject_methodreply_args(alljoyn_busobject bus, alljoyn_message msg,
-                                                         const alljoyn_msgargs args, size_t numArgs);
+                                                         const alljoyn_msgarg args, size_t numArgs);
 /**
  * Reply to a method call with an error message
  *
@@ -209,7 +209,7 @@ extern AJ_API QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
                                                const char* destination,
                                                alljoyn_sessionid sessionId,
                                                const alljoyn_interfacedescription_member signal,
-                                               const alljoyn_msgargs args,
+                                               const alljoyn_msgarg args,
                                                size_t numArgs,
                                                uint16_t timeToLive,
                                                uint8_t flags);

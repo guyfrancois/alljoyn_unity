@@ -52,7 +52,7 @@ QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject bus, const al
 QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject obj,
                                                 const char* ifaceName,
                                                 const char* methodName,
-                                                alljoyn_msgargs args,
+                                                alljoyn_msgarg args,
                                                 size_t numArgs,
                                                 alljoyn_message replyMsg,
                                                 uint32_t timeout,

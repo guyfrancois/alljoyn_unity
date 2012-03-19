@@ -30,7 +30,7 @@
 extern "C" {
 #endif
 typedef struct _alljoyn_msgarg_handle* alljoyn_msgarg;
-typedef struct _alljoyn_msgarg_array_handle* alljoyn_msgarg_array;
+//typedef struct _alljoyn_msgarg_array_handle* alljoyn_msgarg_array;
 
 
 typedef enum {
@@ -102,16 +102,19 @@ extern AJ_API void alljoyn_msgarg_destroy(alljoyn_msgarg arg);
 /**
  * Create an array of message arguments
  *
+ * This returns and alljoyn_msgarg however the individual array elements can only
+ * be accessed using alljoyn_msgarg_array_element() function.
+ *
  * @return the created array of message arguments
  */
-extern AJ_API alljoyn_msgarg_array alljoyn_msgarg_array_create(size_t size);
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_create(size_t size);
 
 /**
  * Destroy a message argument array
  *
  * @param arg the message argument array to destory
  */
-extern AJ_API void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg);
+//extern AJ_API void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg);
 
 /*
  * when working with an array of message arguments this will return the nth item
@@ -119,7 +122,7 @@ extern AJ_API void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg);
  *
  * @param index the index number of the element we wish to access.
  */
-extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg_array arg, size_t index);
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg arg, size_t index);
 
 /**
  * Set value of a message arg from a signature and a list of values. Note that any values or
@@ -333,7 +336,7 @@ extern AJ_API QC_BOOL alljoyn_msgarg_equal(alljoyn_msgarg lhv, alljoyn_msgarg rh
  *       - #ER_BUS_TRUNCATED if the signature was longer than expected.
  *       - Other error status codes indicating a failure.
  */
-extern AJ_API QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t* numArgs, const char* signature, ...);
+extern AJ_API QStatus alljoyn_msgarg_array_set(alljoyn_msgarg args, size_t* numArgs, const char* signature, ...);
 
 /**
  * Unpack an array of MsgArgs by applying the alljoyn_msgarg_get() function to each MsgArg in turn.
@@ -348,7 +351,7 @@ extern AJ_API QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t
  *      - #ER_BUS_SIGNATURE_MISMATCH if the signature did not match.
  *      - Other error status codes indicating a failure.
  */
-extern AJ_API QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg_array args, size_t numArgs, const char* signature, ...);
+extern AJ_API QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t numArgs, const char* signature, ...);
 
 /**
  * Returns an XML string representation of this type
@@ -368,7 +371,7 @@ extern AJ_API const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t ind
  *
  * @return The XML string representation of the message args.
  */
-extern AJ_API const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg_array args, size_t numArgs, size_t indent);
+extern AJ_API const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent);
 
 /**
  * Returns a string for the signature of this value
@@ -387,7 +390,7 @@ extern AJ_API const char* alljoyn_msgarg_signature(alljoyn_msgarg arg);
  *
  * @return The signature string for the message args.
  */
-extern AJ_API const char* alljoyn_msgarg_array_signature(alljoyn_msgarg_array values, size_t numValues);
+extern AJ_API const char* alljoyn_msgarg_array_signature(alljoyn_msgarg values, size_t numValues);
 
 /**
  * Checks the signature of this arg.
@@ -469,28 +472,11 @@ extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t 
 #endif
 
 /*******************************************************************************
- * work with the alljoyn_msgargs (NOTE plural MsgArg).  This set of functions
- * were designed to work with an array of MsgArgs not a single MsgArg for this
- * reason it does not properly map with the C++ MsgArg Class.  These calls are
- * being left in here till proper mapping between 'C' and the 'C++' can be
- * completed. And can be verified that the code continues to work with other
- * existing code bindings.
+ * This set of functions were originally designed for the alljoyn_unity bindings
+ * however they did not not properly map with the C++ MsgArg Class.  These calls
+ * are being left in here till proper mapping between 'C' and 'unity' can be
+ * completed. And can be verified that the code continues to work.
  ******************************************************************************/
-typedef struct _alljoyn_msgargs_handle*                     alljoyn_msgargs;
-
-/**
- * Create a new message argument array.
- *
- * @param numArgs Number of arguments to create in the array.
- */
-extern AJ_API alljoyn_msgargs alljoyn_msgargs_create(size_t numArgs);
-
-/**
- * Destroy a message argument.
- *
- * @param arg The message argument to destroy.
- */
-extern AJ_API void alljoyn_msgargs_destroy(alljoyn_msgargs arg);
 
 /**
  * Set an array of MsgArgs by applying the Set() method to each MsgArg in turn.
@@ -509,32 +495,32 @@ extern AJ_API void alljoyn_msgargs_destroy(alljoyn_msgargs arg);
  *       - #ER_BUS_TRUNCATED if the signature was longer than expected.
  *       - Other error status codes indicating a failure.
  */
-extern AJ_API QStatus alljoyn_msgargs_set(alljoyn_msgargs args, size_t argOffset, size_t* numArgs, const char* signature, ...);
+extern AJ_API QStatus alljoyn_msgarg_array_set_offset(alljoyn_msgarg args, size_t argOffset, size_t* numArgs, const char* signature, ...);
 
-extern AJ_API uint8_t alljoyn_msgargs_as_uint8(const alljoyn_msgargs args, size_t idx);
-extern AJ_API QC_BOOL alljoyn_msgargs_as_bool(const alljoyn_msgargs args, size_t idx);
-extern AJ_API int16_t alljoyn_msgargs_as_int16(const alljoyn_msgargs args, size_t idx);
-extern AJ_API uint16_t alljoyn_msgargs_as_uint16(const alljoyn_msgargs args, size_t idx);
-extern AJ_API int32_t alljoyn_msgargs_as_int32(const alljoyn_msgargs args, size_t idx);
-extern AJ_API uint32_t alljoyn_msgargs_as_uint32(const alljoyn_msgargs args, size_t idx);
-extern AJ_API int64_t alljoyn_msgargs_as_int64(const alljoyn_msgargs args, size_t idx);
-extern AJ_API uint64_t alljoyn_msgargs_as_uint64(const alljoyn_msgargs args, size_t idx);
-extern AJ_API double alljoyn_msgargs_as_double(const alljoyn_msgargs args, size_t idx);
-extern AJ_API const char* alljoyn_msgargs_as_string(const alljoyn_msgargs args, size_t idx);
-extern AJ_API const char* alljoyn_msgargs_as_objpath(const alljoyn_msgargs args, size_t idx);
-extern AJ_API alljoyn_msgargs alljoyn_msgargs_as_variant(const alljoyn_msgargs args, size_t idx);
-extern AJ_API void alljoyn_msgargs_as_signature(const alljoyn_msgargs args, size_t idx,
-                                                uint8_t* out_len, const char** out_sig);
-extern AJ_API void alljoyn_msgargs_as_handle(const alljoyn_msgargs args, size_t idx,
-                                             void** out_socketFd);
-extern AJ_API const alljoyn_msgargs alljoyn_msgargs_as_array(const alljoyn_msgargs args, size_t idx,
-                                                             size_t* out_len, const char** out_sig);
-extern AJ_API alljoyn_msgargs alljoyn_msgargs_as_struct(const alljoyn_msgargs args, size_t idx,
-                                                        size_t* out_numMembers);
-extern AJ_API void alljoyn_msgargs_as_dictentry(const alljoyn_msgargs args, size_t idx,
-                                                alljoyn_msgargs* out_key, alljoyn_msgargs* out_val);
-extern AJ_API void alljoyn_msgargs_as_scalararray(const alljoyn_msgargs args, size_t idx,
-                                                  size_t* out_numElements, const void** out_elements);
+extern AJ_API uint8_t alljoyn_msgarg_as_uint8(const alljoyn_msgarg args, size_t idx);
+extern AJ_API QC_BOOL alljoyn_msgarg_as_bool(const alljoyn_msgarg args, size_t idx);
+extern AJ_API int16_t alljoyn_msgarg_as_int16(const alljoyn_msgarg args, size_t idx);
+extern AJ_API uint16_t alljoyn_msgarg_as_uint16(const alljoyn_msgarg args, size_t idx);
+extern AJ_API int32_t alljoyn_msgarg_as_int32(const alljoyn_msgarg args, size_t idx);
+extern AJ_API uint32_t alljoyn_msgarg_as_uint32(const alljoyn_msgarg args, size_t idx);
+extern AJ_API int64_t alljoyn_msgarg_as_int64(const alljoyn_msgarg args, size_t idx);
+extern AJ_API uint64_t alljoyn_msgarg_as_uint64(const alljoyn_msgarg args, size_t idx);
+extern AJ_API double alljoyn_msgarg_as_double(const alljoyn_msgarg args, size_t idx);
+extern AJ_API const char* alljoyn_msgarg_as_string(const alljoyn_msgarg args, size_t idx);
+extern AJ_API const char* alljoyn_msgarg_as_objpath(const alljoyn_msgarg args, size_t idx);
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_as_variant(const alljoyn_msgarg args, size_t idx);
+extern AJ_API void alljoyn_msgarg_as_signature(const alljoyn_msgarg args, size_t idx,
+                                               uint8_t* out_len, const char** out_sig);
+extern AJ_API void alljoyn_msgarg_as_handle(const alljoyn_msgarg args, size_t idx,
+                                            void** out_socketFd);
+extern AJ_API const alljoyn_msgarg alljoyn_msgarg_as_array(const alljoyn_msgarg args, size_t idx,
+                                                           size_t* out_len, const char** out_sig);
+extern AJ_API alljoyn_msgarg alljoyn_msgarg_as_struct(const alljoyn_msgarg args, size_t idx,
+                                                      size_t* out_numMembers);
+extern AJ_API void alljoyn_msgarg_as_dictentry(const alljoyn_msgarg args, size_t idx,
+                                               alljoyn_msgarg* out_key, alljoyn_msgarg* out_val);
+extern AJ_API void alljoyn_msgarg_as_scalararray(const alljoyn_msgarg args, size_t idx,
+                                                 size_t* out_numElements, const void** out_elements);
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

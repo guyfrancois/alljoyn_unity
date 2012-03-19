@@ -39,18 +39,19 @@ struct _alljoyn_msgarg_handle {
     /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
 };
 
-struct _alljoyn_msgarg_array_handle {
-    /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
-};
+//struct _alljoyn_msgarg_array_handle {
+//    /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
+//};
 
 alljoyn_msgarg alljoyn_msgarg_create() {
-    ajn::MsgArgC* arg = new ajn::MsgArgC;
+    ajn::MsgArgC* arg = new ajn::MsgArgC[1];
     return (alljoyn_msgarg)arg;
 }
 
 alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature, ...)
 {
-    ajn::MsgArgC* arg = new ajn::MsgArgC(ajn::ALLJOYN_INVALID);
+    ajn::MsgArgC* arg = new ajn::MsgArgC[1];
+    arg->typeId = ajn::ALLJOYN_INVALID;
     va_list argp;
     va_start(argp, signature);
     QStatus status = ER_OK;
@@ -72,27 +73,27 @@ alljoyn_msgarg alljoyn_msgarg_create_and_set(const char* signature, ...)
 void alljoyn_msgarg_destroy(alljoyn_msgarg arg)
 {
     if (arg != NULL) {
-        delete (ajn::MsgArgC*)arg;
+        delete [] (ajn::MsgArgC*)arg;
     }
 }
 
-alljoyn_msgarg_array alljoyn_msgarg_array_create(size_t size)
+alljoyn_msgarg alljoyn_msgarg_array_create(size_t size)
 {
     ajn::MsgArgC* args = new ajn::MsgArgC[size];
     for (size_t i = 0; i < size; i++) {
         args[i].Clear();
     }
-    return (alljoyn_msgarg_array)args;
+    return (alljoyn_msgarg)args;
 }
 
-void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg)
-{
-    if (arg != NULL) {
-        delete [] (ajn::MsgArgC*)arg;
-    }
-}
+//void  alljoyn_msgarg_array_destroy(alljoyn_msgarg_array arg)
+//{
+//    if (arg != NULL) {
+//        delete [] (ajn::MsgArgC*)arg;
+//    }
+//}
 
-alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg_array arg, size_t index)
+alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg arg, size_t index)
 {
     if (!arg) {
         return NULL;
@@ -145,7 +146,9 @@ alljoyn_msgarg alljoyn_msgarg_copy(const alljoyn_msgarg source)
     if (!source) {
         return NULL;
     }
-    return (alljoyn_msgarg) new ajn::MsgArgC(*(ajn::MsgArgC*)source);
+    ajn::MsgArgC* ret = new ajn::MsgArgC[1];
+    *ret = *(ajn::MsgArgC*)source;
+    return (alljoyn_msgarg) ret;
 }
 
 QC_BOOL alljoyn_msgarg_equal(alljoyn_msgarg lhv, alljoyn_msgarg rhv)
@@ -156,7 +159,7 @@ QC_BOOL alljoyn_msgarg_equal(alljoyn_msgarg lhv, alljoyn_msgarg rhv)
     return (*(ajn::MsgArgC*)lhv) == (*(ajn::MsgArgC*)rhv);
 }
 
-QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t* numArgs, const char* signature, ...)
+QStatus alljoyn_msgarg_array_set(alljoyn_msgarg args, size_t* numArgs, const char* signature, ...)
 {
     if (!args) {
         return ER_BAD_ARG_1;
@@ -168,7 +171,7 @@ QStatus alljoyn_msgarg_array_set(alljoyn_msgarg_array args, size_t* numArgs, con
     return status;
 }
 
-QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg_array args, size_t numArgs, const char* signature, ...)
+QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t numArgs, const char* signature, ...)
 {
     if (!args) {
         return ER_BAD_ARG_1;
@@ -195,7 +198,7 @@ const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent)
     return ((ajn::MsgArgC*)arg)->ToString(indent).c_str();
 }
 
-const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg_array args, size_t numArgs, size_t indent)
+const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent)
 {
     if (!args) {
         return NULL;
@@ -211,7 +214,7 @@ const char* alljoyn_msgarg_signature(alljoyn_msgarg arg)
     return ((ajn::MsgArgC*)arg)->Signature().c_str();
 }
 
-const char* alljoyn_msgarg_array_signature(alljoyn_msgarg_array values, size_t numValues)
+const char* alljoyn_msgarg_array_signature(alljoyn_msgarg values, size_t numValues)
 {
     if (!values) {
         return NULL;
@@ -304,34 +307,13 @@ extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t 
 #endif
 
 /*******************************************************************************
- * work with the alljoyn_msgargs (NOTE plural MsgArg).  This set of functions
- * were designed to work with an array of MsgArgs not a single MsgArg for this
- * reason it does not properly map with the C++ MsgArg Class.  These calls are
- * being left in here till proper mapping between 'C' and the 'C++' can be
- * completed. And can be verified that the code continues to work with other
- * existing code bindings.
+ * This set of functions were originally designed for the alljoyn_unity bindings
+ * however they did not not properly map with the C++ MsgArg Class.  These calls
+ * are being left in here till proper mapping between 'C' and 'unity' can be
+ * completed. And can be verified that the code continues to work.
  ******************************************************************************/
 
-struct _alljoyn_msgargs_handle {
-    /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
-};
-
-alljoyn_msgargs alljoyn_msgargs_create(size_t numArgs)
-{
-    ajn::MsgArgC* args = new ajn::MsgArgC[numArgs];
-    for (size_t i = 0; i < numArgs; i++) {
-        args[i].Clear();
-    }
-    return (alljoyn_msgargs)args;
-}
-
-void alljoyn_msgargs_destroy(alljoyn_msgargs arg)
-{
-    assert(arg != NULL && "NULL argument passed to alljoyn_msgarg_destroy.");
-    delete [] (ajn::MsgArgC*)arg;
-}
-
-QStatus alljoyn_msgargs_set(alljoyn_msgargs args, size_t argOffset, size_t* numArgs, const char* signature, ...)
+QStatus alljoyn_msgarg_array_set_offset(alljoyn_msgarg args, size_t argOffset, size_t* numArgs, const char* signature, ...)
 {
     va_list argp;
     va_start(argp, signature);
@@ -361,57 +343,57 @@ _IMPLEMENT_MSGARG_TYPE_ACCESSOR(double, double, v_double);
 #undef _IMPLEMENT_MSGARG_TYPE_ACCESSOR
 #undef _IMPLEMENT_MSGARG_TYPE_ACCESSOR_S
 
-const char* alljoyn_msgargs_as_string(const alljoyn_msgargs args, size_t idx)
+const char* alljoyn_msgarg_as_string(const alljoyn_msgarg args, size_t idx)
 {
     return ((ajn::MsgArgC*)args)[idx].v_string.str;
 }
 
-const char* alljoyn_msgargs_as_objpath(const alljoyn_msgargs args, size_t idx)
+const char* alljoyn_msgarg_as_objpath(const alljoyn_msgarg args, size_t idx)
 {
     return ((ajn::MsgArgC*)args)[idx].v_objPath.str;
 }
 
-void alljoyn_msgargs_as_signature(const alljoyn_msgargs args, size_t idx,
-                                  uint8_t* out_len, const char** out_sig)
+void alljoyn_msgarg_as_signature(const alljoyn_msgarg args, size_t idx,
+                                 uint8_t* out_len, const char** out_sig)
 {
     *out_len = ((ajn::MsgArgC*)args)[idx].v_signature.len;
     *out_sig = ((ajn::MsgArgC*)args)[idx].v_signature.sig;
 }
 
-void alljoyn_msgargs_as_handle(const alljoyn_msgargs args, size_t idx, void** out_socketFd)
+void alljoyn_msgarg_as_handle(const alljoyn_msgarg args, size_t idx, void** out_socketFd)
 {
     *out_socketFd = &((ajn::MsgArgC*)args)[idx].v_handle.fd;
 }
 
-const alljoyn_msgargs alljoyn_msgargs_as_array(const alljoyn_msgargs args, size_t idx,
-                                               size_t* out_len, const char** out_sig)
+const alljoyn_msgarg alljoyn_msgarg_as_array(const alljoyn_msgarg args, size_t idx,
+                                             size_t* out_len, const char** out_sig)
 {
     *out_len = ((ajn::MsgArgC*)args)[idx].v_array.GetNumElements();
     *out_sig = ((ajn::MsgArgC*)args)[idx].v_array.GetElemSig();
-    return (const alljoyn_msgargs)(((ajn::MsgArgC*)args)[idx].v_array.GetElements());
+    return (const alljoyn_msgarg)(((ajn::MsgArgC*)args)[idx].v_array.GetElements());
 }
 
-alljoyn_msgargs alljoyn_msgargs_as_struct(const alljoyn_msgargs args, size_t idx,
-                                          size_t* out_numMembers)
+alljoyn_msgarg alljoyn_msgarg_as_struct(const alljoyn_msgarg args, size_t idx,
+                                        size_t* out_numMembers)
 {
     *out_numMembers = ((ajn::MsgArgC*)args)[idx].v_struct.numMembers;
-    return (alljoyn_msgargs)(((ajn::MsgArgC*)args)[idx].v_struct.members);
+    return (alljoyn_msgarg)(((ajn::MsgArgC*)args)[idx].v_struct.members);
 }
 
-void alljoyn_msgargs_as_dictentry(const alljoyn_msgargs args, size_t idx,
-                                  alljoyn_msgargs* out_key, alljoyn_msgargs* out_val)
+void alljoyn_msgarg_as_dictentry(const alljoyn_msgarg args, size_t idx,
+                                 alljoyn_msgarg* out_key, alljoyn_msgarg* out_val)
 {
-    *out_key = (alljoyn_msgargs)((ajn::MsgArgC*)args)[idx].v_dictEntry.key;
-    *out_val = (alljoyn_msgargs)((ajn::MsgArgC*)args)[idx].v_dictEntry.val;
+    *out_key = (alljoyn_msgarg)((ajn::MsgArgC*)args)[idx].v_dictEntry.key;
+    *out_val = (alljoyn_msgarg)((ajn::MsgArgC*)args)[idx].v_dictEntry.val;
 }
 
-alljoyn_msgargs alljoyn_msgargs_as_variant(const alljoyn_msgargs args, size_t idx)
+alljoyn_msgarg alljoyn_msgarg_as_variant(const alljoyn_msgarg args, size_t idx)
 {
-    return (alljoyn_msgargs)((ajn::MsgArgC*)args)[idx].v_variant.val;
+    return (alljoyn_msgarg)((ajn::MsgArgC*)args)[idx].v_variant.val;
 }
 
-void alljoyn_msgargs_as_scalararray(const alljoyn_msgargs args, size_t idx,
-                                    size_t* out_numElements, const void** out_elements)
+void alljoyn_msgarg_as_scalararray(const alljoyn_msgarg args, size_t idx,
+                                   size_t* out_numElements, const void** out_elements)
 {
     *out_numElements = ((ajn::MsgArgC*)args)[idx].v_scalarArray.numElements;
     *out_elements = ((ajn::MsgArgC*)args)[idx].v_scalarArray.v_byte;

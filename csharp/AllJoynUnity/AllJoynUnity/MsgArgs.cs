@@ -9,7 +9,7 @@ namespace AllJoynUnity
 		{
 			public MsgArgs(uint numArgs)
 			{
-				_msgArgs = alljoyn_msgargs_create((UIntPtr)numArgs);
+				_msgArgs = alljoyn_msgarg_array_create((UIntPtr)numArgs);
 				_argArray = new MsgArg[numArgs];
 				for(uint i = 0; i < numArgs; i++)
 				{
@@ -55,7 +55,7 @@ namespace AllJoynUnity
 			{
 				if(!_isDisposed)
 				{
-					alljoyn_msgargs_destroy(_msgArgs);
+					alljoyn_msgarg_destroy(_msgArgs);
 					_msgArgs = IntPtr.Zero;
 				}
 				_isDisposed = true;
@@ -69,10 +69,10 @@ namespace AllJoynUnity
 
 			#region DLL Imports
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgargs_create(UIntPtr numArgs); // UIntPtr must map to the same size as size_t, not a typo
+			private static extern IntPtr alljoyn_msgarg_array_create(UIntPtr numArgs); // UIntPtr must map to the same size as size_t, not a typo
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern void alljoyn_msgargs_destroy(IntPtr arg);
+			private static extern void alljoyn_msgarg_destroy(IntPtr arg);
 			#endregion
 
 			#region Internal Properties

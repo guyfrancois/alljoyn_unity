@@ -70,7 +70,7 @@ extern AJ_API void alljoyn_message_destroy(alljoyn_message msg);
  *      - The argument
  *      - NULL if unmarshal failed or there is not such argument.
  */
-extern AJ_API const alljoyn_msgargs alljoyn_message_getarg(alljoyn_message msg, size_t argN);
+extern AJ_API const alljoyn_msgarg alljoyn_message_getarg(alljoyn_message msg, size_t argN);
 
 #ifdef __cplusplus
 } /* extern "C" */

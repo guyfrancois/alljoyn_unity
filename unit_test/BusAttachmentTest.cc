@@ -91,7 +91,7 @@ void registersignalHandler_Handler(const alljoyn_interfacedescription_member* me
                                    const char* srcPath,
                                    alljoyn_message message) {
     EXPECT_STREQ(sourcePath1, srcPath);
-    EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
+    EXPECT_STREQ("AllJoyn", alljoyn_msgarg_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag = true;
 }
 
@@ -99,7 +99,7 @@ void registersignalHandler_Handler2(const alljoyn_interfacedescription_member* m
                                     const char* srcPath,
                                     alljoyn_message message) {
     EXPECT_STREQ(sourcePath2, srcPath);
-    EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
+    EXPECT_STREQ("AllJoyn", alljoyn_msgarg_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag2 = true;
 }
 
@@ -153,9 +153,9 @@ TEST(BusAttachmentTest, registersignalhandler_basic) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObj, &registersignalHandler_Handler, my_signal_member, NULL);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -228,9 +228,9 @@ TEST(BusAttachmentTest, registersignalhandler_multiple_signals) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObj, &registersignalHandler_Handler2, my_signal_member, NULL);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -305,9 +305,9 @@ TEST(BusAttachmentTest, unregistersignalhandler) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObj, &registersignalHandler_Handler2, my_signal_member, NULL);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -408,9 +408,9 @@ TEST(BusAttachmentTest, register_unregister_signalhandler_with_sourcePath) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObjB, &registersignalHandler_Handler2, my_signal_member, sourcePath2);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
     //send Two signals one for each path
@@ -570,9 +570,9 @@ TEST(BusAttachmentTest, unregisterallhandlers) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObj, &registersignalHandler_Handler2, my_signal_member, NULL);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
@@ -617,7 +617,7 @@ void registersignalHandler_Handler3(const alljoyn_interfacedescription_member* m
                                     const char* srcPath,
                                     alljoyn_message message) {
     EXPECT_STREQ(sourcePath3, srcPath);
-    EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
+    EXPECT_STREQ("AllJoyn", alljoyn_msgarg_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag3 = true;
 }
 
@@ -625,7 +625,7 @@ void registersignalHandler_Handler4(const alljoyn_interfacedescription_member* m
                                     const char* srcPath,
                                     alljoyn_message message) {
     EXPECT_STREQ(sourcePath4, srcPath);
-    EXPECT_STREQ("AllJoyn", alljoyn_msgargs_as_string(alljoyn_message_getarg(message, 0), 0));
+    EXPECT_STREQ("AllJoyn", alljoyn_msgarg_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag4 = true;
 }
 /*
@@ -702,9 +702,9 @@ TEST(BusAttachmentTest, unregistersignalhandler_muliple_busobjects) {
     status = alljoyn_busattachment_registersignalhandler(bus, testObj2, &registersignalHandler_Handler4, my_signal_member2, NULL);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    alljoyn_msgargs arg = alljoyn_msgargs_create(1);
+    alljoyn_msgarg arg = alljoyn_msgarg_array_create(1);
     size_t numArgs = 1;
-    status = alljoyn_msgargs_set(arg, 0, &numArgs, "s", "AllJoyn");
+    status = alljoyn_msgarg_array_set(arg, &numArgs, "s", "AllJoyn");
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);

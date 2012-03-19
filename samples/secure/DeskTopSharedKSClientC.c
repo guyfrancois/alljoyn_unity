@@ -272,21 +272,21 @@ int main(int argc, char** argv, char** envArg)
         alljoyn_proxybusobject_addinterface(remoteObj, alljoynTestIntf);
 
         alljoyn_message reply = alljoyn_message_create(g_msgBus);
-        alljoyn_msgargs inputs = alljoyn_msgargs_create(1);
+        alljoyn_msgarg inputs = alljoyn_msgarg_array_create(1);
         size_t numArgs = 1;
-        status = alljoyn_msgargs_set(inputs, 0, &numArgs, "s", "ClientC says Hello AllJoyn!");
+        status = alljoyn_msgarg_array_set(inputs, &numArgs, "s", "ClientC says Hello AllJoyn!");
 
         status = alljoyn_proxybusobject_methodcall_synch(remoteObj, INTERFACE_NAME, "Ping", inputs, 1, reply, 5000, 0);
         if (ER_OK == status) {
             printf("%s.%s ( path=%s) returned \"%s\"\n", INTERFACE_NAME, "Ping",
-                   SERVICE_PATH, alljoyn_msgargs_as_string(alljoyn_message_getarg(reply, 0), 0));
+                   SERVICE_PATH, alljoyn_msgarg_as_string(alljoyn_message_getarg(reply, 0), 0));
         } else {
             printf("MethodCall on %s.%s failed\n", INTERFACE_NAME, "Ping");
         }
 
         alljoyn_proxybusobject_destroy(remoteObj);
         alljoyn_message_destroy(reply);
-        alljoyn_msgargs_destroy(inputs);
+        alljoyn_msgarg_destroy(inputs);
     }
 
     /* Deallocate bus */
