@@ -49,6 +49,10 @@ QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject bus, const al
     return ((ajn::ProxyBusObject*)bus)->AddInterface(*((const ajn::InterfaceDescription*)iface));
 }
 
+QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj) {
+    return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObject();
+}
+
 QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject obj,
                                                 const char* ifaceName,
                                                 const char* methodName,
@@ -61,4 +65,23 @@ QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject obj,
     ajn::Message* reply = (ajn::Message*)&(*replyMsg);
     return ((ajn::ProxyBusObject*)obj)->MethodCall(ifaceName, methodName, (const ajn::MsgArg*)args,
                                                    numArgs, *reply, timeout, flags);
+}
+
+const alljoyn_interfacedescription alljoyn_proxybusobject_getinterface(alljoyn_proxybusobject proxyObj, const char* iface) {
+    return (const alljoyn_interfacedescription)((ajn::ProxyBusObject*)proxyObj)->GetInterface(iface);
+}
+size_t alljoyn_proxybusobject_getinterfaces(alljoyn_proxybusobject proxyObj, const alljoyn_interfacedescription* ifaces, size_t numIfaces) {
+    return ((ajn::ProxyBusObject*)proxyObj)->GetInterfaces(((const ajn::InterfaceDescription**)ifaces), numIfaces);
+}
+
+const char* alljoyn_proxybusobject_getpath(alljoyn_proxybusobject proxyObj) {
+    return ((ajn::ProxyBusObject*)proxyObj)->GetPath().c_str();
+}
+
+const char* alljoyn_proxybusobject_getservicename(alljoyn_proxybusobject proxyObj) {
+    return ((ajn::ProxyBusObject*)proxyObj)->GetServiceName().c_str();
+}
+
+alljoyn_sessionid alljoyn_proxybusobject_getsessionid(alljoyn_proxybusobject proxyObj) {
+    return (alljoyn_sessionid)((ajn::ProxyBusObject*)proxyObj)->GetSessionId();
 }

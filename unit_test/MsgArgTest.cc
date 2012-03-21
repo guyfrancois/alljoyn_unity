@@ -18,6 +18,7 @@
 #include <alljoyn_c/MsgArg.h>
 #include <alljoyn/MsgArg.h>
 #include <Status.h>
+#include <qcc/Thread.h>
 #include "ajTestCommon.h"
 
 TEST(MsgArgTest, Basic) {
@@ -462,10 +463,21 @@ TEST(MsgArgTest, tostring) {
     size_t numArgs = 4;
     status = alljoyn_msgarg_array_set(arg, &numArgs, "issi", 1, "two", "three", 4);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-
-    EXPECT_STREQ("<int32>1</int32>", alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 0), 0));
-    EXPECT_STREQ("<int32>1</int32>\n<string>two</string>\n<string>three</string>\n<int32>4</int32>\n",
-                 alljoyn_msgarg_array_tostring(arg, 4, 0));
+    EXPECT_EQ((size_t)4,  numArgs);
+    char* str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 0), 0);
+    EXPECT_STREQ("<int32>1</int32>", str);
+    free(str);
+    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 1), 0);
+    EXPECT_STREQ("<string>two</string>", str);
+    free(str);
+    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 2), 0);
+    EXPECT_STREQ("<string>three</string>", str);
+    free(str);
+    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 3), 0);
+    EXPECT_STREQ("<int32>4</int32>", str);
+    char* val = alljoyn_msgarg_array_tostring(arg, 4, 0);
+    EXPECT_STREQ("<int32>1</int32>\n<string>two</string>\n<string>three</string>\n<int32>4</int32>\n", val);
+    free(val);
 
     alljoyn_msgarg_destroy(arg);
 }

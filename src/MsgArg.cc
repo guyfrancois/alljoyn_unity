@@ -190,20 +190,20 @@ QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t numArgs, cons
     return status;
 }
 
-const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent)
+char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent)
 {
     if (!arg) {
         return NULL;
     }
-    return ((ajn::MsgArgC*)arg)->ToString(indent).c_str();
+    return strdup(((ajn::MsgArgC*)arg)->ToString(indent).c_str());
 }
 
-const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent)
+char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent)
 {
     if (!args) {
         return NULL;
     }
-    return ((ajn::MsgArgC*)args)->ToString((ajn::MsgArgC*)args, numArgs, indent).c_str();
+    return strdup(((ajn::MsgArgC*)args)->ToString((ajn::MsgArgC*)args, numArgs, indent).c_str());
 }
 
 const char* alljoyn_msgarg_signature(alljoyn_msgarg arg)
@@ -323,7 +323,7 @@ QStatus alljoyn_msgarg_array_set_offset(alljoyn_msgarg args, size_t argOffset, s
 }
 
 #define _IMPLEMENT_MSGARG_TYPE_ACCESSOR(rt, nt, mt) \
-    rt alljoyn_msgargs_as_ ## nt(const alljoyn_msgargs args, size_t idx) \
+    rt alljoyn_msgarg_as_ ## nt(const alljoyn_msgarg args, size_t idx) \
     { \
         return ((ajn::MsgArgC*)args)[idx].mt; \
     }

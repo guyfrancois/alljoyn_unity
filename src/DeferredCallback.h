@@ -50,7 +50,7 @@ class DeferredCallback {
             sCallbackListLock.Unlock(MUTEX_CONTEXT);
             cb->executeNow = true;
             while (!cb->finished)
-                usleep(1);
+                qcc::Sleep(1);
             delete cb;
             ret++;
         }
@@ -66,7 +66,7 @@ class DeferredCallback {
     void Wait()
     {
         while (!executeNow)
-            usleep(1);
+            qcc::Sleep(1);
     }
 
     class ScopeFinishedMarker {

@@ -211,8 +211,12 @@ extern AJ_API const char* alljoyn_interfacedescription_getname(const alljoyn_int
  * @param iface      Interface to query
  * @param indent   Number of space chars to use in XML indentation.
  * @return The XML introspection data.
+ *
+ * This function copies the null-terminated string into a newly allocated string.
+ * The string is allocated using malloc. The return string must be freed by the
+ * caller.
  */
-extern AJ_API const char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent);
+extern AJ_API char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent);
 
 /**
  * Indicates if this interface is secure. Secure interfaces require end-to-end authentication.
@@ -233,10 +237,6 @@ extern AJ_API QC_BOOL alljoyn_interfacedescription_issecure(const alljoyn_interf
  */
 extern AJ_API QC_BOOL alljoyn_interfacedescription_eql(const alljoyn_interfacedescription one,
                                                        const alljoyn_interfacedescription other);
-#if 0
-/* TODO? */
-qcc::String Introspect(size_t indent = 0) const;
-#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

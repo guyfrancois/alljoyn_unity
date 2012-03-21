@@ -74,6 +74,8 @@ typedef enum {
 
 /**
  * Create a new message argument.
+ * calling alljoyn_msgarg_create() is the same as calling
+ * alljoyn_msgarg_array_create(1).
  *
  * @return the created message argument
  */
@@ -105,6 +107,35 @@ extern AJ_API void alljoyn_msgarg_destroy(alljoyn_msgarg arg);
  * This returns and alljoyn_msgarg however the individual array elements can only
  * be accessed using alljoyn_msgarg_array_element() function.
  *
+ * the alljoyn_msgarg returned can be used in any functions that states says
+ * alljoyn_msgarg_array_*.  and alljoyn_msgarg created using alljoyn_msgarg_create()
+ * is an array of message arguments with size of 1.
+ *
+ * If the function does not specifically say it is for an array it is assumed that
+ * the message argument was created using alljoyn_msgarg_create() and will be treated
+ * like an array with only one element.
+ *
+ * For example the following code would only copy the first msgarg in the array.
+ * An alljoyn_msgarg of the string "hello". Not both array elements.
+ *
+ * @code
+ * alljoyn_msgarg args = alljoyn_msgarg_array_create(2);
+ * alljoyn_msgarg_array_set(args, 2, "ss", "hello", "world");
+ * alljoyn_msgarg arg = alljoyn_msgarg_copy(args);
+ * @endcode
+ *
+ * To make a copy of a alljoyn_msgarg that contains an array of elements requires
+ * a for loop.
+ *
+ * @code
+ * alljoyn_msgarg args = alljoyn_msgarg_array_create(2);
+ * alljoyn_msgarg_array_set(args, 2, "ss", "hello", "world");
+ * alljoyn_msgarg cp_args = alljoyn_msgarg_array_create(2);
+ * for (size_t i = 0; i < 2; ++i) {
+ *     alljoyn_msgarg_array_element(cp_args, i) = alljoyn_msgarg_copy(alljoyn_msgarg_array_element(args, i));
+ * }
+ * @endcode
+ *
  * @return the created array of message arguments
  */
 extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_create(size_t size);
@@ -119,7 +150,7 @@ extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_create(size_t size);
 /*
  * when working with an array of message arguments this will return the nth item
  * in the array.
- *
+ * @param arg   the alljoyn_msgarg that contains an array of msgargs
  * @param index the index number of the element we wish to access.
  */
 extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg arg, size_t index);
@@ -177,18 +208,19 @@ extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_element(alljoyn_msgarg arg, si
  * An array of 3 dictionary entries where each entry has an integer key and string value.
  *
  *     @code
- *     MsgArg dict[3];
- *     dict[0].Set("{is}", 1, "red");
- *     dict[1].Set("{is}", 2, "green");
- *     dict[2].Set("{is}", 3, "blue");
- *     arg.Set("a{is}", 3, dict);
+ *     alljoyn_msgarg dict = alljoyn_msgarg_array_create(3)
+ *     alljoyn_msgarg_set(alljoyn_msgarg_array_element(0), "{is}", 1, "red");
+ *     alljoyn_msgarg_set(alljoyn_msgarg_array_element(1), "{is}", 2, "green");
+ *     alljoyn_msgarg_set(alljoyn_msgarg_array_element(2), "{is}", 3, "blue");
+ *     alljoyn_msgarg arg = alljoyn_msgarg_create();
+ *     alljoyn_msgarg_set(arg, "a{is}", 3, dict);
  *     @endcode
  *
  * An array of uint_16's
  *
  *     @code
  *     uint16_t aq[] = { 1, 2, 3, 5, 6, 7 };
- *     arg.Set("aq", sizeof(aq) / sizeof(uint16_t), aq);
+ *     alljoyn_msgarg_set(arg, "aq", sizeof(aq) / sizeof(uint16_t), aq);
  *     @endcode
  *
  * @param arg         The alljoyn_msgarg being set
@@ -242,7 +274,7 @@ extern AJ_API QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signatu
  *         char *hello;
  *         char *world;
  *     } myStruct;
- *     arg.Get("(uss)", &myStruct.i, &myStruct.hello, &myStruct.world);
+ *     alljoyn_msgarg_get(arg, "(uss)", &myStruct.i, &myStruct.hello, &myStruct.world);
  *     @endcode
  *
  * A variant where it is known that the value is a uint32, a string, or double. Note that the
@@ -252,11 +284,11 @@ extern AJ_API QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signatu
  *     uint32_t i;
  *     double d;
  *     char *str;
- *     QStatus status = arg.Get("i", &i);
+ *     QStatus status = alljoyn_msgarg_get(arg, "i", &i);
  *     if (status == ER_BUS_SIGNATURE_MISMATCH) {
- *         status = arg.Get("s", &str);
+ *         status = alljoyn_msgarg_get(arg, "s", &str);
  *         if (status == ER_BUS_SIGNATURE_MISMATCH) {
- *             status = arg.Get("d", &d);
+ *             status = alljoyn_msgarg_get(arg, "d", &d);
  *         }
  *     }
  *     @endcode
@@ -265,16 +297,16 @@ extern AJ_API QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signatu
  * entries where the variant value is a string or a struct of 2 strings.
  *
  *     @code
- *     MsgArg *entries;
+ *     alljoyn_msgarg entries;
  *     size_t num;
- *     arg.Get("a{iv}", &num, &entries);
- *     for (size_t i = 0; i > num; ++i) {
+ *     alljoyn_msgarg_get(arg, "a{iv}", &num, &entries);
+ *     for (size_t i = 0; i < num; ++i) {
  *         char *str1;
  *         char *str2;
  *         uint32_t key;
- *         status = entries[i].Get("{is}", &key, &str1);
+ *         status = alljoyn_msgarg_get(alljoyn_msgarg_array_element(entries, i), "{is}", &key, &str1);
  *         if (status == ER_BUS_SIGNATURE_MISMATCH) {
- *             status = entries[i].Get("{i(ss)}", &key, &str1, &str2);
+ *             status = alljoyn_msgarg_get(alljoyn_msgarg_array_element(entries, i), "{i(ss)}", &key, &str1, &str2);
  *         }
  *     }
  *     @endcode
@@ -284,7 +316,7 @@ extern AJ_API QStatus alljoyn_msgarg_set(alljoyn_msgarg arg, const char* signatu
  *     @code
  *     uint16_t *vals;
  *     size_t numVals;
- *     arg.Get("aq", &numVals, &vals);
+ *     alljoyn_msgarg_get(arg, "aq", &numVals, &vals);
  *     @endcode
  *
  * @param get         The alljoyn_msgarg we are reading reading from
@@ -359,8 +391,12 @@ extern AJ_API QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t
  * @param indent  Number of spaces to indent the generated xml
  *
  * @return  The XML string
+ *
+ * This function copies the null-terminated string into a newly allocated string.
+ * The string is allocated using malloc. The return string must be freed by the
+ * caller.
  */
-extern AJ_API const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent);
+extern AJ_API char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent);
 
 /**
  * Returns an XML string representation for an array of message args.
@@ -370,8 +406,12 @@ extern AJ_API const char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t ind
  * @param indent   Number of spaces to indent the generated xml
  *
  * @return The XML string representation of the message args.
+ *
+ * This function copies the null-terminated string into a newly allocated string.
+ * The string is allocated using malloc. The return string must be freed by the
+ * caller.
  */
-extern AJ_API const char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent);
+extern AJ_API char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent);
 
 /**
  * Returns a string for the signature of this value

@@ -22,6 +22,8 @@
 int main(int argc, char**argv, char**envArg)
 {
     int status = 0;
+    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stderr, NULL, _IONBF, 0);
 
     printf("\n Running alljoyn_c unit test\n");
     testing::InitGoogleTest(&argc, argv);

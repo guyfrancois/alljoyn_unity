@@ -61,7 +61,7 @@ TEST(InterfaceDescriptionTest, introspect) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_SIGNAL, "chirp", "", "s", "chirp", 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char introspect[512];
+    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
     const char* expectedIntrospect =
         "<interface name=\"org.alljoyn.test.InterfaceDescription\">\n"
         "  <signal name=\"chirp\">\n"
@@ -72,9 +72,8 @@ TEST(InterfaceDescriptionTest, introspect) {
         "    <arg name=\"out\" type=\"s\" direction=\"out\"/>\n"
         "  </method>\n"
         "</interface>\n";
-
-    snprintf(introspect, 512, "%s", alljoyn_interfacedescription_introspect(testIntf, 0));
     EXPECT_STREQ(expectedIntrospect, introspect);
+    free(introspect);
     alljoyn_busattachment_destroy(bus);
 }
 

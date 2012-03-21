@@ -151,9 +151,9 @@ const char* alljoyn_interfacedescription_getname(const alljoyn_interfacedescript
     return ((const ajn::InterfaceDescription*)iface)->GetName();
 }
 
-extern AJ_API const char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent)
+extern AJ_API char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent)
 {
-    return (((const ajn::InterfaceDescription*)iface)->Introspect(indent).c_str());
+    return strdup(((const ajn::InterfaceDescription*)iface)->Introspect(indent).c_str());
 }
 
 QC_BOOL alljoyn_interfacedescription_issecure(const alljoyn_interfacedescription iface)
@@ -169,3 +169,4 @@ QC_BOOL alljoyn_interfacedescription_eql(const alljoyn_interfacedescription one,
 
     return (_one == _other ? QC_TRUE : QC_FALSE);
 }
+

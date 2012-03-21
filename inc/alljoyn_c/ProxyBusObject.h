@@ -65,9 +65,9 @@ extern AJ_API alljoyn_proxybusobject alljoyn_proxybusobject_create(alljoyn_busat
 /**
  * Destroy a proxy object created using alljoyn_proxybusobject_create.
  *
- * @param bus The bus object to destroy.
+ * @param proxyObj The proxy bus object to destroy.
  */
-extern AJ_API void alljoyn_proxybusobject_destroy(alljoyn_proxybusobject bus);
+extern AJ_API void alljoyn_proxybusobject_destroy(alljoyn_proxybusobject proxyObj);
 
 /**
  * Add an interface to this ProxyBusObject.
@@ -80,18 +80,34 @@ extern AJ_API void alljoyn_proxybusobject_destroy(alljoyn_proxybusobject bus);
  * The interface added via this call must have been previously registered with the
  * Bus. (i.e. it must have come from a call to alljoyn_busattachment_getinterface).
  *
- * @param bus      The bus object onto which the interface is to be added.
+ * @param proxyObj      The proxy bus object onto which the interface is to be added.
  * @param iface    The interface to add to this object. Must come from alljoyn_busattachment_getinterface.
  * @return
  *      - #ER_OK if successful.
  *      - An error status otherwise
  */
-extern AJ_API QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject bus, const alljoyn_interfacedescription iface);
+extern AJ_API QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject proxyObj, const alljoyn_interfacedescription iface);
 
+/**
+ * Query the remote object on the bus to determine the interfaces and
+ * children that exist. Use this information to populate this proxy's
+ * interfaces and children.
+ *
+ * This call causes messages to be send on the bus, therefore it cannot
+ * be called within AllJoyn callbacks (method/signal/reply handlers or
+ * ObjectRegistered callbacks, etc.)
+ *
+ * @param proxyObj    The proxy bus object that will be query the remote object.
+ *
+ * @return
+ *      - #ER_OK if successful
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj);
 /**
  * Make a synchronous method call
  *
- * @param obj          ProxyBusObject on which to call the method.
+ * @param proxyObj     ProxyBusObject on which to call the method.
  * @param ifaceName    Name of interface.
  * @param methodName   Name of method.
  * @param args         The arguments for the method call (can be NULL)
@@ -107,7 +123,7 @@ extern AJ_API QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject
  *      - #ER_OK if the method call succeeded and the reply message type is #MESSAGE_METHOD_RET
  *      - #ER_BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is #MESSAGE_ERROR
  */
-extern AJ_API QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject obj,
+extern AJ_API QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject proxyObj,
                                                               const char* ifaceName,
                                                               const char* methodName,
                                                               alljoyn_msgarg args,
@@ -116,50 +132,64 @@ extern AJ_API QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusob
                                                               uint32_t timeout,
                                                               uint8_t flags);
 
-#if 0
-/*TODO create C bindings for the following C++ methods */
+/**
+ * Returns a pointer to an interface description. Returns NULL if the object does not implement
+ * the requested interface.
+ *
+ * @param proxyObj The proxy bus object to obtain an interface description from.
+ * @param iface  The name of interface to get.
+ *
+ * @return
+ *      - A pointer to the requested interface description.
+ *      - NULL if requested interface is not implemented or not found
+ */
+extern AJ_API const alljoyn_interfacedescription alljoyn_proxybusobject_getinterface(alljoyn_proxybusobject proxyObj, const char* iface);
+
+/**
+ * Returns the interfaces implemented by this object. Note that all proxy bus objects
+ * automatically inherit the "org.freedesktop.DBus.Peer" which provides the built-in "ping"
+ * method, so this method always returns at least that one interface.
+ *
+ * @param proxyObj The proxy bus object to obtain an interface descriptions from.
+ * @param ifaces     A pointer to an InterfaceDescription array to receive the interfaces. Can be NULL in
+ *                   which case no interfaces are returned and the return value gives the number
+ *                   of interface available.
+ * @param numIfaces  The size of the InterfaceDescription array. If this value is smaller than the total
+ *                   number of interfaces only numIfaces will be returned.
+ *                   (DEFAULT) if numInterfaces is 0 then an array of all the interfaces will be returned.
+ *
+ * @return  The number of interfaces returned or the total number of interfaces if ifaces is NULL.
+ */
+extern AJ_API size_t alljoyn_proxybusobject_getinterfaces(alljoyn_proxybusobject proxyObj, const alljoyn_interfacedescription* ifaces, size_t numIfaces);
+
 /**
  * Return the absolute object path for the remote object.
  *
+ * @param proxyObj  the proxy bus object to read the object path from.
+ *
  * @return Object path
  */
-const qcc::String& GetPath(void) const {
-    return path;
-}
+extern AJ_API const char* alljoyn_proxybusobject_getpath(alljoyn_proxybusobject proxyObj);
 
 /**
  * Return the remote service name for this object.
  *
+ * @param proxyObj  the proxy bus object to read the service name (Bus Name) path from.
+ *
  * @return Service name (typically a well-known service name but may be a unique name)
  */
-const qcc::String& GetServiceName(void) const {
-    return serviceName;
-}
+extern AJ_API const char* alljoyn_proxybusobject_getservicename(alljoyn_proxybusobject proxyObj);
 
 /**
  * Return the session Id for this object.
  *
+ * @param proxyObj the proxy bus object we wish to obtain the session ID from.
  * @return Session Id
  */
-SessionId GetSessionId(void) const {
-    return sessionId;
-}
+extern AJ_API alljoyn_sessionid alljoyn_proxybusobject_getsessionid(alljoyn_proxybusobject proxyObj);
 
-/**
- * Query the remote object on the bus to determine the interfaces and
- * children that exist. Use this information to populate this proxy's
- * interfaces and children.
- *
- * This call causes messages to be send on the bus, therefore it cannot
- * be called within AllJoyn callbacks (method/signal/reply handlers or
- * ObjectRegistered callbacks, etc.)
- *
- * @return
- *      - #ER_OK if successful
- *      - An error status otherwise
- */
-QStatus IntrospectRemoteObject();
-
+#if 0
+/*TODO create C bindings for the following C++ methods */
 /**
  * Query the remote object on the bus to determine the interfaces and
  * children that exist. Use this information to populate this object's
@@ -285,33 +315,6 @@ QStatus SetProperty(const char* iface, const char* property, const char* s) cons
 QStatus SetProperty(const char* iface, const char* property, const qcc::String& s) const {
     MsgArg arg("s", s.c_str()); return SetProperty(iface, property, arg);
 }
-
-/**
- * Returns the interfaces implemented by this object. Note that all proxy bus objects
- * automatically inherit the "org.freedesktop.DBus.Peer" which provides the built-in "ping"
- * method, so this method always returns at least that one interface.
- *
- * @param ifaces     A pointer to an InterfaceDescription array to receive the interfaces. Can be NULL in
- *                   which case no interfaces are returned and the return value gives the number
- *                   of interface available.
- * @param numIfaces  The size of the InterfaceDescription array. If this value is smaller than the total
- *                   number of interfaces only numIfaces will be returned.
- *
- * @return  The number of interfaces returned or the total number of interfaces if ifaces is NULL.
- */
-size_t GetInterfaces(const InterfaceDescription** ifaces = NULL, size_t numIfaces = 0) const;
-
-/**
- * Returns a pointer to an interface description. Returns NULL if the object does not implement
- * the requested interface.
- *
- * @param iface  The name of interface to get.
- *
- * @return
- *      - A pointer to the requested interface description.
- *      - NULL if requested interface is not implemented or not found
- */
-const InterfaceDescription* GetInterface(const char* iface) const;
 
 /**
  * Tests if this object implements the requested interface.
