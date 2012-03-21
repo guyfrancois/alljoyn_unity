@@ -20,8 +20,7 @@
 #include <alljoyn_c/AjAPI.h>
 #include <list>
 #include <signal.h>
-#include <pthread.h>
-#include <unistd.h>
+#include <qcc/Thread.h>
 #include <qcc/Mutex.h>
 
 //#define DEBUG_DEFERRED_CALLBACKS 1
@@ -60,7 +59,7 @@ class DeferredCallback {
 
     static bool IsMainThread()
     {
-        return (sMainThreadCallbacksOnly ? (pthread_equal(sMainThread, pthread_self()) != 0) : true);
+        return (sMainThreadCallbacksOnly ? (sMainThread == qcc::Thread::GetThread()) : true);
     }
 
   protected:
@@ -85,7 +84,7 @@ class DeferredCallback {
   protected:
     volatile sig_atomic_t finished;
     static std::list<DeferredCallback*> sPendingCallbacks;
-    static pthread_t sMainThread;
+    static qcc::Thread* sMainThread;
 
   public:
     static bool sMainThreadCallbacksOnly;
