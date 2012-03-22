@@ -142,7 +142,7 @@ QStatus alljoyn_busattachment_advertisename(alljoyn_busattachment bus, const cha
     return ((ajn::BusAttachmentC*)bus)->AdvertiseName(name, transports);
 }
 
-QStatus alljoyn_busattachment_canceladvertisedname(alljoyn_busattachment bus, const char* name, alljoyn_transportmask transports)
+QStatus alljoyn_busattachment_canceladvertisename(alljoyn_busattachment bus, const char* name, alljoyn_transportmask transports)
 {
     return ((ajn::BusAttachmentC*)bus)->CancelAdvertiseName(name, transports);
 }

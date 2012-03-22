@@ -37,6 +37,27 @@ typedef struct _alljoyn_message_handle*                     alljoyn_message;
 typedef struct _alljoyn_busattachment_handle*               alljoyn_busattachment;
 #endif
 
+/** @name Flag types */
+/* @{ */
+/** No reply is expected */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_NO_REPLY_EXPECTED  = 0x01;
+/** Auto start the service */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_AUTO_START         = 0x02;
+/** Allow messages from remote hosts (valid only in Hello message) */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_ALLOW_REMOTE_MSG   = 0x04;
+/** Global (bus-to-bus) broadcast */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_GLOBAL_BROADCAST   = 0x20;
+/** Header is compressed */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_COMPRESSED         = 0x40;
+/** Body is encrypted */
+static const uint8_t ALLJOYN_MESSAGE_FLAG_ENCRYPTED          = 0x80;
+/* @} */
+
+/**
+ * The default timeout for method calls
+ */
+static const uint32_t ALLJOYN_MESSAGE_DEFAULT_TIMEOUT       = 25000;
+
 /** Message types */
 typedef enum {
     ALLJOYN_MESSAGE_INVALID     = 0, ///< an invalid message type
