@@ -57,14 +57,14 @@ QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject pro
     return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObject();
 }
 
-QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject obj,
-                                                const char* ifaceName,
-                                                const char* methodName,
-                                                alljoyn_msgarg args,
-                                                size_t numArgs,
-                                                alljoyn_message replyMsg,
-                                                uint32_t timeout,
-                                                uint8_t flags)
+QStatus alljoyn_proxybusobject_methodcall(alljoyn_proxybusobject obj,
+                                          const char* ifaceName,
+                                          const char* methodName,
+                                          alljoyn_msgarg args,
+                                          size_t numArgs,
+                                          alljoyn_message replyMsg,
+                                          uint32_t timeout,
+                                          uint8_t flags)
 {
     ajn::Message* reply = (ajn::Message*)&(*replyMsg);
     return ((ajn::ProxyBusObject*)obj)->MethodCall(ifaceName, methodName, (const ajn::MsgArg*)args,

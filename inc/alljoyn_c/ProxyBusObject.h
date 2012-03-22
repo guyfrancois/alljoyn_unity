@@ -135,14 +135,14 @@ extern AJ_API QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_prox
  *      - #ER_OK if the method call succeeded and the reply message type is #MESSAGE_METHOD_RET
  *      - #ER_BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is #MESSAGE_ERROR
  */
-extern AJ_API QStatus alljoyn_proxybusobject_methodcall_synch(alljoyn_proxybusobject proxyObj,
-                                                              const char* ifaceName,
-                                                              const char* methodName,
-                                                              const alljoyn_msgarg args,
-                                                              size_t numArgs,
-                                                              alljoyn_message replyMsg,
-                                                              uint32_t timeout,
-                                                              uint8_t flags);
+extern AJ_API QStatus alljoyn_proxybusobject_methodcall(alljoyn_proxybusobject proxyObj,
+                                                        const char* ifaceName,
+                                                        const char* methodName,
+                                                        const alljoyn_msgarg args,
+                                                        size_t numArgs,
+                                                        alljoyn_message replyMsg,
+                                                        uint32_t timeout,
+                                                        uint8_t flags);
 
 /**
  * Make a synchronous method call from this object

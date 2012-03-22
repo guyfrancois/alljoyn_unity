@@ -316,7 +316,7 @@ TEST_F(ProxyBusObjectTest, methodcall) {
 
     alljoyn_message reply = alljoyn_message_create(bus);
     alljoyn_msgarg input = alljoyn_msgarg_create_and_set("s", "AllJoyn");
-    status = alljoyn_proxybusobject_methodcall_synch(proxyObj, INTERFACE_NAME, "ping", input, 1, reply, ALLJOYN_MESSAGE_DEFAULT_TIMEOUT, 0);
+    status = alljoyn_proxybusobject_methodcall(proxyObj, INTERFACE_NAME, "ping", input, 1, reply, ALLJOYN_MESSAGE_DEFAULT_TIMEOUT, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     const char* str;
     alljoyn_msgarg_get(alljoyn_message_getarg(reply, 0), "s", &str);

@@ -26,7 +26,7 @@ namespace AllJoynUnity
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
 			{
-				return alljoyn_proxybusobject_methodcall_synch(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
+				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}
 
@@ -44,7 +44,7 @@ namespace AllJoynUnity
 			private static extern int alljoyn_proxybusobject_addinterface(IntPtr bus, IntPtr iface);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_proxybusobject_methodcall_synch(IntPtr obj,
+			private static extern int alljoyn_proxybusobject_methodcall(IntPtr obj,
 				[MarshalAs(UnmanagedType.LPStr)] string ifaceName,
 				[MarshalAs(UnmanagedType.LPStr)] string methodName,
 				IntPtr args,
