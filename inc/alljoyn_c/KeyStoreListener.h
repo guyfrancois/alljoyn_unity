@@ -18,8 +18,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
-#ifndef _ALLJOYN_UNITY_KEYSTORE_LISTENER_H
-#define _ALLJOYN_UNITY_KEYSTORE_LISTENER_H
+#ifndef _ALLJOYN_C_KEYSTORE_LISTENER_H
+#define _ALLJOYN_C_KEYSTORE_LISTENER_H
 
 #include <alljoyn_c/AjAPI.h>
 #include <Status.h>

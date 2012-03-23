@@ -19,8 +19,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
-#ifndef _ALLJOYN_UNITY_SESSIONLISTENER_H
-#define _ALLJOYN_UNITY_SESSIONLISTENER_H
+#ifndef _ALLJOYN_C_SESSIONLISTENER_H
+#define _ALLJOYN_C_SESSIONLISTENER_H
 
 #include <alljoyn_c/AjAPI.h>
 #include <alljoyn_c/Session.h>

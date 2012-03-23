@@ -1,5 +1,3 @@
-#ifndef _ALLJOYN_UNITY_SESSION_H
-#define _ALLJOYN_UNITY_SESSION_H
 /**
  * @file
  * AllJoyn session related data types.
@@ -20,6 +18,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_SESSION_H
+#define _ALLJOYN_C_SESSION_H
 
 #include <qcc/platform.h>
 #include <alljoyn_c/AjAPI.h>

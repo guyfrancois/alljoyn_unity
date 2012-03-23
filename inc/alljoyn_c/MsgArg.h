@@ -1,5 +1,3 @@
-#ifndef _ALLJOYN_UNITY_MSGARG_H
-#define _ALLJOYN_UNITY_MSGARG_H
 /**
  * @file
  * This file defines a class for message bus data types and values
@@ -20,6 +18,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_MSGARG_H
+#define _ALLJOYN_C_MSGARG_H
 
 #include <qcc/platform.h>
 #include <alljoyn_c/AjAPI.h>

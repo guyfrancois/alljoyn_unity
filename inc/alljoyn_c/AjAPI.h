@@ -1,6 +1,3 @@
-#ifndef _ALLJOYN_UNITY_AJAPI_H
-#define _ALLJOYN_UNITY_AJAPI_H
-
 /******************************************************************************
  * Copyright 2009-2011, Qualcomm Innovation Center, Inc.
  *
@@ -16,6 +13,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_AJAPI_H
+#define _ALLJOYN_C_AJAPI_H
 
 /** This #define allows for redefinition to __dllexport or __dllimport on relevant platforms */
 #ifndef AJ_API

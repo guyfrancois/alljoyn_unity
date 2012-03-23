@@ -18,8 +18,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
-#ifndef _ALLJOYN_UNITY_BUSATTACHMENT_H
-#define _ALLJOYN_UNITY_BUSATTACHMENT_H
+#ifndef _ALLJOYN_C_BUSATTACHMENT_H
+#define _ALLJOYN_C_BUSATTACHMENT_H
 
 #include <qcc/platform.h>
 

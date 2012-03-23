@@ -1,5 +1,3 @@
-#ifndef _ALLJOYN_UNITY_AUTHLISTENER_H
-#define _ALLJOYN_UNITY_AUTHLISTENER_H
 /**
  * @file
  * This file defines the AuthListener class that provides the interface between authentication
@@ -21,6 +19,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_AUTHLISTENER_H
+#define _ALLJOYN_C_AUTHLISTENER_H
+
 #include <alljoyn_c/AjAPI.h>
 #include <alljoyn_c/Message.h>
 

@@ -1,5 +1,3 @@
-#ifndef _ALLJOYN_UNITY_REMOTEBUSOBJECT_H
-#define _ALLJOYN_UNITY_REMOTEBUSOBJECT_H
 /**
  * @file
  * This file defines the class ProxyBusObject.
@@ -22,6 +20,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_REMOTEBUSOBJECT_H
+#define _ALLJOYN_C_REMOTEBUSOBJECT_H
 
 #include <qcc/platform.h>
 #include <alljoyn_c/AjAPI.h>

@@ -1,6 +1,3 @@
-#ifndef _ALLJOYN_UNITY_MESSAGERECEIVER_H
-#define _ALLJOYN_UNITY_MESSAGERECEIVER_H
-
 /**
  * @file
  * MessageReceiver is a base class implemented by any class
@@ -22,6 +19,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_MESSAGERECEIVER_H
+#define _ALLJOYN_C_MESSAGERECEIVER_H
 
 #include <qcc/platform.h>
 #include <alljoyn_c/AjAPI.h>

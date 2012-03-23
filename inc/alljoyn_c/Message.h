@@ -1,5 +1,3 @@
-#ifndef _ALLJOYN_UNITY_MESSAGE_H
-#define _ALLJOYN_UNITY_MESSAGE_H
 /**
  * @file
  * This file defines a class for parsing and generating message bus messages
@@ -20,6 +18,8 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_MESSAGE_H
+#define _ALLJOYN_C_MESSAGE_H
 
 #include <qcc/platform.h>
 #include <alljoyn_c/AjAPI.h>
