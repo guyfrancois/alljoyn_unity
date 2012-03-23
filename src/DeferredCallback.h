@@ -76,18 +76,17 @@ class DeferredCallback {
       private:
         volatile sig_atomic_t* finishedSig;
     };
-
-  private:
-    volatile sig_atomic_t executeNow;
-    static qcc::Mutex sCallbackListLock;
+  public:
+    static bool sMainThreadCallbacksOnly;
 
   protected:
     volatile sig_atomic_t finished;
     static std::list<DeferredCallback*> sPendingCallbacks;
     static qcc::Thread* sMainThread;
+    static qcc::Mutex sCallbackListLock;
 
-  public:
-    static bool sMainThreadCallbacksOnly;
+  private:
+    volatile sig_atomic_t executeNow;
 };
 
 template <typename R, typename T>
