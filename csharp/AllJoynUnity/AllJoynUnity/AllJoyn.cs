@@ -6,7 +6,7 @@ namespace AllJoynUnity
 	public partial class AllJoyn
 	{
 		// DLL name for externs
-		private const string DLL_IMPORT_TARGET = "alljoyn_unity";
+		private const string DLL_IMPORT_TARGET = "alljoyn_c";
 
 		/// Get the version string from AllJoyn.
 		public static string GetVersion()
