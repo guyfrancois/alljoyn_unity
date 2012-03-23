@@ -19,6 +19,9 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_MSGARGC_H
+#define _ALLJOYN_C_MSGARGC_H
+
 #include <alljoyn/Message.h>
 #include <alljoyn/MsgArg.h>
 #include <MsgArgUtils.h>
