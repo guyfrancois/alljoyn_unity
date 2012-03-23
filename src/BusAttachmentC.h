@@ -86,3 +86,4 @@ class BusAttachmentC : public BusAttachment {
 
 };
 }
+#endif

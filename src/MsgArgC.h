@@ -58,3 +58,4 @@ class MsgArgC : public MsgArg {
     static QStatus VParseArgsC(const char*& signature, size_t sigLen, const MsgArg* argList, size_t numArgs, va_list* argp);
 };
 }
+#endif
