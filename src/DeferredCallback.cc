@@ -19,7 +19,7 @@
 namespace ajn {
 
 std::list<DeferredCallback*> DeferredCallback::sPendingCallbacks;
-qcc::Thread* DeferredCallback::sMainThread = qcc::Thread::GetThread();
+pthread_t DeferredCallback::sMainThread = pthread_self();
 bool DeferredCallback::sMainThreadCallbacksOnly = false;
 qcc::Mutex DeferredCallback::sCallbackListLock;
 

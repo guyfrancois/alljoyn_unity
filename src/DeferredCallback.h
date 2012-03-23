@@ -1,6 +1,3 @@
-#ifndef _ALLJOYN_UNITY_DEFERREDCALLBACK_H
-#define _ALLJOYN_UNITY_DEFERREDCALLBACK_H
-
 /******************************************************************************
  * Copyright 2009-2011, Qualcomm Innovation Center, Inc.
  *
@@ -16,12 +13,16 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  ******************************************************************************/
+#ifndef _ALLJOYN_C_DEFERREDCALLBACK_H
+#define _ALLJOYN_C_DEFERREDCALLBACK_H
 
 #include <alljoyn_c/AjAPI.h>
 #include <list>
 #include <signal.h>
-#include <qcc/Thread.h>
+#include <pthread.h>
+#include <unistd.h>
 #include <qcc/Mutex.h>
+#include <qcc/Thread.h>
 
 //#define DEBUG_DEFERRED_CALLBACKS 1
 
@@ -59,7 +60,7 @@ class DeferredCallback {
 
     static bool IsMainThread()
     {
-        return (sMainThreadCallbacksOnly ? (sMainThread == qcc::Thread::GetThread()) : true);
+        return (sMainThreadCallbacksOnly ? (pthread_equal(sMainThread, pthread_self()) != 0) : true);
     }
 
   protected:
@@ -82,7 +83,7 @@ class DeferredCallback {
   protected:
     volatile sig_atomic_t finished;
     static std::list<DeferredCallback*> sPendingCallbacks;
-    static qcc::Thread* sMainThread;
+    static pthread_t sMainThread;
     static qcc::Mutex sCallbackListLock;
 
   private:
