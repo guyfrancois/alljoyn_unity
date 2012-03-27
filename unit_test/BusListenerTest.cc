@@ -155,7 +155,7 @@ TEST_F(BusListenerTest, bus_stopping_disconnected) {
     EXPECT_TRUE(listener_unregistered_flag);
 }
 
-TEST_F(BusListenerTest, found_lost__advertised_name) {
+TEST_F(BusListenerTest, found_lost_advertised_name) {
     status = alljoyn_busattachment_start(bus);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_busattachment_connect(bus, ajn::getConnectArg().c_str());

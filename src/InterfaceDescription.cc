@@ -69,7 +69,7 @@ size_t alljoyn_interfacedescription_getmembers(const alljoyn_interfacedescriptio
         tempMembers = new const ajn::InterfaceDescription::Member *[numMembers];
     }
     size_t ret = ((const ajn::InterfaceDescription*)iface)->GetMembers(tempMembers, numMembers);
-    for (size_t i = 0; i < numMembers; i++) {
+    for (size_t i = 0; i < ret; i++) {
         members[i].iface = (alljoyn_interfacedescription)tempMembers[i]->iface;
         members[i].memberType = (alljoyn_messagetype)tempMembers[i]->memberType;
         members[i].name = tempMembers[i]->name.c_str();
@@ -91,6 +91,58 @@ QC_BOOL alljoyn_interfacedescription_hasmember(alljoyn_interfacedescription ifac
                                                const char* name, const char* inSig, const char* outSig)
 {
     return (((ajn::InterfaceDescription*)iface)->HasMember(name, inSig, outSig) == true ? QC_TRUE : QC_FALSE);
+}
+
+QStatus alljoyn_interfacedescription_addmethod(alljoyn_interfacedescription iface, const char* name, const char* inputSig, const char* outSig, const char* argNames, uint8_t annotation, const char* accessPerms)
+{
+    return ((ajn::InterfaceDescription*)iface)->AddMember(ajn::MESSAGE_METHOD_CALL, name, inputSig, outSig, argNames, annotation, accessPerms);
+}
+
+QC_BOOL alljoyn_interfacedescription_getmethod(alljoyn_interfacedescription iface, const char* name, alljoyn_interfacedescription_member* member)
+{
+    const ajn::InterfaceDescription::Member* found_member = ((const ajn::InterfaceDescription*)iface)->GetMember(name);
+    /*
+     * only return the member if it is a MESSAGE_METHOD_CALL type all others return NULL
+     */
+    if (found_member && found_member->memberType == ajn::MESSAGE_METHOD_CALL) {
+        member->iface = (alljoyn_interfacedescription)found_member->iface;
+        member->memberType = (alljoyn_messagetype)found_member->memberType;
+        member->name = found_member->name.c_str();
+        member->signature = found_member->signature.c_str();
+        member->returnSignature = found_member->returnSignature.c_str();
+        member->argNames = found_member->argNames.c_str();
+        member->annotation = found_member->annotation;
+        member->internal_member = found_member;
+    } else {
+        found_member = NULL;
+    }
+    return (found_member == NULL ? QC_FALSE : QC_TRUE);
+}
+
+QStatus alljoyn_interfacedescription_addsignal(alljoyn_interfacedescription iface, const char* name, const char* sig, const char* argNames, uint8_t annotation, const char* accessPerms)
+{
+    return ((ajn::InterfaceDescription*)iface)->AddMember(ajn::MESSAGE_SIGNAL, name, sig, NULL, argNames, annotation, accessPerms);
+}
+
+QC_BOOL alljoyn_interfacedescription_getsignal(alljoyn_interfacedescription iface, const char* name, alljoyn_interfacedescription_member* member)
+{
+    const ajn::InterfaceDescription::Member* found_member = ((const ajn::InterfaceDescription*)iface)->GetMember(name);
+    /*
+     * only return the member if it is a MESSAGE_SIGNAL type all others return NULL
+     */
+    if (found_member && found_member->memberType == ajn::MESSAGE_SIGNAL) {
+        member->iface = (alljoyn_interfacedescription)found_member->iface;
+        member->memberType = (alljoyn_messagetype)found_member->memberType;
+        member->name = found_member->name.c_str();
+        member->signature = found_member->signature.c_str();
+        member->returnSignature = found_member->returnSignature.c_str();
+        member->argNames = found_member->argNames.c_str();
+        member->annotation = found_member->annotation;
+        member->internal_member = found_member;
+    } else {
+        found_member = NULL;
+    }
+    return (found_member == NULL ? QC_FALSE : QC_TRUE);
 }
 
 QC_BOOL alljoyn_interfacedescription_getproperty(const alljoyn_interfacedescription iface, const char* name,
@@ -115,7 +167,7 @@ size_t alljoyn_interfacedescription_getproperties(const alljoyn_interfacedescrip
         tempProps = new const ajn::InterfaceDescription::Property *[numProps];
     }
     size_t ret = ((const ajn::InterfaceDescription*)iface)->GetProperties(tempProps, numProps);
-    for (size_t i = 0; i < numProps; i++) {
+    for (size_t i = 0; i < ret; i++) {
         props[i].name = tempProps[i]->name.c_str();
         props[i].signature = tempProps[i]->signature.c_str();
         props[i].access = tempProps[i]->access;

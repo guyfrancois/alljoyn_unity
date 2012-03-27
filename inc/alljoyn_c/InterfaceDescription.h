@@ -137,6 +137,61 @@ extern AJ_API QC_BOOL alljoyn_interfacedescription_hasmember(alljoyn_interfacede
                                                              const char* outSig);
 
 /**
+ * Add a method call member to the interface.
+ *
+ * @param iface       Interface on which to add the method member.
+ * @param name        Name of method call member.
+ * @param inputSig    Signature of input parameters or NULL for none.
+ * @param outSig      Signature of output parameters or NULL for none.
+ * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+ * @param annotation  Annotation flags. Default value 0.
+ * @param accessPerms Access permission requirements on this call. Default value 0.
+ *
+ * @return
+ *      - #ER_OK if successful
+ *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+ */
+extern AJ_API QStatus alljoyn_interfacedescription_addmethod(alljoyn_interfacedescription iface, const char* name, const char* inputSig, const char* outSig, const char* argNames, uint8_t annotation, const char* accessPerms);
+
+/**
+ * Lookup a member method description by name
+ *
+ * @param       iface Interface on which to lookup the method.
+ * @param       name  Name of the method to lookup
+ * @param[out]  member  The description of the member
+ * @return
+ *      - Pointer to member.
+ *      - NULL if does not exist.
+ */
+extern AJ_API QC_BOOL alljoyn_interfacedescription_getmethod(alljoyn_interfacedescription iface, const char* name, alljoyn_interfacedescription_member* member);
+
+/**
+ * Add a signal member to the interface.
+ *
+ * @param iface       Interface on which to add the signal member.
+ * @param name        Name of method call member.
+ * @param sig         Signature of parameters or NULL for none.
+ * @param argNames    Comma separated list of arg names used in annotation XML.
+ * @param annotation  Annotation flags. Default value 0.
+ * @param accessPerms Access permission requirements on this call. Default value 0.
+ *
+ * @return
+ *      - #ER_OK if successful
+ *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+ */
+extern AJ_API QStatus alljoyn_interfacedescription_addsignal(alljoyn_interfacedescription iface, const char* name, const char* sig, const char* argNames, uint8_t annotation, const char* accessPerms);
+
+/**
+ * Lookup a member signal description by name
+ *
+ * @param name  Name of the signal to lookup
+ * @return
+ *      - Pointer to member.
+ *      - NULL if does not exist.
+ */
+extern AJ_API QC_BOOL alljoyn_interfacedescription_getsignal(alljoyn_interfacedescription iface, const char* name, alljoyn_interfacedescription_member* member);
+
+/**
  * Lookup a property description by name
  *
  * @param iface     Interface to query for a property.
