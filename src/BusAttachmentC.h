@@ -23,7 +23,6 @@
 #define _ALLJOYN_C_BUSATTACHMENTC_H
 
 #include <qcc/platform.h>
-
 #include <alljoyn/BusAttachment.h>
 #include <alljoyn_c/AjAPI.h>
 #include <alljoyn_c/KeyStoreListener.h>
@@ -35,6 +34,7 @@
 #include <alljoyn_c/Session.h>
 #include <alljoyn_c/SessionListener.h>
 #include <alljoyn_c/SessionPortListener.h>
+
 #include <Status.h>
 #include <map>
 
@@ -49,6 +49,11 @@ class BusAttachmentC : public BusAttachment {
     BusAttachmentC(const char* applicationName, bool allowRemoteMessages = false) :
         BusAttachment(applicationName, allowRemoteMessages) { }
 
+    /** Destructor */
+    virtual ~BusAttachmentC() {
+        /* remove all signal handers associated with this BusAttachment */
+        UnregisterAllHandlersC();
+    }
     /**
      * Take a 'C' style SignalHandler and map it to a 'C++' style SignalHandler
      * Register the 'C++' SignalHandler with the 'C++' code.
@@ -78,12 +83,22 @@ class BusAttachmentC : public BusAttachment {
      * @param receiver the object the signals will no longer be registered with.
      */
     QStatus UnregisterAllHandlersC(alljoyn_busobject receiver);
+
   private:
+    /**
+     * remove all SignalHandlers associated with this BusAttachment
+     *
+     * This method is called by the C function alljoyn_busattachment_destroy
+     * this will ensure that all signal handlers mapped to the signalHandlerMap
+     * that are associated with this BusAttachment are removed before the
+     * BusAttachment is destroyed.
+     */
+    void UnregisterAllHandlersC();
+
     /**
      * Convert the 'C++' SignalHandler callback to a 'C' callback function
      */
     void SignalHandlerRemap(const InterfaceDescription::Member* member, const char* srcPath, Message& message);
-
 };
 }
 #endif

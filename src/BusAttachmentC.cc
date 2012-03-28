@@ -29,6 +29,7 @@ typedef struct {
     alljoyn_messagereceiver_signalhandler_ptr handler;
     const char* sourcePath;
     alljoyn_busobject busObject;
+    ajn::BusAttachmentC* bus;
 }signalCallbackMapEntry;
 
 /*
@@ -46,7 +47,7 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_busobject receiver, alljo
 {
     QStatus ret = ER_OK;
     const ajn::InterfaceDescription::Member* cpp_member = (const ajn::InterfaceDescription::Member*)(member.internal_member);
-    signalCallbackMapEntry entry = { signalHandler, srcPath, receiver };
+    signalCallbackMapEntry entry = { signalHandler, srcPath, receiver, this };
     /*
      * a local multimap connecting the signal to each possible 'C' signal handler is being maintained
      * we only need to Register a new SignalHandler if the signal is a new signal
@@ -64,6 +65,7 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_busobject receiver, alljo
         signalCallbackMap.insert(pair<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>(
                                      cpp_member,
                                      entry));
+
         signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
     }
     return ret;
@@ -125,8 +127,22 @@ QStatus BusAttachmentC::UnregisterAllHandlersC(alljoyn_busobject receiver) {
             signalCallbackMap.erase(it);
         }
     }
+
     signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
     return UnregisterAllHandlers((ajn::BusObject*)receiver);
+}
+
+void BusAttachmentC::UnregisterAllHandlersC() {
+    std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator it;
+    it = signalCallbackMap.begin();
+    signalCallbackMapLock.Lock(MUTEX_CONTEXT);
+    for (it = signalCallbackMap.begin(); it != signalCallbackMap.end(); ++it) {
+        if (this == it->second.bus) {
+            signalCallbackMap.erase(it);
+        }
+    }
+
+    signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
 }
 
 void BusAttachmentC::SignalHandlerRemap(const InterfaceDescription::Member* member, const char* srcPath, Message& message)
