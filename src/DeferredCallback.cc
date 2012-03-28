@@ -17,9 +17,9 @@
 #include "DeferredCallback.h"
 
 namespace ajn {
-
+bool DeferredCallback::initilized = false;
 std::list<DeferredCallback*> DeferredCallback::sPendingCallbacks;
-pthread_t DeferredCallback::sMainThread = pthread_self();
+qcc::Thread* DeferredCallback::sMainThread = NULL;
 bool DeferredCallback::sMainThreadCallbacksOnly = false;
 qcc::Mutex DeferredCallback::sCallbackListLock;
 

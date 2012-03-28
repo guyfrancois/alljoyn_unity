@@ -19,8 +19,6 @@
 #include <alljoyn_c/AjAPI.h>
 #include <list>
 #include <signal.h>
-#include <pthread.h>
-#include <unistd.h>
 #include <qcc/Mutex.h>
 #include <qcc/Thread.h>
 
@@ -37,7 +35,12 @@ namespace ajn {
 
 class DeferredCallback {
   public:
-    DeferredCallback() : executeNow(false), finished(false) { }
+    DeferredCallback() : finished(false), executeNow(false) {
+        if (!initilized) {
+            sMainThread = qcc::Thread::GetThread();
+            initilized = true;
+        }
+    }
 
     virtual ~DeferredCallback() { }
 
@@ -60,7 +63,7 @@ class DeferredCallback {
 
     static bool IsMainThread()
     {
-        return (sMainThreadCallbacksOnly ? (pthread_equal(sMainThread, pthread_self()) != 0) : true);
+        return (sMainThreadCallbacksOnly ? (sMainThread == qcc::Thread::GetThread()) : true);
     }
 
   protected:
@@ -81,9 +84,10 @@ class DeferredCallback {
     static bool sMainThreadCallbacksOnly;
 
   protected:
+    static bool initilized;
     volatile sig_atomic_t finished;
     static std::list<DeferredCallback*> sPendingCallbacks;
-    static pthread_t sMainThread;
+    static qcc::Thread* sMainThread;
     static qcc::Mutex sCallbackListLock;
 
   private:
