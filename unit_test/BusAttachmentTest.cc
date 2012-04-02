@@ -596,8 +596,8 @@ TEST(BusAttachmentTest, unregisterallhandlers) {
 
     status = alljoyn_busobject_signal(testObj, NULL, 0, my_signal_member, arg, 1, 0, 0);
 
-    //wait a second to make sure the signal still did not come through
-    qcc::Sleep(1000);
+    //wait a little while to make sure the signal still did not come through
+    qcc::Sleep(100);
     EXPECT_FALSE(registersignalhandler_flag);
     EXPECT_FALSE(registersignalhandler_flag2);
 

@@ -213,6 +213,46 @@ extern AJ_API QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
                                                size_t numArgs,
                                                uint16_t timeToLive,
                                                uint8_t flags);
+#if 0
+/* TODO list of C++ methods that have not be mapped to the C yet */
+/**
+ * Add a method handler to this object. The interface for the method handler must have already
+ * been added by calling AddInterface().
+ *
+ * @param member   Interface member implemented by handler.
+ * @param handler  Method handler.
+ * @param context  An optional context. This is mainly intended for implementing language
+ *                 bindings and should normally be NULL.
+ *
+ * @return
+ *      - #ER_OK if the method handler was added.
+ *      - An error status otherwise
+ */
+QStatus AddMethodHandler(const InterfaceDescription::Member* member, MessageReceiver::MethodHandler handler, void* context = NULL);
+
+/**
+ * Returns a description of the object in the D-Bus introspection XML format.
+ * This method can be overridden by derived classes in order to customize the
+ * introspection XML presented to remote nodes. Note that to DTD description and
+ * the root element are not generated.
+ *
+ * @param deep     Include XML for all descendants rather than stopping at direct children.
+ * @param indent   Number of characters to indent the XML
+ * @return Description of the object in D-Bus introspection XML format
+ */
+virtual qcc::String GenerateIntrospection(bool deep = false, size_t indent = 0) const;
+
+/**
+ * Default handler for a bus attempt to read the object's introspection data.
+ * @remark
+ * A derived class can override this function to provide a custom handler for the GetProp method
+ * call. If overridden the custom handler must compose an appropriate reply message.
+ *
+ * @param member   Identifies the @c org.freedesktop.DBus.Introspectable.Introspect method.
+ * @param msg      The Introspectable.Introspect request.
+ */
+virtual void Introspect(const InterfaceDescription::Member* member, Message& msg);
+#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

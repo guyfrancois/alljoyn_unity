@@ -37,7 +37,6 @@ static void ping_method(alljoyn_busobject bus, const alljoyn_interfacedescriptio
     outArg = alljoyn_message_getarg(msg, 0);
     const char* str;
     alljoyn_msgarg_get(outArg, "s", &str);
-    //printf("Ping : %s\n", str);
     QStatus status = alljoyn_busobject_methodreply_args(bus, msg, outArg, 1);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 }
@@ -49,7 +48,6 @@ static void chirp_method(alljoyn_busobject bus, const alljoyn_interfacedescripti
     outArg = alljoyn_message_getarg(msg, 0);
     const char* str;
     alljoyn_msgarg_get(outArg, "s", &str);
-    //printf("Chirp : %s\n", str);
     QStatus status = alljoyn_busobject_methodreply_args(bus, msg, NULL, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 }
@@ -160,9 +158,13 @@ class ProxyBusObjectTest : public testing::Test {
     void TearDownProxyBusObjectTestService()
     {
         alljoyn_busattachment_unregisterbuslistener(servicebus, buslistener);
-        /* TODO fix so can destroy buslistener without calling unregister*/
-        alljoyn_buslistener_destroy(buslistener);
+        /*
+         * must destroy the busattachment before destroying the buslistener or
+         * the code will segfault when the code tries to call the bus_stopping
+         * callback.
+         */
         alljoyn_busattachment_destroy(servicebus);
+        alljoyn_buslistener_destroy(buslistener);
     }
 
     QStatus status;
@@ -253,7 +255,7 @@ TEST_F(ProxyBusObjectTest, getsessionid) {
 
     EXPECT_NO_FATAL_FAILURE(alljoyn_proxybusobject_destroy(proxyObj));
     /*
-     * TODO set up a session with a reall session and make sure that proxyObj has
+     * TODO set up a session with a real session and make sure that proxyObj has
      * will return the proper sessionid.
      */
 

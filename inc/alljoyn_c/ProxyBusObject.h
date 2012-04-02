@@ -108,13 +108,57 @@ extern AJ_API QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxyb
  * be called within AllJoyn callbacks (method/signal/reply handlers or
  * ObjectRegistered callbacks, etc.)
  *
- * @param proxyObj    The proxy bus object that will be query the remote object.
+ * @param proxyObj    The proxy bus object that will query the remote object.
  *
  * @return
  *      - #ER_OK if successful
  *      - An error status otherwise
  */
 extern AJ_API QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj);
+
+/**
+ * Get a property from an interface on the remote object.
+ *
+ * @param proxyObj    The proxy bus object the property will be read from
+ * @param iface       Name of interface to retrieve property from.
+ * @param property    The name of the property to get.
+ * @param[out] value  Property value.
+ *
+ * @return
+ *      - #ER_OK if the property was obtained.
+ *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
+ *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_getproperty(alljoyn_proxybusobject proxyObj, const char* iface, const char* property, alljoyn_msgarg value);
+
+/**
+ * Get all properties from an interface on the remote object.
+ *
+ * @param proxyObj    The proxy bus object the properties will be read from
+ * @param iface       Name of interface to retrieve all properties from.
+ * @param[out] values Property values returned as an array of dictionary entries, signature "a{sv}".
+ *
+ * @return
+ *      - #ER_OK if the property was obtained.
+ *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
+ *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_getallproperties(alljoyn_proxybusobject proxyObj, const char* iface, alljoyn_msgarg values);
+
+/**
+ * Set a property on an interface on the remote object.
+ *
+ * @param proxyObj  The proxy bus object the property will be set on
+ * @param iface     Interface that holds the property
+ * @param property  The name of the property to set
+ * @param value     The value to set
+ *
+ * @return
+ *      - #ER_OK if the property was set
+ *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
+ *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_setproperty(alljoyn_proxybusobject proxyObj, const char* iface, const char* property, alljoyn_msgarg value);
 
 /**
  * Make a synchronous method call
@@ -313,110 +357,6 @@ extern AJ_API QC_BOOL alljoyn_proxybusobject_implementsinterface(alljoyn_proxybu
  *      - An error status otherwise
  */
 QStatus IntrospectRemoteObjectAsync(ProxyBusObject::Listener* listener, ProxyBusObject::Listener::IntrospectCB callback, void* context);
-
-/**
- * Get a property from an interface on the remote object.
- *
- * @param iface       Name of interface to retrieve property from.
- * @param property    The name of the property to get.
- * @param[out] value  Property value.
- *
- * @return
- *      - #ER_OK if the property was obtained.
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus GetProperty(const char* iface, const char* property, MsgArg& value) const;
-
-/**
- * Get all properties from an interface on the remote object.
- *
- * @param iface       Name of interface to retrieve all properties from.
- * @param[out] values Property values returned as an array of dictionary entries, signature "a{sv}".
- *
- * @return
- *      - #ER_OK if the property was obtained.
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus GetAllProperties(const char* iface, MsgArg& values) const;
-
-/**
- * Set a property on an interface on the remote object.
- *
- * @param iface     Interface that holds the property
- * @param property  The name of the property to set
- * @param value     The value to set
- *
- * @return
- *      - #ER_OK if the property was set
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus SetProperty(const char* iface, const char* property, MsgArg& value) const;
-
-/**
- * Set a uint32 property.
- *
- * @param iface     Interface that holds the property
- * @param property  The name of the property to set
- * @param u         The uint32 value to set
- *
- * @return
- *      - #ER_OK if the property was set
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus SetProperty(const char* iface, const char* property, uint32_t u) const {
-    MsgArg arg("u", u); return SetProperty(iface, property, arg);
-}
-
-/**
- * Set an int32 property.
- *
- * @param iface     Interface that holds the property
- * @param property  The name of the property to set
- * @param i         The int32 value to set
- *
- * @return
- *      - #ER_OK if the property was set
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus SetProperty(const char* iface, const char* property, int32_t i) const {
-    MsgArg arg("i", i); return SetProperty(iface, property, arg);
-}
-
-/**
- * Set a string property using a C string.
- *
- * @param iface     Interface that holds the property
- * @param property  The name of the property to set
- * @param s         The string value to set
- *
- * @return
- *      - #ER_OK if the property was set
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus SetProperty(const char* iface, const char* property, const char* s) const {
-    MsgArg arg("s", s); return SetProperty(iface, property, arg);
-}
-
-/**
- * Set a string property using a qcc::String.
- *
- * @param iface     Interface that holds the property
- * @param property  The name of the property to set
- * @param s         The string value to set
- *
- * @return
- *      - #ER_OK if the property was set
- *      - #ER_BUS_OBJECT_NO_SUCH_INTERFACE if the no such interface on this remote object.
- *      - #ER_BUS_NO_SUCH_PROPERTY if the property does not exist
- */
-QStatus SetProperty(const char* iface, const char* property, const qcc::String& s) const {
-    MsgArg arg("s", s.c_str()); return SetProperty(iface, property, arg);
-}
 
 /**
  * Returns an array of ProxyBusObjects for the children of this %ProxyBusObject.

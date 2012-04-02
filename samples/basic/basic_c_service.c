@@ -162,7 +162,7 @@ int main(int argc, char** argv, char** envArg)
     alljoyn_busobject_callbacks busObjCbs = {
         NULL,
         NULL,
-        busobject_object_registered,
+        &busobject_object_registered,
         NULL
     };
     alljoyn_busobject testObj = alljoyn_busobject_create(g_msgBus, SERVICE_PATH, QC_FALSE, &busObjCbs, NULL);

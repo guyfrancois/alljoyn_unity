@@ -49,12 +49,32 @@ QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject proxyObj, con
     return ((ajn::ProxyBusObject*)proxyObj)->AddInterface(*((const ajn::InterfaceDescription*)iface));
 }
 
-QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxybusobject proxyObj, const char* name) {
+QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxybusobject proxyObj, const char* name)
+{
     return ((ajn::ProxyBusObject*)proxyObj)->AddInterface(name);
 }
 
-QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj) {
+QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj)
+{
     return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObject();
+}
+
+QStatus alljoyn_proxybusobject_getproperty(alljoyn_proxybusobject proxyObj, const char* iface, const char* property, alljoyn_msgarg value)
+{
+    ajn::MsgArg* reply = (ajn::MsgArg*)&(*value);
+    return ((ajn::ProxyBusObject*)proxyObj)->GetProperty(iface, property, *reply);
+}
+
+QStatus alljoyn_proxybusobject_getallproperties(alljoyn_proxybusobject proxyObj, const char* iface, alljoyn_msgarg values)
+{
+    ajn::MsgArg* reply = (ajn::MsgArg*)&(*values);
+    return ((ajn::ProxyBusObject*)proxyObj)->GetAllProperties(iface, *reply);
+}
+
+QStatus alljoyn_proxybusobject_setproperty(alljoyn_proxybusobject proxyObj, const char* iface, const char* property, alljoyn_msgarg value)
+{
+    ajn::MsgArg* reply = (ajn::MsgArg*)&(*value);
+    return ((ajn::ProxyBusObject*)proxyObj)->SetProperty(iface, property, *reply);
 }
 
 QStatus alljoyn_proxybusobject_methodcall(alljoyn_proxybusobject obj,
