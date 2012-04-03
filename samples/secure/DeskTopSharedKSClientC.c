@@ -44,8 +44,8 @@ static alljoyn_authlistener g_authListener;
 
 /*constants*/
 static const char* INTERFACE_NAME = "org.alljoyn.bus.samples.secure.SecureInterface";
-static const char* SERVICE_NAME = "org.alljoyn.bus.samples.secure";
-static const char* SERVICE_PATH = "/SecureService";
+static const char* OBJECT_NAME = "org.alljoyn.bus.samples.secure";
+static const char* OBJECT_PATH = "/SecureService";
 static const alljoyn_sessionport SERVICE_PORT = 42;
 
 static QC_BOOL s_joinComplete = QC_FALSE;
@@ -89,7 +89,7 @@ char*get_line(char*str, size_t num, FILE*fp)
 void found_advertised_name(const void* context, const char* name, alljoyn_transportmask transport, const char* namePrefix)
 {
     printf("FoundAdvertisedName(name=%s, prefix=%s)\n", name, namePrefix);
-    if (0 == strcmp(name, SERVICE_NAME)) {
+    if (0 == strcmp(name, OBJECT_NAME)) {
         /* We found a remote bus that is advertising basic service's  well-known name so connect to it */
         alljoyn_sessionopts opts = alljoyn_sessionopts_create(ALLJOYN_TRAFFIC_TYPE_MESSAGES, QC_FALSE, ALLJOYN_PROXIMITY_ANY, ALLJOYN_TRANSPORT_ANY);
         QStatus status = alljoyn_busattachment_joinsession(g_msgBus, name, SERVICE_PORT, NULL, &s_sessionId, opts);
@@ -107,7 +107,7 @@ void found_advertised_name(const void* context, const char* name, alljoyn_transp
 /* NameOwnerChanged callback */
 void name_owner_changed(const void* context, const char* busName, const char* previousOwner, const char* newOwner)
 {
-    if (newOwner && (0 == strcmp(busName, SERVICE_NAME))) {
+    if (newOwner && (0 == strcmp(busName, OBJECT_NAME))) {
         printf("NameOwnerChanged: name=%s, oldOwner=%s, newOwner=%s\n",
                busName,
                previousOwner ? previousOwner : "<none>",
@@ -134,10 +134,10 @@ QC_BOOL request_credentials(const void* context, const char* authMechanism, cons
     if (strcmp(authMechanism, "ALLJOYN_SRP_KEYX") == 0) {
         if (credMask & ALLJOYN_CRED_PASSWORD) {
             if (authCount <= 3) {
+                const int bufSize = 7;
+                char buf[7];
                 /* Take input from stdin and send it as a chat messages */
                 printf("Please enter one time password : ");
-                const int bufSize = 7;
-                char buf[bufSize];
                 get_line(buf, bufSize, stdin);
                 alljoyn_credentials_setpassword(credentials, buf);
                 return QC_TRUE;
@@ -158,27 +158,28 @@ void authentication_complete(const void* context, const char* authMechanism, con
 int main(int argc, char** argv, char** envArg)
 {
     QStatus status = ER_OK;
-
+    alljoyn_interfacedescription testIntf = NULL;
+    char connectArgs[][64] = { "tcp:addr=127.0.0.1,port=9955", "unix:abstract=alljoyn" };
+    size_t i;
+    alljoyn_buslistener_callbacks callbacks = {
+        NULL,
+        NULL,
+        &found_advertised_name,
+        NULL,
+        &name_owner_changed,
+        NULL,
+        NULL
+    };
     printf("AllJoyn Library version: %s\n", alljoyn_getversion());
     printf("AllJoyn Library build info: %s\n", alljoyn_getbuildinfo());
 
     /* Install SIGINT handler */
     signal(SIGINT, SigIntHandler);
 
-    const char* connectArgs = getenv("BUS_ADDRESS");
-    if (connectArgs == NULL) {
-#ifdef _WIN32
-        connectArgs = "tcp:addr=127.0.0.1,port=9955";
-#else
-        connectArgs = "unix:abstract=alljoyn";
-#endif
-    }
-
     /* Create message bus */
     g_msgBus = alljoyn_busattachment_create("SRPSecurityClientC", QC_TRUE);
 
     /* Add org.alljoyn.bus.samples.secure.SecureInterface interface */
-    alljoyn_interfacedescription testIntf = NULL;
     status = alljoyn_busattachment_createinterface(g_msgBus, INTERFACE_NAME, &testIntf, QC_TRUE);
     if (status == ER_OK) {
         alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_METHOD_CALL, "Ping", "s",  "s", "inStr1,outStr", 0);
@@ -222,24 +223,21 @@ int main(int argc, char** argv, char** envArg)
 
     /* Connect to the bus */
     if (ER_OK == status) {
-        status = alljoyn_busattachment_connect(g_msgBus, connectArgs);
+        for (i = 0; i < sizeof(connectArgs) / sizeof(connectArgs[0]); ++i) {
+            status = alljoyn_busattachment_connect(g_msgBus, connectArgs[i]);
+            if (ER_OK != status) {
+                printf("BusAttachment::Connect(\"%s\") failed\n", connectArgs[i]);
+            } else {
+                printf("BusAttchement connected to %s\n", connectArgs[i]);
+                break;
+            }
+        }
         if (ER_OK != status) {
-            printf("BusAttachment::Connect(\"%s\") failed\n", connectArgs);
-        } else {
-            printf("BusAttchement connected to %s\n", connectArgs);
+            printf("Multiple BusAttachment::Connect attempts failed\n");
         }
     }
 
     /* Create a bus listener */
-    alljoyn_buslistener_callbacks callbacks = {
-        NULL,
-        NULL,
-        &found_advertised_name,
-        NULL,
-        &name_owner_changed,
-        NULL,
-        NULL
-    };
     g_busListener = alljoyn_buslistener_create(&callbacks, NULL);
 
     /* Register a bus listener in order to get discovery indications */
@@ -250,7 +248,7 @@ int main(int argc, char** argv, char** envArg)
 
     /* Begin discovery on the well-known name of the service to be called */
     if (ER_OK == status) {
-        status = alljoyn_busattachment_findadvertisedname(g_msgBus, SERVICE_NAME);
+        status = alljoyn_busattachment_findadvertisedname(g_msgBus, OBJECT_NAME);
         if (status != ER_OK) {
             printf("org.alljoyn.Bus.FindAdvertisedName failed (%s))\n", QCC_StatusText(status));
         }
@@ -266,20 +264,24 @@ int main(int argc, char** argv, char** envArg)
     }
 
     if (status == ER_OK && g_interrupt == QC_FALSE) {
-        alljoyn_proxybusobject remoteObj = alljoyn_proxybusobject_create(g_msgBus, SERVICE_NAME, SERVICE_PATH, s_sessionId);
+        alljoyn_message reply;
+        alljoyn_msgarg inputs;
+        size_t numArgs;
+
+        alljoyn_proxybusobject remoteObj = alljoyn_proxybusobject_create(g_msgBus, OBJECT_NAME, OBJECT_PATH, s_sessionId);
         const alljoyn_interfacedescription alljoynTestIntf = alljoyn_busattachment_getinterface(g_msgBus, INTERFACE_NAME);
         assert(alljoynTestIntf);
         alljoyn_proxybusobject_addinterface(remoteObj, alljoynTestIntf);
 
-        alljoyn_message reply = alljoyn_message_create(g_msgBus);
-        alljoyn_msgarg inputs = alljoyn_msgarg_array_create(1);
-        size_t numArgs = 1;
+        reply = alljoyn_message_create(g_msgBus);
+        inputs = alljoyn_msgarg_array_create(1);
+        numArgs = 1;
         status = alljoyn_msgarg_array_set(inputs, &numArgs, "s", "ClientC says Hello AllJoyn!");
 
         status = alljoyn_proxybusobject_methodcall(remoteObj, INTERFACE_NAME, "Ping", inputs, 1, reply, 5000, 0);
         if (ER_OK == status) {
             printf("%s.%s ( path=%s) returned \"%s\"\n", INTERFACE_NAME, "Ping",
-                   SERVICE_PATH, alljoyn_msgarg_as_string(alljoyn_message_getarg(reply, 0), 0));
+                   OBJECT_PATH, alljoyn_msgarg_as_string(alljoyn_message_getarg(reply, 0), 0));
         } else {
             printf("MethodCall on %s.%s failed\n", INTERFACE_NAME, "Ping");
         }
