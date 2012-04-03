@@ -18,7 +18,11 @@
 
 /** This #define allows for redefinition to __dllexport or __dllimport on relevant platforms */
 #ifndef AJ_API
-#   define AJ_API
+#  ifdef QCC_OS_WINDOWS
+#    define AJ_API __declspec(dllexport)
+#  else
+#    define AJ_API
+#  endif
 #endif
 
 #ifdef __cplusplus
