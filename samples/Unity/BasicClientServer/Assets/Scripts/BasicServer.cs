@@ -167,7 +167,7 @@ namespace basic_clientserver
 					Debug.Log("Server BusAttachment.Start failed.");
 				}
 			}
-			return;
+			
 			// Request name
 			if(status)
 			{
