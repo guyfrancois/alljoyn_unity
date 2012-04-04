@@ -9,20 +9,22 @@ namespace basic_clientserver
 		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample";
 		private const string SERVICE_PATH = "/method_sample";
 		private const ushort SERVICE_PORT = 25;
-
-		//private const string connectArgs = "tcp:addr=127.0.0.1,port=9955";
-		private const string connectArgs = "unix:abstract=alljoyn";
-		//private const string connectArgs = "launchd:";
+		
+		private static readonly string[] connectArgs = {"unix:abstract=alljoyn",
+														"tcp:addr=127.0.0.1,port=9955",
+														"launchd:"};
 
 		private static bool sJoinComplete = false;
 		private static AllJoyn.BusAttachment sMsgBus;
 		private static MyBusListener sBusListener;
 		private static uint sSessionId;
+		public static string clientText;
 
 		class MyBusListener : AllJoyn.BusListener
 		{
 			protected override void FoundAdvertisedName(string name, AllJoyn.TransportMask transport, string namePrefix)
 			{
+				clientText += "Client FoundAdvertisedName(name=" + name + ", prefix=" + namePrefix + ")\n";
 				Debug.Log("Client FoundAdvertisedName(name=" + name + ", prefix=" + namePrefix + ")");
 				if(string.Compare(SERVICE_NAME, name) == 0)
 				{
@@ -33,10 +35,12 @@ namespace basic_clientserver
 					AllJoyn.QStatus status = sMsgBus.JoinSession(name, SERVICE_PORT, null, out sSessionId, opts);
 					if(status)
 					{
+						clientText += "Client JoinSession SUCCESS (Session id=" + sSessionId + ")\n";
 						Debug.Log("Client JoinSession SUCCESS (Session id=" + sSessionId + ")");
 					}
 					else
 					{
+						clientText += "Client JoinSession failed (status=" + status.ToString() + ")\n";
 						Debug.Log("Client JoinSession failed (status=" + status.ToString() + ")");
 					}
 				}
@@ -47,6 +51,8 @@ namespace basic_clientserver
 			{
 				if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
+					clientText += "Client NameOwnerChanged: name=" + busName + ", oldOwner=" +
+						previousOwner + ", newOwner=" + newOwner + "\n";
 					Debug.Log("Client NameOwnerChanged: name=" + busName + ", oldOwner=" +
 						previousOwner + ", newOwner=" + newOwner);
 				}
@@ -55,6 +61,7 @@ namespace basic_clientserver
 
 		public BasicClient()
 		{
+			clientText = "";
 			// Create message bus
 			sMsgBus = new AllJoyn.BusAttachment("myApp", true);
 
@@ -63,12 +70,14 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
 			if(status)
 			{
+				clientText += "Client Interface Created.\n";
 				Debug.Log("Client Interface Created.");
 				testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "cat", "ss", "s", "inStr1,inStr2,outStr");
 				testIntf.Activate();
 			}
 			else
 			{
+				clientText += "Client Failed to create interface 'org.alljoyn.Bus.method_sample'\n";
 				Debug.Log("Client Failed to create interface 'org.alljoyn.Bus.method_sample'");
 			}
 
@@ -78,10 +87,12 @@ namespace basic_clientserver
 				status = sMsgBus.Start();
 				if(status)
 				{
+					clientText += "Client BusAttachment started.\n";
 					Debug.Log("Client BusAttachment started.");
 				}
 				else
 				{
+					clientText += "Client BusAttachment.Start failed.\n";
 					Debug.Log("Client BusAttachment.Start failed.");
 				}
 			}
@@ -89,14 +100,25 @@ namespace basic_clientserver
 			// Connect to the bus
 			if(status)
 			{
-				status = sMsgBus.Connect(connectArgs);
-				if(status)
+				for (int i = 0; i < connectArgs.Length; ++i)
 				{
-					Debug.Log("Client BusAttchement connected to " + connectArgs);
+					status = sMsgBus.Connect(connectArgs[i]);
+					if (status)
+					{
+						clientText += "BusAttchement.Connect(" + connectArgs[i] + ") SUCCEDED.\n";
+						Debug.Log("BusAttchement.Connect(" + connectArgs[i] + ") SUCCEDED.");
+						break;
+					}
+					else
+					{
+						clientText += "BusAttachment.Connect(" + connectArgs[i] + ") failed.\n";
+						Debug.Log("BusAttachment.Connect(" + connectArgs[i] + ") failed.");
+					}
 				}
-				else
+				if(!status)
 				{
-					Debug.Log("Client BusAttachment::Connect(" + connectArgs + ") failed.");
+					clientText += "BusAttachment.Connect failed.\n";
+					Debug.Log("BusAttachment.Connect failed.");
 				}
 			}
 
@@ -106,6 +128,7 @@ namespace basic_clientserver
 			if(status)
 			{
 				sMsgBus.RegisterBusListener(sBusListener);
+				clientText += "Client BusListener Registered.\n";
 				Debug.Log("Client BusListener Registered.");
 			}
 		}
@@ -116,6 +139,7 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = sMsgBus.FindAdvertisedName(SERVICE_NAME);
 			if(!status)
 			{
+				clientText += "Client org.alljoyn.Bus.FindAdvertisedName failed.\n";
 				Debug.Log("Client org.alljoyn.Bus.FindAdvertisedName failed.");
 			}
 
@@ -153,11 +177,13 @@ namespace basic_clientserver
 					
 					if(status)
 					{
+						clientText += SERVICE_NAME + ".cat(path=" + SERVICE_PATH + ") returned \"" + (string)reply[0] + "\"\n";
 						Debug.Log(SERVICE_NAME + ".cat(path=" + SERVICE_PATH + ") returned \"" + (string)reply[0] + "\"");
 						return (string)reply[0];
 					}
 					else
 					{
+						clientText += "MethodCall on " + SERVICE_NAME + ".cat failed\n";
 						Debug.Log("MethodCall on " + SERVICE_NAME + ".cat failed");
 						return "";
 					}

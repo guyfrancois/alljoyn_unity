@@ -9,16 +9,17 @@ namespace basic_clientserver
 		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample";
 		private const string SERVICE_PATH = "/method_sample";
 		private const ushort SERVICE_PORT = 25;
-
-		//private const string connectArgs = "tcp:addr=127.0.0.1,port=9955";
-		private const string connectArgs = "unix:abstract=alljoyn";
-		//private const string connectArgs = "launchd:";
+		
+		private static readonly string[] connectArgs = {"unix:abstract=alljoyn",
+														"tcp:addr=127.0.0.1,port=9955",
+														"launchd:"};
 
 		private AllJoyn.BusAttachment msgBus;
 		private MyBusListener busListener;
 		private MySessionPortListener sessionPortListener;
 		private TestBusObject testObj;
 		private AllJoyn.InterfaceDescription testIntf;
+		public static string serverText;
 
 		class TestBusObject : AllJoyn.BusObject
 		{
@@ -28,6 +29,7 @@ namespace basic_clientserver
 				AllJoyn.QStatus status = AddInterface(exampleIntf);
 				if(!status)
 				{
+					serverText += "Server Failed to add interface " + status + "\n";
 					Debug.Log("Server Failed to add interface " + status);
 				}
 
@@ -35,12 +37,14 @@ namespace basic_clientserver
 				status = AddMethodHandler(catMember, this.Cat);
 				if(!status)
 				{
+					serverText +="Server Failed to add method handler " + status + "\n";
 					Debug.Log("Server Failed to add method handler " + status);
 				}
 			}
 
-			protected override void OnObjectRegistered()
+			protected override void OnObjectRegistered ()
 			{
+				serverText += "Server ObjectRegistered has been called\n";
 				Debug.Log("Server ObjectRegistered has been called");
 			}
 
@@ -53,6 +57,7 @@ namespace basic_clientserver
 				AllJoyn.QStatus status = MethodReply(message, outArgs);
 				if(!status)
 				{
+					serverText += "Server Ping: Error sending reply\n";
 					Debug.Log("Server Ping: Error sending reply");
 				}
 			}
@@ -64,6 +69,8 @@ namespace basic_clientserver
 			{
 				if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
+					serverText += "Server NameOwnerChanged: name=" + busName + ", oldOwner=" +
+						previousOwner + ", newOwner=" + newOwner + "\n";
 					Debug.Log("Server NameOwnerChanged: name=" + busName + ", oldOwner=" +
 						previousOwner + ", newOwner=" + newOwner);
 				}
@@ -76,9 +83,13 @@ namespace basic_clientserver
 			{
 				if (sessionPort != SERVICE_PORT)
 				{
+					serverText += "Server Rejecting join attempt on unexpected session port " + sessionPort + "\n";
 					Debug.Log("Server Rejecting join attempt on unexpected session port " + sessionPort);
 					return false;
 				}
+				serverText += "Server Accepting join session request from " + joiner + 
+					" (opts.proximity=" + opts.Proximity + ", opts.traffic=" + opts.Traffic + 
+					", opts.transports=" + opts.Transports + ")\n";
 				Debug.Log("Server Accepting join session request from " + joiner + 
 					" (opts.proximity=" + opts.Proximity + ", opts.traffic=" + opts.Traffic + 
 					", opts.transports=" + opts.Transports + ")");
@@ -88,6 +99,7 @@ namespace basic_clientserver
 
 		public BasicServer()
 		{
+			serverText = "";
 			// Create message bus
 			msgBus = new AllJoyn.BusAttachment("myApp", true);
 
@@ -95,12 +107,14 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = msgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
 			if(status)
 			{
+				serverText += "Server Interface Created.\n";
 				Debug.Log("Server Interface Created.");
 				testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "cat", "ss", "s", "inStr1,inStr2,outStr");
 				testIntf.Activate();
 			}
 			else
 			{
+				serverText += "Failed to create interface 'org.alljoyn.Bus.method_sample'\n";
 				Debug.Log("Failed to create interface 'org.alljoyn.Bus.method_sample'");
 			}
 
@@ -109,6 +123,7 @@ namespace basic_clientserver
 			if(status)
 			{
 				msgBus.RegisterBusListener(busListener);
+				serverText += "Server BusListener Registered.\n";
 				Debug.Log("Server BusListener Registered.");
 			}
 
@@ -121,25 +136,38 @@ namespace basic_clientserver
 				status = msgBus.Start();
 				if(status)
 				{
+					serverText += "Server BusAttachment started.\n";
 					Debug.Log("Server BusAttachment started.");
 					msgBus.RegisterBusObject(testObj);
 
-					status = msgBus.Connect(connectArgs);
-					if(status)
+					for (int i = 0; i < connectArgs.Length; ++i)
 					{
-						Debug.Log("Server BusAttchement connected to " + connectArgs);
+						status = msgBus.Connect(connectArgs[i]);
+						if (status)
+						{
+							serverText += "BusAttchement.Connect(" + connectArgs[i] + ") SUCCEDED.\n";
+							Debug.Log("BusAttchement.Connect(" + connectArgs[i] + ") SUCCEDED.");
+							break;
+						}
+						else
+						{
+							serverText += "BusAttachment.Connect(" + connectArgs[i] + ") failed.\n";
+							Debug.Log("BusAttachment.Connect(" + connectArgs[i] + ") failed.");
+						}
 					}
-					else
+					if(!status)
 					{
-						Debug.Log("Server BusAttachment::Connect(" + connectArgs + ") failed.");
+						serverText += "BusAttachment.Connect failed.\n";
+						Debug.Log("BusAttachment.Connect failed.");
 					}
 				}
 				else
 				{
+					serverText += "Server BusAttachment.Start failed.\n";
 					Debug.Log("Server BusAttachment.Start failed.");
 				}
 			}
-
+			return;
 			// Request name
 			if(status)
 			{
@@ -147,6 +175,7 @@ namespace basic_clientserver
 					AllJoyn.DBus.NameFlags.ReplaceExisting | AllJoyn.DBus.NameFlags.DoNotQueue);
 				if(!status)
 				{
+					serverText +="Server RequestName(" + SERVICE_NAME + ") failed (status=" + status + ")\n";
 					Debug.Log("Server RequestName(" + SERVICE_NAME + ") failed (status=" + status + ")");
 				}
 			}
@@ -161,6 +190,7 @@ namespace basic_clientserver
 				status = msgBus.BindSessionPort(ref sessionPort, opts, sessionPortListener);
 				if(!status || sessionPort != SERVICE_PORT)
 				{
+					serverText += "Server BindSessionPort failed (" + status + ")\n";
 					Debug.Log("Server BindSessionPort failed (" + status + ")");
 				}
 			}
@@ -171,6 +201,7 @@ namespace basic_clientserver
 				status = msgBus.AdvertiseName(SERVICE_NAME, opts.Transports);
 				if(!status)
 				{
+					serverText += "Server Failed to advertise name " + SERVICE_NAME + " (" + status + ")\n";
 					Debug.Log("Server Failed to advertise name " + SERVICE_NAME + " (" + status + ")");
 				}
 			}

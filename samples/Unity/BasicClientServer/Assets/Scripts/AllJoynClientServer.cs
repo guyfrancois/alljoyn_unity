@@ -4,6 +4,16 @@ using basic_clientserver;
 
 public class AllJoynClientServer : MonoBehaviour
 {
+	void OnGUI ()
+	{
+		if(BasicServer.serverText != null){
+			GUI.TextArea (new Rect (0, 0, Screen.width, (Screen.height / 3)), BasicServer.serverText);
+		}
+		if(BasicClient.clientText != null){
+			GUI.TextArea (new Rect (0, (Screen.height / 3), Screen.width, (Screen.height * 2 / 3)), BasicClient.clientText);
+		}
+	}
+	
 	// Use this for initialization
 	void Start()
 	{
