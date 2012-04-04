@@ -46,14 +46,14 @@ namespace AllJoynUnity
 			private int _RequestCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName, ushort authCount,
 				IntPtr userName, ushort credMask, IntPtr credentials)
 			{
-				return (RequestCredentials(Marshal.PtrToStringAuto(authMechanism), Marshal.PtrToStringAuto(peerName),
-					authCount, Marshal.PtrToStringAuto(userName), (Credentials.CredentialFlags)credMask, new Credentials(credentials)) ? 1 : 0);
+				return (RequestCredentials(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
+					authCount, Marshal.PtrToStringAnsi(userName), (Credentials.CredentialFlags)credMask, new Credentials(credentials)) ? 1 : 0);
 			}
 
 			private int _VerifyCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName,
 				IntPtr credentials)
 			{
-				return (VerifyCredentials(Marshal.PtrToStringAuto(authMechanism), Marshal.PtrToStringAuto(peerName),
+				return (VerifyCredentials(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
 					new Credentials(credentials)) ? 1 : 0);
 			}
 
@@ -64,7 +64,7 @@ namespace AllJoynUnity
 
 			private void _AuthenticationComplete(IntPtr context, IntPtr authMechanism, IntPtr peerName, int success)
 			{
-				AuthenticationComplete(Marshal.PtrToStringAuto(authMechanism), Marshal.PtrToStringAuto(peerName),
+				AuthenticationComplete(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
 					success == 1 ? true : false);
 			}
 			#endregion

@@ -74,20 +74,20 @@ namespace AllJoynUnity
 
 			private void _FoundAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
 			{
-				FoundAdvertisedName(Marshal.PtrToStringAuto(name), (TransportMask)transport,
-							Marshal.PtrToStringAuto(namePrefix));
+				FoundAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
+							Marshal.PtrToStringAnsi(namePrefix));
 			}
 
 			private void _LostAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
 			{
-				LostAdvertisedName(Marshal.PtrToStringAuto(name), (TransportMask)transport,
-							Marshal.PtrToStringAuto(namePrefix));
+				LostAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
+							Marshal.PtrToStringAnsi(namePrefix));
 			}
 
 			private void _NameOwnerChanged(IntPtr context, IntPtr busName, IntPtr previousOwner, IntPtr newOwner)
 			{
-				NameOwnerChanged(Marshal.PtrToStringAuto(busName), Marshal.PtrToStringAuto(previousOwner),
-							Marshal.PtrToStringAuto(newOwner));
+				NameOwnerChanged(Marshal.PtrToStringAnsi(busName), Marshal.PtrToStringAnsi(previousOwner),
+							Marshal.PtrToStringAnsi(newOwner));
 			}
 
 			private void _BusStopping(IntPtr context)

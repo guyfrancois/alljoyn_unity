@@ -81,7 +81,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_busobject_getpath(_busObject));
+					return Marshal.PtrToStringAnsi(alljoyn_busobject_getpath(_busObject));
 				}
 			}
 
@@ -132,14 +132,14 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _PropertyGet(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val)
 			{
-				OnPropertyGet(Marshal.PtrToStringAuto(ifcName),
-					Marshal.PtrToStringAuto(propName), new MsgArg(val));
+				OnPropertyGet(Marshal.PtrToStringAnsi(ifcName),
+					Marshal.PtrToStringAnsi(propName), new MsgArg(val));
 			}
 
 			private void _PropertySet(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val)
 			{
-				OnPropertySet(Marshal.PtrToStringAuto(ifcName),
-					Marshal.PtrToStringAuto(propName), new MsgArg(val));
+				OnPropertySet(Marshal.PtrToStringAnsi(ifcName),
+					Marshal.PtrToStringAnsi(propName), new MsgArg(val));
 			}
 
 			private void _ObjectRegistered(IntPtr context)

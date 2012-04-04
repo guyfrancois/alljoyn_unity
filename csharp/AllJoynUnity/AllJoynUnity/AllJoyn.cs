@@ -11,13 +11,13 @@ namespace AllJoynUnity
 		/// Get the version string from AllJoyn.
 		public static string GetVersion()
 		{
-			return Marshal.PtrToStringAuto(alljoyn_getversion());
+			return Marshal.PtrToStringAnsi(alljoyn_getversion());
 		}
 
 		/// Get the build info string from AllJoyn.
 		public static string GetBuildInfo()
 		{
-			return Marshal.PtrToStringAuto(alljoyn_getbuildinfo());
+			return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
 		}
 
 		/// Call to trigger callbacks on main thread.
@@ -95,7 +95,7 @@ namespace AllJoynUnity
 
 			public override string ToString()
 			{
-				return Marshal.PtrToStringAuto(QCC_StatusText(value));
+				return Marshal.PtrToStringAnsi(QCC_StatusText(value));
 			}
 
 			public static implicit operator string(QStatus x)

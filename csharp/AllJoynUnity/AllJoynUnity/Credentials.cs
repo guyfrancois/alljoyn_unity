@@ -46,7 +46,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_credentials_getpassword(_credentials));
+					return Marshal.PtrToStringAnsi(alljoyn_credentials_getpassword(_credentials));
 				}
 				set
 				{
@@ -58,7 +58,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_credentials_getusername(_credentials));
+					return Marshal.PtrToStringAnsi(alljoyn_credentials_getusername(_credentials));
 				}
 				set
 				{
@@ -70,7 +70,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_credentials_getcertchain(_credentials));
+					return Marshal.PtrToStringAnsi(alljoyn_credentials_getcertchain(_credentials));
 				}
 				set
 				{
@@ -82,7 +82,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_credentials_getprivateKey(_credentials));
+					return Marshal.PtrToStringAnsi(alljoyn_credentials_getprivateKey(_credentials));
 				}
 				set
 				{
@@ -94,7 +94,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_credentials_getlogonentry(_credentials));
+					return Marshal.PtrToStringAnsi(alljoyn_credentials_getlogonentry(_credentials));
 				}
 				set
 				{

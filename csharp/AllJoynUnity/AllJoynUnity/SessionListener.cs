@@ -45,12 +45,12 @@ namespace AllJoynUnity
 
 			private void _SessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
-				SessionMemberAdded(sessionId, Marshal.PtrToStringAuto(uniqueName));
+				SessionMemberAdded(sessionId, Marshal.PtrToStringAnsi(uniqueName));
 			}
 
 			private void _SessionMemberRemoved(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
-				SessionMemberRemoved(sessionId, Marshal.PtrToStringAuto(uniqueName));
+				SessionMemberRemoved(sessionId, Marshal.PtrToStringAnsi(uniqueName));
 			}
 			#endregion
 

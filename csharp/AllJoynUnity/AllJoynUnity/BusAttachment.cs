@@ -366,7 +366,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_busattachment_getuniquename(_busAttachment));
+					return Marshal.PtrToStringAnsi(alljoyn_busattachment_getuniquename(_busAttachment));
 				}
 			}
 
@@ -374,7 +374,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_busattachment_getglobalguidstring(_busAttachment));
+					return Marshal.PtrToStringAnsi(alljoyn_busattachment_getglobalguidstring(_busAttachment));
 				}
 			}
 

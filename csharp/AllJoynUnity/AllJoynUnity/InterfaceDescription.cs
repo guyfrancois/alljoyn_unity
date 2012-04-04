@@ -71,7 +71,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_interfacedescription_getname(_interfaceDescription));
+					return Marshal.PtrToStringAnsi(alljoyn_interfacedescription_getname(_interfaceDescription));
 				}
 			}
 
@@ -209,7 +209,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_member.name);
+						return Marshal.PtrToStringAnsi(_member.name);
 					}
 				}
 
@@ -217,7 +217,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_member.signature);
+						return Marshal.PtrToStringAnsi(_member.signature);
 					}
 				}
 
@@ -225,7 +225,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_member.returnSignature);
+						return Marshal.PtrToStringAnsi(_member.returnSignature);
 					}
 				}
 
@@ -233,7 +233,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_member.argNames);
+						return Marshal.PtrToStringAnsi(_member.argNames);
 					}
 				}
 
@@ -266,7 +266,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_property.name);
+						return Marshal.PtrToStringAnsi(_property.name);
 					}
 				}
 
@@ -274,7 +274,7 @@ namespace AllJoynUnity
 				{
 					get
 					{
-						return Marshal.PtrToStringAuto(_property.signature);
+						return Marshal.PtrToStringAnsi(_property.signature);
 					}
 				}
 

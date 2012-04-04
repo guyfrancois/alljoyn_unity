@@ -35,12 +35,12 @@ namespace AllJoynUnity
 			#region Callbacks
 			private int _AcceptSessionJoiner(IntPtr context, ushort sessionPort, IntPtr joiner, IntPtr opts)
 			{
-				return (AcceptSessionJoiner(sessionPort, Marshal.PtrToStringAuto(joiner), new SessionOpts(opts)) ? 1 : 0);
+				return (AcceptSessionJoiner(sessionPort, Marshal.PtrToStringAnsi(joiner), new SessionOpts(opts)) ? 1 : 0);
 			}
 
 			private void _SessionJoined(IntPtr context, ushort sessionPort, uint sessionId, IntPtr joiner)
 			{
-				SessionJoined(sessionPort, sessionId, Marshal.PtrToStringAuto(joiner));
+				SessionJoined(sessionPort, sessionId, Marshal.PtrToStringAnsi(joiner));
 			}
 			#endregion
 

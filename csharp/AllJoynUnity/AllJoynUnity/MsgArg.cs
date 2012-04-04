@@ -78,14 +78,14 @@ namespace AllJoynUnity
 
 			public static implicit operator string(MsgArg arg)
 			{
-				return Marshal.PtrToStringAuto(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
+				return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
 			}
 
 			public string ObjectPath
 			{
 				get
 				{
-					return Marshal.PtrToStringAuto(alljoyn_msgarg_as_objpath(_msgArgs, (UIntPtr)_index));
+					return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_objpath(_msgArgs, (UIntPtr)_index));
 				}
 				set
 				{
