@@ -10,9 +10,9 @@ namespace basic_clientserver
 		private const string SERVICE_PATH = "/method_sample";
 		private const ushort SERVICE_PORT = 25;
 
-		//private const string connectArgs = "tcp:addr=127.0.0.1,port=9955";
-		private const string connectArgs = "unix:abstract=alljoyn";
-		//private const string connectArgs = "launchd:";
+		private static readonly string[] connectArgs = {"unix:abstract=alljoyn",
+														"tcp:addr=127.0.0.1,port=9955",
+														"launchd:"};
 
 		private AllJoyn.BusAttachment msgBus;
 		private MyBusListener busListener;
@@ -123,14 +123,22 @@ namespace basic_clientserver
 					Console.WriteLine("Server BusAttachment started.");
 					msgBus.RegisterBusObject(testObj);
 
-					status = msgBus.Connect(connectArgs);
-					if(status)
+					for (int i = 0; i < connectArgs.Length; ++i)
 					{
-						Console.WriteLine("Server BusAttchement connected to " + connectArgs);
+						status = msgBus.Connect(connectArgs[i]);
+						if (status)
+						{
+							Console.WriteLine("BusAttchement.Connect(" + connectArgs[i] + ") SUCCEDED.");
+							break;
+						}
+						else
+						{
+							Console.WriteLine("BusAttachment.Connect(" + connectArgs[i] + ") failed.");
+						}
 					}
-					else
+					if (!status)
 					{
-						Console.WriteLine("Server BusAttachment::Connect(" + connectArgs + ") failed.");
+						Console.WriteLine("BusAttachment.Connect failed.");
 					}
 				}
 				else
