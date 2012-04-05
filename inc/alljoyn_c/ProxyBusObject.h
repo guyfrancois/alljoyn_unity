@@ -268,6 +268,69 @@ extern AJ_API QStatus alljoyn_proxybusobject_methodcall_member_noreply(alljoyn_p
                                                                        const alljoyn_msgarg args,
                                                                        size_t numArgs,
                                                                        uint8_t flags);
+
+/**
+ * Make an asynchronous method call from this object
+ *
+ * @param proxyObj     ProxyBusObject on which to call the method
+ * @param ifaceName    Name of interface for method.
+ * @param methodName   Name of method.
+ * @param replyFunc    The function that is called to deliver the reply
+ * @param args         The arguments for the method call (can be NULL)
+ * @param numArgs      The number of arguments (can be 0)
+ * @param context      User-defined context that will be returned to the reply handler
+ *                     Recommended default NULL.
+ * @param timeout      Timeout specified in milliseconds to wait for a reply
+ *                     Recommended default #ALLJOYN_MESSAGE_DEFAULT_TIMEOUT which is 25000 ms
+ * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
+ *                     - If #ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+ *                     - If #ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+ *                     - If #ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+ *                     Set value to '0' for no flags.
+ * @return
+ *      - ER_OK if successful
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_methodcallasync(alljoyn_proxybusobject proxyObj,
+                                                             const char* ifaceName,
+                                                             const char* methodName,
+                                                             alljoyn_messagereceiver_replyhandler_ptr replyFunc,
+                                                             const alljoyn_msgarg args,
+                                                             size_t numArgs,
+                                                             void* context,
+                                                             uint32_t timeout,
+                                                             uint8_t flags);
+
+/**
+ * Make an asynchronous method call from this object
+ *
+ * @param proxyObj     ProxyBusObject on which to call the method
+ * @param method       Method being invoked.
+ * @param replyFunc    The function that is called to deliver the reply
+ * @param args         The arguments for the method call (can be NULL)
+ * @param numArgs      The number of arguments (can be 0)
+ * @param context      User-defined context that will be returned to the reply handler
+ *                     Recommended default NULL.
+ * @param timeout      Timeout specified in milliseconds to wait for a reply
+ *                     Recommended default #ALLJOYN_MESSAGE_DEFAULT_TIMEOUT which is 25000 ms
+ * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
+ *                     - If #ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+ *                     - If #ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+ *                     - If #ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+ *                     Set value to '0' for no flags.
+ * @return
+ *      - ER_OK if successful
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_proxybusobject proxyObj,
+                                                                    const alljoyn_interfacedescription_member method,
+                                                                    alljoyn_messagereceiver_replyhandler_ptr replyFunc,
+                                                                    const alljoyn_msgarg args,
+                                                                    size_t numArgs,
+                                                                    void* context,
+                                                                    uint32_t timeout,
+                                                                    uint8_t flags);
+
 /**
  * Returns a pointer to an interface description. Returns NULL if the object does not implement
  * the requested interface.
@@ -414,63 +477,6 @@ QStatus AddChild(const ProxyBusObject& child);
  *      - #ER_FAIL any other unexpected error.
  */
 QStatus RemoveChild(const char* path);
-
-/**
- * Make an asynchronous method call from this object
- *
- * @param method       Method being invoked.
- * @param receiver     The object to be called when the asych method call completes.
- * @param replyFunc    The function that is called to deliver the reply
- * @param args         The arguments for the method call (can be NULL)
- * @param numArgs      The number of arguments
- * @param receiver     The object to be called when the asych method call completes.
- * @param context      User-defined context that will be returned to the reply handler
- * @param timeout      Timeout specified in milliseconds to wait for a reply
- * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
- *                     - If #ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
- *                     - If #ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
- *                     - If #ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
- * @return
- *      - ER_OK if successful
- *      - An error status otherwise
- */
-QStatus MethodCallAsync(const InterfaceDescription::Member& method,
-                        MessageReceiver* receiver,
-                        MessageReceiver::ReplyHandler replyFunc,
-                        const MsgArg* args = NULL,
-                        size_t numArgs = 0,
-                        void* context = NULL,
-                        uint32_t timeout = DefaultCallTimeout,
-                        uint8_t flags = 0) const;
-
-/**
- * Make an asynchronous method call from this object
- *
- * @param ifaceName    Name of interface for method.
- * @param methodName   Name of method.
- * @param receiver     The object to be called when the asynchronous method call completes.
- * @param replyFunc    The function that is called to deliver the reply
- * @param args         The arguments for the method call (can be NULL)
- * @param numArgs      The number of arguments
- * @param context      User-defined context that will be returned to the reply handler
- * @param timeout      Timeout specified in milliseconds to wait for a reply
- * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
- *                     - If #ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
- *                     - If #ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
- *                     - If #ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
- * @return
- *      - ER_OK if successful
- *      - An error status otherwise
- */
-QStatus MethodCallAsync(const char* ifaceName,
-                        const char* methodName,
-                        MessageReceiver* receiver,
-                        MessageReceiver::ReplyHandler replyFunc,
-                        const MsgArg* args = NULL,
-                        size_t numArgs = 0,
-                        void* context = NULL,
-                        uint32_t timeout = DefaultCallTimeout,
-                        uint8_t flags = 0) const;
 
 /**
  * Initialize this proxy object from an XML string. Calling this method does several things:

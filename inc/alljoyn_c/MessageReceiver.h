@@ -51,18 +51,15 @@ typedef void (*alljoyn_messagereceiver_methodhandler_ptr)(alljoyn_busobject bus,
  * ReplyHandlers are %MessageReceiver methods which are called by AllJoyn library
  * to forward AllJoyn method_reply and error responses to AllJoyn library users.
  *
- * @param bus       The bus object triggering this callback.
  * @param message   The received message.
  * @param context   User-defined context passed to MethodCall and returned upon reply.
  */
-typedef void (*alljoyn_messagereceiver_replyhandler_ptr)(alljoyn_busobject bus,
-                                                         alljoyn_message message, void* context);
+typedef void (*alljoyn_messagereceiver_replyhandler_ptr)(alljoyn_message message, void* context);
 
 /**
  * SignalHandlers are %MessageReceiver methods which are called by AllJoyn library
  * to forward AllJoyn received signals to AllJoyn library users.
  *
- * @param bus       The bus object triggering this callback.
  * @param member    Method or signal interface member entry.
  * @param srcPath   Object path of signal emitter.
  * @param message   The received message.

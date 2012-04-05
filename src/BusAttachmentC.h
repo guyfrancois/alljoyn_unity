@@ -42,6 +42,14 @@
 
 namespace ajn {
 
+/*
+ * When setting up a joinsession callback handler for C a alljoyn_busattachment_joinsessioncb_ptr
+ * function pointer will be passed in as the callback handler.  AllJoyn expects
+ * a method handler.  The function handler will be passed as the part of the void*
+ * context that is passed to the internal callback handler and then is used to map
+ * the internal callback handler to the user defined joinsession callback function
+ * pointer.
+ */
 class JoinsessionCallbackContext {
   public:
     JoinsessionCallbackContext(alljoyn_busattachment_joinsessioncb_ptr joinsessioncb_ptr, void* context) :

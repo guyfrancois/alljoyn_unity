@@ -445,3 +445,95 @@ TEST_F(ProxyBusObjectTest, methodcall_member_noreply) {
 
     TearDownProxyBusObjectTestService();
 }
+QC_BOOL ping_methodcall_reply_handler_flag = QC_FALSE;
+QC_BOOL chirp_methodcall_reply_handler_flag = QC_FALSE;
+void ping_methodcall_reply_handler(alljoyn_message message, void* context)
+{
+    // TODO add alljoyn_message_gettype()
+    //EXPECT_EQ(ALLJOYN_MESSAGE_METHOD_RET, alljoyn_message_gettype(message));
+    EXPECT_STREQ("Input String to test context", (char*)context);
+    const char* str;
+    alljoyn_msgarg_get(alljoyn_message_getarg(message, 0), "s", &str);
+    EXPECT_STREQ("AllJoyn", str);
+    ping_methodcall_reply_handler_flag = QC_TRUE;
+}
+
+void chirp_methodcall_reply_handler(alljoyn_message message, void* context)
+{
+    //not yet used in any tests
+}
+
+TEST_F(ProxyBusObjectTest, methodcallasync) {
+    SetUpProxyBusObjectTestService();
+
+    alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, OBJECT_NAME, OBJECT_PATH, 0);
+    EXPECT_TRUE(proxyObj);
+    status = alljoyn_proxybusobject_introspectremoteobject(proxyObj);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_msgarg input = alljoyn_msgarg_create_and_set("s", "AllJoyn");
+
+    ping_methodcall_reply_handler_flag = QC_FALSE;
+
+    char context_str[64] = "Input String to test context";
+    status = alljoyn_proxybusobject_methodcallasync(proxyObj,
+                                                    INTERFACE_NAME,
+                                                    "ping",
+                                                    &ping_methodcall_reply_handler,
+                                                    input,
+                                                    1,
+                                                    context_str,
+                                                    ALLJOYN_MESSAGE_DEFAULT_TIMEOUT, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    alljoyn_msgarg_destroy(input);
+    alljoyn_proxybusobject_destroy(proxyObj);
+
+    for (size_t i = 0; i < 200; ++i) {
+        if (ping_methodcall_reply_handler_flag) {
+            break;
+        }
+        qcc::Sleep(5);
+    }
+    EXPECT_TRUE(ping_methodcall_reply_handler_flag);
+
+    TearDownProxyBusObjectTestService();
+}
+
+TEST_F(ProxyBusObjectTest, methodcallasync_member) {
+    SetUpProxyBusObjectTestService();
+
+    alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, OBJECT_NAME, OBJECT_PATH, 0);
+    EXPECT_TRUE(proxyObj);
+    status = alljoyn_proxybusobject_introspectremoteobject(proxyObj);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_msgarg input = alljoyn_msgarg_create_and_set("s", "AllJoyn");
+
+    ping_methodcall_reply_handler_flag = QC_FALSE;
+
+    /* register method handlers */
+    alljoyn_interfacedescription_member ping_member_from_proxy;
+    QC_BOOL foundMember = alljoyn_interfacedescription_getmember(alljoyn_proxybusobject_getinterface(proxyObj, INTERFACE_NAME), "ping", &ping_member_from_proxy);
+    EXPECT_TRUE(foundMember);
+    char context_str[64] = "Input String to test context";
+    status = alljoyn_proxybusobject_methodcallasync_member(proxyObj,
+                                                           ping_member_from_proxy,
+                                                           &ping_methodcall_reply_handler,
+                                                           input,
+                                                           1,
+                                                           context_str,
+                                                           ALLJOYN_MESSAGE_DEFAULT_TIMEOUT, 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    alljoyn_msgarg_destroy(input);
+    alljoyn_proxybusobject_destroy(proxyObj);
+
+    for (size_t i = 0; i < 200; ++i) {
+        if (ping_methodcall_reply_handler_flag) {
+            break;
+        }
+        qcc::Sleep(5);
+    }
+    EXPECT_TRUE(ping_methodcall_reply_handler_flag);
+
+    TearDownProxyBusObjectTestService();
+}

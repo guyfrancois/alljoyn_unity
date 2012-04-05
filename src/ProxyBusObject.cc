@@ -24,12 +24,14 @@
 #include <alljoyn/ProxyBusObject.h>
 #include <alljoyn_c/ProxyBusObject.h>
 #include "BusAttachmentC.h"
+#include "MessageReceiverC.h"
 
 #define QCC_MODULE "ALLJOYN"
 
 struct _alljoyn_proxybusobject_handle {
     /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
 };
+static ajn::MessageReceiverC msgReceverC;
 
 alljoyn_proxybusobject alljoyn_proxybusobject_create(alljoyn_busattachment bus, const char* service,
                                                      const char* path, alljoyn_sessionid sessionId)
@@ -122,6 +124,47 @@ QStatus alljoyn_proxybusobject_methodcall_member_noreply(alljoyn_proxybusobject 
 {
     return ((ajn::ProxyBusObject*)proxyObj)->MethodCall(*(const ajn::InterfaceDescription::Member*)(method.internal_member),
                                                         (const ajn::MsgArg*)args, numArgs, flags);
+}
+
+QStatus alljoyn_proxybusobject_methodcallasync(alljoyn_proxybusobject proxyObj,
+                                               const char* ifaceName,
+                                               const char* methodName,
+                                               alljoyn_messagereceiver_replyhandler_ptr replyFunc,
+                                               const alljoyn_msgarg args,
+                                               size_t numArgs,
+                                               void* context,
+                                               uint32_t timeout,
+                                               uint8_t flags)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->MethodCallAsync(ifaceName,
+                                                             methodName,
+                                                             &msgReceverC,
+                                                             static_cast<ajn::MessageReceiver::ReplyHandler>(&ajn::MessageReceiverC::ReplyHandler),
+                                                             (const ajn::MsgArg*)args,
+                                                             numArgs,
+                                                             new ajn::MessageReceiverReplyHandlerCallbackContext(replyFunc, context),
+                                                             timeout,
+                                                             flags);
+}
+
+QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_proxybusobject proxyObj,
+                                                      const alljoyn_interfacedescription_member method,
+                                                      /* MessageReceiver* receiver,*/
+                                                      alljoyn_messagereceiver_replyhandler_ptr replyFunc,
+                                                      const alljoyn_msgarg args,
+                                                      size_t numArgs,
+                                                      void* context,
+                                                      uint32_t timeout,
+                                                      uint8_t flags)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->MethodCallAsync(*(const ajn::InterfaceDescription::Member*)(method.internal_member),
+                                                             &msgReceverC,
+                                                             static_cast<ajn::MessageReceiver::ReplyHandler>(&ajn::MessageReceiverC::ReplyHandler),
+                                                             (const ajn::MsgArg*)args,
+                                                             numArgs,
+                                                             new ajn::MessageReceiverReplyHandlerCallbackContext(replyFunc, context),
+                                                             timeout,
+                                                             flags);
 }
 const alljoyn_interfacedescription alljoyn_proxybusobject_getinterface(alljoyn_proxybusobject proxyObj, const char* iface)
 {
