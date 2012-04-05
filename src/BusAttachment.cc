@@ -109,6 +109,18 @@ QStatus alljoyn_busattachment_joinsession(alljoyn_busattachment bus, const char*
                                                     *((ajn::SessionOpts*)opts));
 }
 
+QStatus alljoyn_busattachment_joinsessionasync(alljoyn_busattachment bus,
+                                               const char* sessionHost,
+                                               alljoyn_sessionport sessionPort,
+                                               alljoyn_sessionlistener listener,
+                                               const alljoyn_sessionopts opts,
+                                               alljoyn_busattachment_joinsessioncb_ptr callback,
+                                               void* context)
+{
+    return ((ajn::BusAttachmentC*)bus)->JoinSessionAsync(sessionHost, (ajn::SessionPort)sessionPort,
+                                                         (ajn::SessionListener*)listener, *((ajn::SessionOpts*)opts), (ajn::BusAttachmentC*)bus, (void*)new ajn::JoinsessionCallbackContext(callback, context));
+}
+
 QStatus alljoyn_busattachment_registerbusobject(alljoyn_busattachment bus, alljoyn_busobject obj)
 {
     return ((ajn::BusAttachmentC*)bus)->RegisterBusObject(*((ajn::BusObject*)obj));

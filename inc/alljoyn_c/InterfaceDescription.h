@@ -293,6 +293,28 @@ extern AJ_API QC_BOOL alljoyn_interfacedescription_issecure(const alljoyn_interf
 extern AJ_API QC_BOOL alljoyn_interfacedescription_eql(const alljoyn_interfacedescription one,
                                                        const alljoyn_interfacedescription other);
 
+/**
+ * Equality operation.
+ *
+ * @param one   alljoyn_interfacedescription_member to compare to other
+ * @param other alljoyn_interfacedescription_member to compare to one
+ *
+ * @return QC_TRUE if one == other
+ */
+extern AJ_API QC_BOOL alljoyn_interfacedescription_member_eql(const alljoyn_interfacedescription_member one,
+                                                              const alljoyn_interfacedescription_member other);
+
+/**
+ * Equality operation.
+ *
+ * @param one   alljoyn_interfacedescription_property to compare to other
+ * @param other alljoyn_interfacedescription_property to compare to one
+ *
+ * @return QC_TRUE if one == other
+ */
+extern AJ_API QC_BOOL alljoyn_interfacedescription_property_eql(const alljoyn_interfacedescription_property one,
+                                                                const alljoyn_interfacedescription_property other);
+
 #ifdef __cplusplus
 } /* extern "C" */
 #endif

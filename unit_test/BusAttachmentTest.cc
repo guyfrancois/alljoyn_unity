@@ -628,6 +628,7 @@ void registersignalHandler_Handler4(const alljoyn_interfacedescription_member* m
     EXPECT_STREQ("AllJoyn", alljoyn_msgarg_as_string(alljoyn_message_getarg(message, 0), 0));
     registersignalhandler_flag4 = true;
 }
+
 /*
  * this test is designed to verify that on unregistering a signal for one busobject
  * will not unregister the signal for other objects that have registered for

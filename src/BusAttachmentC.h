@@ -27,6 +27,7 @@
 #include <alljoyn_c/AjAPI.h>
 #include <alljoyn_c/KeyStoreListener.h>
 #include <alljoyn_c/AuthListener.h>
+#include <alljoyn_c/BusAttachment.h>
 #include <alljoyn_c/BusListener.h>
 #include <alljoyn_c/BusObject.h>
 #include <alljoyn_c/ProxyBusObject.h>
@@ -35,16 +36,28 @@
 #include <alljoyn_c/SessionListener.h>
 #include <alljoyn_c/SessionPortListener.h>
 
+#include <stdio.h>
 #include <Status.h>
 #include <map>
 
 namespace ajn {
+
+class JoinsessionCallbackContext {
+  public:
+    JoinsessionCallbackContext(alljoyn_busattachment_joinsessioncb_ptr joinsessioncb_ptr, void* context) :
+        joinsessioncb_ptr(joinsessioncb_ptr), context(context)
+    { }
+
+    alljoyn_busattachment_joinsessioncb_ptr joinsessioncb_ptr;
+    void* context;
+};
+
 /*
  * This class is a child of BusAttachment.  This class contains extra methods needed
  * to map 'C++' callback methods to 'C' callback functions used for signals and
  * other async method calls.
  */
-class BusAttachmentC : public BusAttachment {
+class BusAttachmentC : public BusAttachment, public BusAttachment::JoinSessionAsyncCB {
   public:
     BusAttachmentC(const char* applicationName, bool allowRemoteMessages = false) :
         BusAttachment(applicationName, allowRemoteMessages) { }
@@ -83,6 +96,11 @@ class BusAttachmentC : public BusAttachment {
      * @param receiver the object the signals will no longer be registered with.
      */
     QStatus UnregisterAllHandlersC(alljoyn_busobject receiver);
+
+    void JoinSessionCB(QStatus status, SessionId sessionId, const SessionOpts& opts, void* context) {
+        JoinsessionCallbackContext* in = (JoinsessionCallbackContext*)context;
+        (in->joinsessioncb_ptr)(status, (alljoyn_sessionid)sessionId, (const alljoyn_sessionopts)&opts, in->context);
+    }
 
   private:
     /**

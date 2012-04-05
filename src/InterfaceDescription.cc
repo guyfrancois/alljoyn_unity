@@ -222,3 +222,21 @@ QC_BOOL alljoyn_interfacedescription_eql(const alljoyn_interfacedescription one,
     return (_one == _other ? QC_TRUE : QC_FALSE);
 }
 
+QC_BOOL alljoyn_interfacedescription_member_eql(const alljoyn_interfacedescription_member one,
+                                                const alljoyn_interfacedescription_member other)
+{
+    const ajn::InterfaceDescription::Member _one = *((ajn::InterfaceDescription::Member*)one.internal_member);
+    const ajn::InterfaceDescription::Member _other = *((ajn::InterfaceDescription::Member*)other.internal_member);
+
+    return (_one == _other ? QC_TRUE : QC_FALSE);
+}
+
+QC_BOOL alljoyn_interfacedescription_property_eql(const alljoyn_interfacedescription_property one,
+                                                  const alljoyn_interfacedescription_property other)
+{
+    const ajn::InterfaceDescription::Property _one = *((ajn::InterfaceDescription::Property*)one.internal_property);
+    const ajn::InterfaceDescription::Property _other = *((ajn::InterfaceDescription::Property*)other.internal_property);
+
+    return (_one == _other ? QC_TRUE : QC_FALSE);
+}
+

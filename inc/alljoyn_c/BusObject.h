@@ -132,6 +132,21 @@ extern AJ_API size_t alljoyn_busobject_getname(alljoyn_busobject bus, char* buff
 extern AJ_API QStatus alljoyn_busobject_addinterface(alljoyn_busobject bus, const alljoyn_interfacedescription iface);
 
 /**
+ * Add a method handler to this object. The interface for the method handler must have already
+ * been added by calling AddInterface().
+ *
+ * @param member   Interface member implemented by handler.
+ * @param handler  Method handler.
+ * @param context  An optional context. This is mainly intended for implementing language
+ *                 bindings and should normally be NULL.
+ *
+ * @return
+ *      - #ER_OK if the method handler was added.
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_busobject_addmethodhandler(alljoyn_busobject bus, const alljoyn_interfacedescription_member member, alljoyn_messagereceiver_methodhandler_ptr handler, void* context);
+
+/**
  * Add a set of method handers at once.
  *
  * @param bus          The bus on which to add method handlers.
@@ -215,21 +230,6 @@ extern AJ_API QStatus alljoyn_busobject_signal(alljoyn_busobject bus,
                                                uint8_t flags);
 #if 0
 /* TODO list of C++ methods that have not be mapped to the C yet */
-/**
- * Add a method handler to this object. The interface for the method handler must have already
- * been added by calling AddInterface().
- *
- * @param member   Interface member implemented by handler.
- * @param handler  Method handler.
- * @param context  An optional context. This is mainly intended for implementing language
- *                 bindings and should normally be NULL.
- *
- * @return
- *      - #ER_OK if the method handler was added.
- *      - An error status otherwise
- */
-QStatus AddMethodHandler(const InterfaceDescription::Member* member, MessageReceiver::MethodHandler handler, void* context = NULL);
-
 /**
  * Returns a description of the object in the D-Bus introspection XML format.
  * This method can be overridden by derived classes in order to customize the

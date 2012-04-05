@@ -45,6 +45,11 @@ typedef struct _alljoyn_busattachment_handle*               alljoyn_busattachmen
 #endif
 
 /**
+ * Type for the joinsession callback used with the asynchronous joinsession request.
+ */
+typedef void (*alljoyn_busattachment_joinsessioncb_ptr)(QStatus status, alljoyn_sessionid sessionId, const alljoyn_sessionopts opts, void* context);
+
+/**
  * Allocate a BusAttachment.
  *
  * @note Any BusAttachment allocated using this function must be freed using
@@ -361,6 +366,35 @@ extern AJ_API const alljoyn_interfacedescription alljoyn_busattachment_getinterf
 extern AJ_API QStatus alljoyn_busattachment_joinsession(alljoyn_busattachment bus, const char* sessionHost,
                                                         alljoyn_sessionport sessionPort, alljoyn_sessionlistener listener,
                                                         alljoyn_sessionid* sessionId, alljoyn_sessionopts opts);
+
+
+/**
+ * Join a session.
+ * This method is a shortcut/helper that issues an org.alljoyn.Bus.JoinSession method call to the local daemon
+ * and interprets the response.
+ *
+ * This call executes asynchronously. When the JoinSession response is received, the callback will be called.
+ *
+ * @param[in]  bus              BusAttachment with which to join a session.
+ * @param[in]  sessionHost      Bus name of attachment that is hosting the session to be joined.
+ * @param[in]  sessionPort      SessionPort of sessionHost to be joined.
+ * @param[in]  listener         Optional listener called when session related events occur. May be NULL.
+ * @param[in]  opts             Session options.
+ * @param[in]  callback         Called when JoinSession response is received.
+ * @param[in]  context          User defined context which will be passed as-is to callback.
+ *
+ * @return
+ *      - #ER_OK iff method call to local daemon response was was successful.
+ *      - #ER_BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+ *      - Other error status codes indicating a failure.
+ */
+extern AJ_API QStatus alljoyn_busattachment_joinsessionasync(alljoyn_busattachment bus,
+                                                             const char* sessionHost,
+                                                             alljoyn_sessionport sessionPort,
+                                                             alljoyn_sessionlistener listener,
+                                                             const alljoyn_sessionopts opts,
+                                                             alljoyn_busattachment_joinsessioncb_ptr callback,
+                                                             void* context);
 
 /**
  * Register a BusObject
