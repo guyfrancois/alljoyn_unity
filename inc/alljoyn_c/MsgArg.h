@@ -388,30 +388,35 @@ extern AJ_API QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t
 /**
  * Returns an XML string representation of this type
  *
- * @param indent  Number of spaces to indent the generated xml
+ * @param[in]  arg    The message arg to generate the XML string representation of
+ * @param[out] str    The character string that will hold the XML string
+ *               representation of the alljoyn_msgarg
+ * @param[in]  buf    The size of the char* array that will hold the string
+ * @param[in]  indent Number of spaces to indent the generated xml (default value 0)
  *
- * @return  The XML string
- *
- * This function copies the null-terminated string into a newly allocated string.
- * The string is allocated using malloc. The return string must be freed by the
- * caller.
+ * @return  The number of characters (excluding the terminating null byte) which
+ *          would have been written to the final string if enough space
+ *          available.  Thus returning a value of buf or larger means the output
+ *          was truncated.
  */
-extern AJ_API char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent);
+extern AJ_API size_t alljoyn_msgarg_tostring(alljoyn_msgarg arg, char* str, size_t buf, size_t indent);
 
 /**
  * Returns an XML string representation for an array of message args.
  *
- * @param args     The message arg array.
- * @param numArgs  The size of the message arg array.
- * @param indent   Number of spaces to indent the generated xml
+ * @param[in]  args     The message arg array to generate the XML string representation of
+ * @param[in]  numArgs  The size of the message arg array.
+ * @param[out] str      The character string that will hold the XML string
+ *                      representation of the alljoyn_msgarg array
+ * @param[in]  buf      The size of the char* array that will hold the string
+ * @param[in]  indent   Number of spaces to indent the generated xml (default value 0)
  *
- * @return The XML string representation of the message args.
- *
- * This function copies the null-terminated string into a newly allocated string.
- * The string is allocated using malloc. The return string must be freed by the
- * caller.
+ * @return  The number of characters (excluding the terminating null byte) which
+ *          would have been written to the final string if enough space is
+ *          available.  Thus returning a value of buf or larger means the output
+ *          was truncated.
  */
-extern AJ_API char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent);
+extern AJ_API size_t alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, char* str, size_t buf, size_t indent);
 
 /**
  * Returns a string for the signature of this value
@@ -494,22 +499,6 @@ extern AJ_API void alljoyn_msgarg_clear(alljoyn_msgarg arg);
  */
 extern AJ_API void alljoyn_msgarg_stabilize(alljoyn_msgarg arg);
 
-#if 0
-/**
- * This method sets the ownership flags on this MsgArg, and optionally all
- * MsgArgs subordinate to this MsgArg. By setting the ownership flags the
- * caller can transfer responsibility for freeing nested data referenced
- * by this MsgArg to the MsgArg's destructor. The #OwnsArgs flag is
- * particularly useful for managing complex data structures such as arrays
- * of structs, nested structs, and variants where the inner MsgArgs are
- * dynamically allocated. The #OwnsData flag is useful for freeing
- * dynamically allocated strings, byte arrays, etc,.
- *
- * @param flags  A logical or of the applicable ownership flags (OwnsArgs and OwnsData).
- * @param deep   If true recursively sets the ownership flags on all MsgArgs owned by this MsgArg.
- */
-extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t flags, QC_BOOL deep);
-#endif
 
 /*******************************************************************************
  * This set of functions were originally designed for the alljoyn_unity bindings

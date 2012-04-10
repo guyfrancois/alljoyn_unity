@@ -43,6 +43,15 @@ typedef struct _alljoyn_busattachment_handle*               alljoyn_busattachmen
 #endif
 
 /**
+ * Callback registered with alljoyn_proxybusobject_introspectremoteobjectasync()
+ *
+ * @param status    ER_OK if successful
+ * @param obj       Remote bus object that was introspected
+ * @param context   Context passed in IntrospectRemoteObjectAsync()
+ */
+typedef void (*alljoyn_proxybusobject_listener_introspectcb_ptr)(QStatus status, alljoyn_proxybusobject obj, void* context);
+
+/**
  * Create an empty proxy object that refers to an object at given remote service name. Note
  * that the created proxy object does not contain information about the interfaces that the
  * actual remote object implements with the exception that org.freedesktop.DBus.Peer
@@ -116,6 +125,27 @@ extern AJ_API QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxyb
  */
 extern AJ_API QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj);
 
+/**
+ * Query the remote object on the bus to determine the interfaces and
+ * children that exist. Use this information to populate this object's
+ * interfaces and children.
+ *
+ * This call executes asynchronously. When the introspection response
+ * is received from the actual remote object, this ProxyBusObject will
+ * be updated and the callback will be called.
+ *
+ * This call exists primarily to allow introspection of remote objects
+ * to be done inside AllJoyn method/signal/reply handlers and ObjectRegistered
+ * callbacks.
+ *
+ * @param proxyObj    The proxy bus object that will query the remote object.
+ * @param callback  Method on listener that will be called.
+ * @param context   User defined context which will be passed as-is to callback.
+ * @return
+ *      - #ER_OK if successful.
+ *      - An error status otherwise
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_introspectremoteobjectasync(alljoyn_proxybusobject proxyObj, alljoyn_proxybusobject_listener_introspectcb_ptr callback, void* context);
 /**
  * Get a property from an interface on the remote object.
  *
@@ -332,6 +362,32 @@ extern AJ_API QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_prox
                                                                     uint8_t flags);
 
 /**
+ * Initialize this proxy object from an XML string. Calling this method does several things:
+ *
+ *  -# Create and register any new InterfaceDescription(s) that are mentioned in the XML.
+ *     (Interfaces that are already registered with the bus are left "as-is".)
+ *  -# Add all the interfaces mentioned in the introspection data to this ProxyBusObject.
+ *  -# Recursively create any child ProxyBusObject(s) and create/add their associated @n
+ *     interfaces as mentioned in the XML. Then add the descendant object(s) to the appropriate
+ *     descendant of this ProxyBusObject (in the children collection). If the named child object
+ *     already exists as a child of the appropriate ProxyBusObject, then it is updated
+ *     to include any new interfaces or children mentioned in the XML.
+ *
+ * Note that when this method fails during parsing, the return code will be set accordingly.
+ * However, any interfaces which were successfully parsed prior to the failure
+ * may be registered with the bus. Similarly, any objects that were successfully created
+ * before the failure will exist in this object's set of children.
+ *
+ * @param xml         An XML string in DBus introspection format.
+ * @param identifier  An optional identifying string to include in error logging messages.
+ *
+ * @return
+ *      - #ER_OK if parsing is completely successful.
+ *      - An error status otherwise.
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_parsexml(alljoyn_proxybusobject proxyObj, const char* xml, const char* identifier);
+
+/**
  * Returns a pointer to an interface description. Returns NULL if the object does not implement
  * the requested interface.
  *
@@ -397,29 +453,15 @@ extern AJ_API alljoyn_sessionid alljoyn_proxybusobject_getsessionid(alljoyn_prox
  */
 extern AJ_API QC_BOOL alljoyn_proxybusobject_implementsinterface(alljoyn_proxybusobject proxyObj, const char* iface);
 
+/**
+ * Indicates if this is a valid (usable) proxy bus object.
+ *
+ * @return true if a valid proxy bus object, false otherwise.
+ */
+extern AJ_API QC_BOOL alljoyn_proxybusobj_isvalid(alljoyn_proxybusobject proxyObj);
+
 #if 0
 /*TODO create C bindings for the following C++ methods */
-/**
- * Query the remote object on the bus to determine the interfaces and
- * children that exist. Use this information to populate this object's
- * interfaces and children.
- *
- * This call executes asynchronously. When the introspection response
- * is received from the actual remote object, this ProxyBusObject will
- * be updated and the callback will be called.
- *
- * This call exists primarily to allow introspection of remote objects
- * to be done inside AllJoyn method/signal/reply handlers and ObjectRegistered
- * callbacks.
- *
- * @param listener  Pointer to the object that will receive the callback.
- * @param callback  Method on listener that will be called.
- * @param context   User defined context which will be passed as-is to callback.
- * @return
- *      - #ER_OK if successful.
- *      - An error status otherwise
- */
-QStatus IntrospectRemoteObjectAsync(ProxyBusObject::Listener* listener, ProxyBusObject::Listener::IntrospectCB callback, void* context);
 
 /**
  * Returns an array of ProxyBusObjects for the children of this %ProxyBusObject.
@@ -479,32 +521,6 @@ QStatus AddChild(const ProxyBusObject& child);
 QStatus RemoveChild(const char* path);
 
 /**
- * Initialize this proxy object from an XML string. Calling this method does several things:
- *
- *  -# Create and register any new InterfaceDescription(s) that are mentioned in the XML.
- *     (Interfaces that are already registered with the bus are left "as-is".)
- *  -# Add all the interfaces mentioned in the introspection data to this ProxyBusObject.
- *  -# Recursively create any child ProxyBusObject(s) and create/add their associated @n
- *     interfaces as mentioned in the XML. Then add the descendant object(s) to the appropriate
- *     descendant of this ProxyBusObject (in the children collection). If the named child object
- *     already exists as a child of the appropriate ProxyBusObject, then it is updated
- *     to include any new interfaces or children mentioned in the XML.
- *
- * Note that when this method fails during parsing, the return code will be set accordingly.
- * However, any interfaces which were successfully parsed prior to the failure
- * may be registered with the bus. Similarly, any objects that were successfully created
- * before the failure will exist in this object's set of children.
- *
- * @param xml         An XML string in DBus introspection format.
- * @param identifier  An optional identifying string to include in error logging messages.
- *
- * @return
- *      - #ER_OK if parsing is completely successful.
- *      - An error status otherwise.
- */
-QStatus ParseXml(const char* xml, const char* identifier = NULL);
-
-/**
  * Explicitly secure the connection to the remote peer for this proxy object. Peer-to-peer
  * connections can only be secured if EnablePeerSecurity() was previously called on the bus
  * attachment for this proxy object. If the peer-to-peer connection is already secure this
@@ -559,15 +575,6 @@ ProxyBusObject& operator=(const ProxyBusObject& other);
  * @param other  The object being copied from.
  */
 ProxyBusObject(const ProxyBusObject &other);
-
-/**
- * Indicates if this is a valid (usable) proxy bus object.
- *
- * @return true if a valid proxy bus object, false otherwise.
- */
-bool IsValid() const {
-    return bus != NULL;
-}
 
 #endif
 

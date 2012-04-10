@@ -85,7 +85,7 @@ class BusAttachmentC : public BusAttachment, public BusAttachment::JoinSessionAs
      * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
      * @return #ER_OK
      */
-    QStatus RegisterSignalHandlerC(alljoyn_busobject receiver, alljoyn_messagereceiver_signalhandler_ptr signalHandler, const alljoyn_interfacedescription_member member, const char* srcPath);
+    QStatus RegisterSignalHandlerC(alljoyn_messagereceiver_signalhandler_ptr signalHandler, const alljoyn_interfacedescription_member member, const char* srcPath);
 
     /**
      * remove the 'C' style SignalHandler from the map and Unregister the 'C++' SignalHandler.
@@ -96,14 +96,14 @@ class BusAttachmentC : public BusAttachment, public BusAttachment::JoinSessionAs
      * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
      * @return #ER_OK
      */
-    QStatus UnregisterSignalHandlerC(alljoyn_busobject receiver, alljoyn_messagereceiver_signalhandler_ptr signalHandler, const alljoyn_interfacedescription_member member, const char* srcPath);
+    QStatus UnregisterSignalHandlerC(alljoyn_messagereceiver_signalhandler_ptr signalHandler, const alljoyn_interfacedescription_member member, const char* srcPath);
 
     /**
      * remove all SignalHandlers associated with the receiver alljoyn_busobject
      *
      * @param receiver the object the signals will no longer be registered with.
      */
-    QStatus UnregisterAllHandlersC(alljoyn_busobject receiver);
+    QStatus UnregisterAllHandlersC();
 
     void JoinSessionCB(QStatus status, SessionId sessionId, const SessionOpts& opts, void* context) {
         JoinsessionCallbackContext* in = (JoinsessionCallbackContext*)context;
@@ -112,19 +112,11 @@ class BusAttachmentC : public BusAttachment, public BusAttachment::JoinSessionAs
 
   private:
     /**
-     * remove all SignalHandlers associated with this BusAttachment
-     *
-     * This method is called by the C function alljoyn_busattachment_destroy
-     * this will ensure that all signal handlers mapped to the signalHandlerMap
-     * that are associated with this BusAttachment are removed before the
-     * BusAttachment is destroyed.
-     */
-    void UnregisterAllHandlersC();
-
-    /**
      * Convert the 'C++' SignalHandler callback to a 'C' callback function
      */
     void SignalHandlerRemap(const InterfaceDescription::Member* member, const char* srcPath, Message& message);
+
+
 };
 }
 #endif

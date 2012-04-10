@@ -25,13 +25,17 @@
 #include <alljoyn_c/ProxyBusObject.h>
 #include "BusAttachmentC.h"
 #include "MessageReceiverC.h"
+#include "ProxyBusObjectListenerC.h"
 
 #define QCC_MODULE "ALLJOYN"
 
 struct _alljoyn_proxybusobject_handle {
     /* Empty by design, this is just to allow the type restrictions to save coders from themselves */
 };
+
+/* static instances of classes used for Async CallBacks */
 static ajn::MessageReceiverC msgReceverC;
+static ajn::ProxyBusObjectListenerC proxyObjListener;
 
 alljoyn_proxybusobject alljoyn_proxybusobject_create(alljoyn_busattachment bus, const char* service,
                                                      const char* path, alljoyn_sessionid sessionId)
@@ -59,6 +63,13 @@ QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxybusobject proxy
 QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj)
 {
     return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObject();
+}
+
+QStatus alljoyn_proxybusobject_introspectremoteobjectasync(alljoyn_proxybusobject proxyObj, alljoyn_proxybusobject_listener_introspectcb_ptr callback, void* context)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObjectAsync(&proxyObjListener,
+                                                                         static_cast<ajn::ProxyBusObject::Listener::IntrospectCB>(&ajn::ProxyBusObjectListenerC::IntrospectCB),
+                                                                         (void*) new ajn::IntrospectCallbackContext(callback, context));
 }
 
 QStatus alljoyn_proxybusobject_getproperty(alljoyn_proxybusobject proxyObj, const char* iface, const char* property, alljoyn_msgarg value)
@@ -166,10 +177,17 @@ QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_proxybusobject pro
                                                              timeout,
                                                              flags);
 }
+
+QStatus alljoyn_proxybusobject_parsexml(alljoyn_proxybusobject proxyObj, const char* xml, const char* identifier)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->ParseXml(xml, identifier);
+}
+
 const alljoyn_interfacedescription alljoyn_proxybusobject_getinterface(alljoyn_proxybusobject proxyObj, const char* iface)
 {
     return (const alljoyn_interfacedescription)((ajn::ProxyBusObject*)proxyObj)->GetInterface(iface);
 }
+
 size_t alljoyn_proxybusobject_getinterfaces(alljoyn_proxybusobject proxyObj, const alljoyn_interfacedescription* ifaces, size_t numIfaces)
 {
     return ((ajn::ProxyBusObject*)proxyObj)->GetInterfaces(((const ajn::InterfaceDescription**)ifaces), numIfaces);
@@ -193,4 +211,9 @@ alljoyn_sessionid alljoyn_proxybusobject_getsessionid(alljoyn_proxybusobject pro
 QC_BOOL alljoyn_proxybusobject_implementsinterface(alljoyn_proxybusobject proxyObj, const char* iface)
 {
     return (QC_BOOL)((ajn::ProxyBusObject*)proxyObj)->ImplementsInterface(iface);
+}
+
+QC_BOOL alljoyn_proxybusobj_isvalid(alljoyn_proxybusobject proxyObj)
+{
+    return (QC_BOOL)((ajn::ProxyBusObject*)proxyObj)->IsValid();
 }

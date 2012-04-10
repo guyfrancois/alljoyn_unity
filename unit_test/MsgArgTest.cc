@@ -464,18 +464,37 @@ TEST(MsgArgTest, tostring) {
     status = alljoyn_msgarg_array_set(arg, &numArgs, "issi", 1, "two", "three", 4);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     EXPECT_EQ((size_t)4,  numArgs);
-    char* str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 0), 0);
+
+    size_t buf;
+    char* str;
+    buf = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 0), NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 0), str, buf, 0);
     EXPECT_STREQ("<int32>1</int32>", str);
     free(str);
-    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 1), 0);
+    buf = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 1), NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 1), str, buf, 0);
     EXPECT_STREQ("<string>two</string>", str);
     free(str);
-    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 2), 0);
+    buf = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 2), NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 2), str, buf, 0);
     EXPECT_STREQ("<string>three</string>", str);
     free(str);
-    str = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 3), 0);
+    buf = alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 3), NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_msgarg_tostring(alljoyn_msgarg_array_element(arg, 3), str, buf, 0);
     EXPECT_STREQ("<int32>4</int32>", str);
-    char* val = alljoyn_msgarg_array_tostring(arg, 4, 0);
+    free(str);
+    buf = alljoyn_msgarg_array_tostring(arg, 4, NULL, 0, 0);
+    buf++;
+    char* val = (char*)malloc(sizeof(char) * buf);
+    alljoyn_msgarg_array_tostring(arg, 4, val, buf, 0);
     EXPECT_STREQ("<int32>1</int32>\n<string>two</string>\n<string>three</string>\n<int32>4</int32>\n", val);
     free(val);
 
@@ -636,7 +655,7 @@ TEST(MsgArgTest, null_pointer_test) {
     EXPECT_NO_FATAL_FAILURE(status = alljoyn_msgarg_array_get(arg_array, 1, "i", &i));
     EXPECT_EQ(ER_BAD_ARG_1, status) << "  Actual Status: " << QCC_StatusText(status);
 
-    EXPECT_TRUE(NULL == alljoyn_msgarg_tostring(arg, 0));
+    EXPECT_EQ((size_t)0, alljoyn_msgarg_tostring(arg, NULL, 0, 0));
     EXPECT_TRUE(NULL == alljoyn_msgarg_signature(arg));
     EXPECT_TRUE(NULL == alljoyn_msgarg_array_signature(arg_array, numArgs));
     EXPECT_FALSE(alljoyn_msgarg_hassignature(arg, "i"));

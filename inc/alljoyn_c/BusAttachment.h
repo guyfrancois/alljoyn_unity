@@ -683,7 +683,6 @@ extern AJ_API const char* alljoyn_busattachment_getglobalguidstring(const alljoy
  * type.
  */
 extern AJ_API QStatus alljoyn_busattachment_registersignalhandler(alljoyn_busattachment bus,
-                                                                  alljoyn_busobject receiver,
                                                                   alljoyn_messagereceiver_signalhandler_ptr signal_handler,
                                                                   const alljoyn_interfacedescription_member member,
                                                                   const char* srcPath);
@@ -701,7 +700,6 @@ extern AJ_API QStatus alljoyn_busattachment_registersignalhandler(alljoyn_busatt
  * @return #ER_OK
  */
 extern AJ_API QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busattachment bus,
-                                                                    alljoyn_busobject receiver,
                                                                     alljoyn_messagereceiver_signalhandler_ptr signal_handler,
                                                                     const alljoyn_interfacedescription_member member,
                                                                     const char* srcPath);
@@ -713,7 +711,7 @@ extern AJ_API QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busa
  * @param receiver       The message receiver that is being unregistered.
  * @return ER_OK if successful.
  */
-extern AJ_API QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus, alljoyn_busobject receiver);
+extern AJ_API QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus);
 /**
  * Set a key store listener to listen for key store load and store requests.
  * This overrides the internal key store listener.
@@ -982,20 +980,6 @@ extern AJ_API QStatus alljoyn_busattachment_setdaemondebug(alljoyn_busattachment
  * @return  The current timestamp in milliseconds.
  */
 extern AJ_API uint32_t alljoyn_busattachment_gettimestamp();
-
-#if 0
-/* TODO? */
-
-QStatus JoinSessionAsync(const char* sessionHost,
-                         SessionPort sessionPort,
-                         SessionListener* listener,
-                         const SessionOpts& opts,
-                         BusAttachment::JoinSessionAsyncCB* callback,
-                         void* context = NULL);
-
-
-QStatus GetSessionFd(SessionId sessionId, qcc::SocketFd& sockFd);
-#endif
 
 #ifdef __cplusplus
 } /* extern "C" */

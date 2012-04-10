@@ -190,20 +190,38 @@ QStatus alljoyn_msgarg_array_get(const alljoyn_msgarg args, size_t numArgs, cons
     return status;
 }
 
-char* alljoyn_msgarg_tostring(alljoyn_msgarg arg, size_t indent)
+size_t alljoyn_msgarg_tostring(alljoyn_msgarg arg, char* str, size_t buf, size_t indent)
 {
     if (!arg) {
-        return NULL;
+        return (size_t)0;
     }
-    return strdup(((ajn::MsgArgC*)arg)->ToString(indent).c_str());
+    qcc::String s = ((ajn::MsgArgC*)arg)->ToString(indent);
+    /*
+     * it is ok to send in NULL for str when the user is only interested in the
+     * size of the resulting string.
+     */
+    if (str) {
+        strncpy(str, s.c_str(), buf);
+        str[buf] = '\0'; //prevent sting not being null terminated.
+    }
+    return s.size();
 }
 
-char* alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, size_t indent)
+size_t alljoyn_msgarg_array_tostring(const alljoyn_msgarg args, size_t numArgs, char* str, size_t buf, size_t indent)
 {
     if (!args) {
-        return NULL;
+        return (size_t)0;
     }
-    return strdup(((ajn::MsgArgC*)args)->ToString((ajn::MsgArgC*)args, numArgs, indent).c_str());
+    qcc::String s = ((ajn::MsgArgC*)args)->ToString((ajn::MsgArgC*)args, numArgs, indent);
+    /*
+     * it is ok to send in NULL for str when the user is only interested in the
+     * size of the resulting string.
+     */
+    if (str) {
+        strncpy(str, s.c_str(), buf);
+        str[buf] = '\0'; //prevent sting not being null terminated.
+    }
+    return s.size();
 }
 
 const char* alljoyn_msgarg_signature(alljoyn_msgarg arg)
@@ -296,15 +314,6 @@ void alljoyn_msgarg_stabilize(alljoyn_msgarg arg)
     }
     ((ajn::MsgArgC*)arg)->Stabilize();
 }
-
-#if 0
-extern AJ_API void alljoyn_msgarg_setownershipflags(alljoyn_msgarg arg, uint8_t flags, QC_BOOL deep) {
-    ((ajn::MsgArgC*)arg)->flags |= (flags & (((ajn::MsgArgC*)arg)->OwnsData | ((ajn::MsgArgC*)arg)->OwnsArgs));
-    if (deep) {
-        ((ajn::MsgArgC*)arg)->SetOwnershipDeepC();
-    }
-}
-#endif
 
 /*******************************************************************************
  * This set of functions were originally designed for the alljoyn_unity bindings

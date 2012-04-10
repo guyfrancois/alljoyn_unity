@@ -320,32 +320,28 @@ QStatus alljoyn_busattachment_getpeerguid(alljoyn_busattachment bus, const char*
 }
 
 QStatus alljoyn_busattachment_registersignalhandler(alljoyn_busattachment bus,
-                                                    alljoyn_busobject receiver,
                                                     alljoyn_messagereceiver_signalhandler_ptr signal_handler,
                                                     const alljoyn_interfacedescription_member member,
                                                     const char* srcPath)
 {
-    return ((ajn::BusAttachmentC*)bus)->RegisterSignalHandlerC(receiver,
-                                                               signal_handler,
+    return ((ajn::BusAttachmentC*)bus)->RegisterSignalHandlerC(signal_handler,
                                                                member,
                                                                srcPath);
 }
 
 QStatus alljoyn_busattachment_unregistersignalhandler(alljoyn_busattachment bus,
-                                                      alljoyn_busobject receiver,
                                                       alljoyn_messagereceiver_signalhandler_ptr signal_handler,
                                                       const alljoyn_interfacedescription_member member,
                                                       const char* srcPath)
 {
-    return ((ajn::BusAttachmentC*)bus)->UnregisterSignalHandlerC(receiver,
-                                                                 signal_handler,
+    return ((ajn::BusAttachmentC*)bus)->UnregisterSignalHandlerC(signal_handler,
                                                                  member,
                                                                  srcPath);
 }
 
-QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus, alljoyn_busobject receiver)
+QStatus alljoyn_busattachment_unregisterallhandlers(alljoyn_busattachment bus)
 {
-    return ((ajn::BusAttachmentC*)bus)->UnregisterAllHandlersC(receiver);
+    return ((ajn::BusAttachmentC*)bus)->UnregisterAllHandlersC();
 }
 
 QStatus alljoyn_busattachment_setdaemondebug(alljoyn_busattachment bus, const char* module, uint32_t level)

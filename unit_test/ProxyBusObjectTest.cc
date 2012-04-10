@@ -198,6 +198,51 @@ TEST_F(ProxyBusObjectTest, introspectremoteobject) {
     EXPECT_NO_FATAL_FAILURE(alljoyn_proxybusobject_destroy(proxyObj));
 }
 
+QC_BOOL introspect_callback_flag = QC_FALSE;
+
+void introspect_callback(QStatus status, alljoyn_proxybusobject obj, void* context)
+{
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(obj, "org.freedesktop.DBus.Introspectable");
+    char* str = alljoyn_interfacedescription_introspect(intf, 0);
+    EXPECT_STREQ(
+        "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
+        "  <method name=\"Introspect\">\n"
+        "    <arg name=\"data\" type=\"s\" direction=\"out\"/>\n"
+        "  </method>\n"
+        "</interface>\n",
+        str);
+    free(str);
+    introspect_callback_flag = QC_TRUE;
+}
+
+TEST_F(ProxyBusObjectTest, introspectremoteobjectasync) {
+    alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, "org.alljoyn.Bus", "/org/alljoyn/Bus", 0);
+    EXPECT_TRUE(proxyObj);
+    introspect_callback_flag = QC_FALSE;
+    status = alljoyn_proxybusobject_introspectremoteobjectasync(proxyObj, &introspect_callback, NULL);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    for (size_t i = 0; i < 200; ++i) {
+        if (introspect_callback_flag) {
+            break;
+        }
+        qcc::Sleep(5);
+    }
+    EXPECT_TRUE(introspect_callback_flag);
+    alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(proxyObj, "org.freedesktop.DBus.Introspectable");
+    char* str = alljoyn_interfacedescription_introspect(intf, 0);
+    EXPECT_STREQ(
+        "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
+        "  <method name=\"Introspect\">\n"
+        "    <arg name=\"data\" type=\"s\" direction=\"out\"/>\n"
+        "  </method>\n"
+        "</interface>\n",
+        str);
+    free(str);
+    EXPECT_NO_FATAL_FAILURE(alljoyn_proxybusobject_destroy(proxyObj));
+}
+
+
 TEST_F(ProxyBusObjectTest, getinterface_getinterfaces) {
     alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, "org.alljoyn.Bus", "/org/alljoyn/Bus", 0);
     EXPECT_TRUE(proxyObj);
@@ -450,11 +495,15 @@ QC_BOOL chirp_methodcall_reply_handler_flag = QC_FALSE;
 void ping_methodcall_reply_handler(alljoyn_message message, void* context)
 {
     // TODO add alljoyn_message_gettype()
-    //EXPECT_EQ(ALLJOYN_MESSAGE_METHOD_RET, alljoyn_message_gettype(message));
+    EXPECT_EQ(ALLJOYN_MESSAGE_METHOD_RET, alljoyn_message_gettype(message));
     EXPECT_STREQ("Input String to test context", (char*)context);
     const char* str;
     alljoyn_msgarg_get(alljoyn_message_getarg(message, 0), "s", &str);
     EXPECT_STREQ("AllJoyn", str);
+
+    alljoyn_message_parseargs(message, "s", &str);
+    EXPECT_STREQ("AllJoyn", str);
+
     ping_methodcall_reply_handler_flag = QC_TRUE;
 }
 
