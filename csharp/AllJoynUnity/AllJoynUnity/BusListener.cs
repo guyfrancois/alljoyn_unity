@@ -50,12 +50,19 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalListenerRegisteredDelegate(IntPtr context, IntPtr bus);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalListenerUnregisteredDelegate(IntPtr context);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalFoundAdvertisedNameDelegate(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalLostAdvertisedNameDelegate(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalNameOwnerChangedDelegate(IntPtr context, IntPtr busName, IntPtr previousOwner, IntPtr newOwner);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalBusStoppingDelegate(IntPtr context);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalBusDisconnectedDelegate(IntPtr context);
 			#endregion
 

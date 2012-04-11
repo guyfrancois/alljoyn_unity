@@ -55,8 +55,11 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSessionLost(IntPtr context, uint sessionId);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSessionMemberRemoved(IntPtr context, uint sessionId, IntPtr uniqueName);
 			#endregion
 

@@ -40,7 +40,9 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate int InternalLoadRequest(IntPtr context, IntPtr keyStore);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate int InternalStoreRequest(IntPtr context, IntPtr keyStore);
 			#endregion
 

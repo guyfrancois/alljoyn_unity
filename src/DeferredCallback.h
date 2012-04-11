@@ -47,8 +47,12 @@ class DeferredCallback {
     static int TriggerCallbacks()
     {
         int ret = 0;
-        while (!sPendingCallbacks.empty()) {
+        while (true) {
             sCallbackListLock.Lock(MUTEX_CONTEXT);
+            if (sPendingCallbacks.empty()) {
+                sCallbackListLock.Unlock(MUTEX_CONTEXT);
+                break;
+            }
             DeferredCallback* cb = sPendingCallbacks.front();
             sPendingCallbacks.pop_front();
             sCallbackListLock.Unlock(MUTEX_CONTEXT);
@@ -110,7 +114,32 @@ class DeferredCallback_1 : public DeferredCallback {
         sPendingCallbacks.push_back(this);
         sCallbackListLock.Unlock(MUTEX_CONTEXT);
         if (!IsMainThread()) Wait();
-        return _callback(_param1);
+        R ret = _callback(_param1);
+        return ret;
+    }
+
+  protected:
+    DeferredCallback_1_Callback _callback;
+    T _param1;
+};
+
+template <typename T>
+class DeferredCallback_1<void, T> : public DeferredCallback {
+  public:
+    typedef void (*DeferredCallback_1_Callback)(T arg1);
+
+    DeferredCallback_1(DeferredCallback_1_Callback callback, T param1) : _callback(callback), _param1(param1)
+    {
+    }
+
+    virtual void Execute()
+    {
+        ScopeFinishedMarker finisher(&finished);
+        sCallbackListLock.Lock(MUTEX_CONTEXT);
+        sPendingCallbacks.push_back(this);
+        sCallbackListLock.Unlock(MUTEX_CONTEXT);
+        if (!IsMainThread()) Wait();
+        _callback(_param1);
     }
 
   protected:
@@ -134,7 +163,33 @@ class DeferredCallback_2 : public DeferredCallback {
         sPendingCallbacks.push_back(this);
         sCallbackListLock.Unlock(MUTEX_CONTEXT);
         if (!IsMainThread()) Wait();
-        return _callback(_param1, _param2);
+        R ret = _callback(_param1, _param2);
+        return ret;
+    }
+
+  protected:
+    DeferredCallback_2_Callback _callback;
+    T _param1;
+    U _param2;
+};
+
+template <typename T, typename U>
+class DeferredCallback_2<void, T, U> : public DeferredCallback {
+  public:
+    typedef void (*DeferredCallback_2_Callback)(T arg1, U arg2);
+
+    DeferredCallback_2(DeferredCallback_2_Callback callback, T param1, U param2) : _callback(callback), _param1(param1), _param2(param2)
+    {
+    }
+
+    virtual void Execute()
+    {
+        ScopeFinishedMarker finisher(&finished);
+        sCallbackListLock.Lock(MUTEX_CONTEXT);
+        sPendingCallbacks.push_back(this);
+        sCallbackListLock.Unlock(MUTEX_CONTEXT);
+        if (!IsMainThread()) Wait();
+        _callback(_param1, _param2);
     }
 
   protected:
@@ -160,7 +215,35 @@ class DeferredCallback_3 : public DeferredCallback {
         sPendingCallbacks.push_back(this);
         sCallbackListLock.Unlock(MUTEX_CONTEXT);
         if (!IsMainThread()) Wait();
-        return _callback(_param1, _param2, _param3);
+        R ret = _callback(_param1, _param2, _param3);
+        return ret;
+    }
+
+  protected:
+    DeferredCallback_3_Callback _callback;
+    T _param1;
+    U _param2;
+    V _param3;
+};
+
+template <typename T, typename U, typename V>
+class DeferredCallback_3<void, T, U, V> : public DeferredCallback {
+  public:
+    typedef void (*DeferredCallback_3_Callback)(T arg1, U arg2, V arg3);
+
+    DeferredCallback_3(DeferredCallback_3_Callback callback, T param1, U param2, V param3) :
+        _callback(callback), _param1(param1), _param2(param2), _param3(param3)
+    {
+    }
+
+    virtual void Execute()
+    {
+        ScopeFinishedMarker finisher(&finished);
+        sCallbackListLock.Lock(MUTEX_CONTEXT);
+        sPendingCallbacks.push_back(this);
+        sCallbackListLock.Unlock(MUTEX_CONTEXT);
+        if (!IsMainThread()) Wait();
+        _callback(_param1, _param2, _param3);
     }
 
   protected:
@@ -187,7 +270,8 @@ class DeferredCallback_4 : public DeferredCallback {
         sPendingCallbacks.push_back(this);
         sCallbackListLock.Unlock(MUTEX_CONTEXT);
         if (!IsMainThread()) Wait();
-        return _callback(_param1, _param2, _param3, _param4);
+        R ret = _callback(_param1, _param2, _param3, _param4);
+        return ret;
     }
 
   protected:
@@ -198,6 +282,33 @@ class DeferredCallback_4 : public DeferredCallback {
     W _param4;
 };
 
+template <typename T, typename U, typename V, typename W>
+class DeferredCallback_4<void, T, U, V, W> : public DeferredCallback {
+  public:
+    typedef void (*DeferredCallback_4_Callback)(T arg1, U arg2, V arg3, W arg4);
+
+    DeferredCallback_4(DeferredCallback_4_Callback callback, T param1, U param2, V param3, W param4) :
+        _callback(callback), _param1(param1), _param2(param2), _param3(param3), _param4(param4)
+    {
+    }
+
+    virtual void Execute()
+    {
+        ScopeFinishedMarker finisher(&finished);
+        sCallbackListLock.Lock(MUTEX_CONTEXT);
+        sPendingCallbacks.push_back(this);
+        sCallbackListLock.Unlock(MUTEX_CONTEXT);
+        if (!IsMainThread()) Wait();
+        _callback(_param1, _param2, _param3, _param4);
+    }
+
+  protected:
+    DeferredCallback_4_Callback _callback;
+    T _param1;
+    U _param2;
+    V _param3;
+    W _param4;
+};
 }
 
 #endif

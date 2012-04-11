@@ -45,7 +45,9 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate int InternalAcceptSessionJoiner(IntPtr context, ushort sessionPort, IntPtr joiner, IntPtr opts);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSessionJoined(IntPtr context, ushort sessionPort, uint sessionId, IntPtr joiner);
 			#endregion
 

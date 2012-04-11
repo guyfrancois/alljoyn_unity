@@ -70,14 +70,15 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate int InternalRequestCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName, ushort authCount,
 				IntPtr userName, ushort credMask, IntPtr credentials);
-
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate int InternalVerifyCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName,
 				IntPtr credentials);
-			
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSecurityViolation(IntPtr context, int status, IntPtr msg);
-
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalAuthenticationComplete(IntPtr context, IntPtr authMechanism, IntPtr peerName, int success);
 			#endregion
 

@@ -33,6 +33,7 @@ namespace basic_clientserver
 					AllJoyn.QStatus status = sMsgBus.JoinSession(name, SERVICE_PORT, null, out sSessionId, opts);
 					if(status)
 					{
+						sJoinComplete = true;
 						Console.WriteLine("Client JoinSession SUCCESS (Session id={0})", sSessionId);
 					}
 					else
@@ -40,7 +41,7 @@ namespace basic_clientserver
 						Console.WriteLine("Client JoinSession failed (status={0})", status.ToString ());
 					}
 				}
-				sJoinComplete = true;
+				
 			}
 
 			protected override void NameOwnerChanged(string busName, string previousOwner, string newOwner)
