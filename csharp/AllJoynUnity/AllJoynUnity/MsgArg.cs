@@ -95,7 +95,7 @@ namespace AllJoynUnity
 						_bytePtr = IntPtr.Zero;
 					}
 					UIntPtr numArgs = (UIntPtr)1;
-					_bytePtr = Marshal.StringToCoTaskMemAuto((string)value);
+					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
 					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, "o", _bytePtr);
 				}
 			}
@@ -131,7 +131,7 @@ namespace AllJoynUnity
 				if(value.GetType() == typeof(string))
 				{
 					signature = "s";
-					_bytePtr = Marshal.StringToCoTaskMemAuto((string)value);
+					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
 					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, _bytePtr);
 				}
 				else if(value.GetType() == typeof(bool))
