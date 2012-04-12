@@ -31,19 +31,19 @@ namespace AllJoynUnity
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string service,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
 				uint sessionId);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_proxybusobject_destroy(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_proxybusobject_addinterface(IntPtr bus, IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_proxybusobject_methodcall(IntPtr obj,
 				[MarshalAs(UnmanagedType.LPStr)] string ifaceName,
 				[MarshalAs(UnmanagedType.LPStr)] string methodName,

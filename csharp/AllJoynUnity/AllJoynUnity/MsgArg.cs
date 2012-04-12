@@ -183,71 +183,71 @@ namespace AllJoynUnity
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern byte alljoyn_msgarg_as_uint8(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_as_bool(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern short alljoyn_msgarg_as_int16(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern ushort alljoyn_msgarg_as_uint16(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_as_int32(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern uint alljoyn_msgarg_as_uint32(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern long alljoyn_msgarg_as_int64(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern ulong alljoyn_msgarg_as_uint64(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern double alljoyn_msgarg_as_double(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_msgarg_as_string(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_msgarg_as_objpath(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_msgarg_as_variant(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, byte arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, short arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, int arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, uint arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, long arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, ulong arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, double arg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
 				[MarshalAs(UnmanagedType.LPStr)] string signature, IntPtr arg);
 			#endregion

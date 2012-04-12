@@ -422,58 +422,58 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_create(
 				[MarshalAs(UnmanagedType.LPStr)] string applicationName,
 				int allowRemoteMessages);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_destroy(IntPtr busAttachment);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_stop(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_createinterface(
 				IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref IntPtr iface,
 				int secure);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_start(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_connect(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string connectSpec);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_busattachment_registerbuslistener(IntPtr bus, IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_busattachment_unregisterbuslistener(IntPtr bus, IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_findadvertisedname(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string namePrefix);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_cancelfindadvertisedname(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string namePrefix);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_advertisename(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name, ushort transports);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_canceladvertisename(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name, ushort transports);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getinterface(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_joinsession(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string sessionHost,
 				ushort sessionPort,
@@ -481,138 +481,138 @@ namespace AllJoynUnity
 				ref uint sessionId,
 				IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_registerbusobject(IntPtr bus, IntPtr obj);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_busattachment_unregisterbusobject(IntPtr bus, IntPtr obj);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_requestname(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string requestedName, uint flags);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_releasename(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_bindsessionport(IntPtr bus,
 				ref ushort sessionPort,
 				IntPtr opts,
 				IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_unbindsessionport(IntPtr bus, ushort sessionPort);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_enablepeersecurity(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string authMechanisms,
 				IntPtr listener,
 				[MarshalAs(UnmanagedType.LPStr)] string keyStoreFileName,
 				int isShared);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_ispeersecurityenabled(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_isstarted(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_isstopping(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_isconnected(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static uint alljoyn_busattachment_gettimestamp();
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_createinterfacesfromxml(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string xml);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static UIntPtr alljoyn_busattachment_getinterfaces(IntPtr bus, IntPtr ifaces, UIntPtr numIfaces);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_deleteinterface(IntPtr bus, IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_disconnect(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string connectSpec);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getdbusproxyobj(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getalljoynproxyobj(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getalljoyndebugobj(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getuniquename(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busattachment_getglobalguidstring(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_registerkeystorelistener(IntPtr bus, IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_reloadkeystore(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_busattachment_clearkeystore(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_clearkeys(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string guid);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_setkeyexpiration(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string guid,
 				uint timeout);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_getkeyexpiration(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string guid,
 				ref uint timeout);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_addlogonentry(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string authMechanism,
 				[MarshalAs(UnmanagedType.LPStr)] string userName,
 				[MarshalAs(UnmanagedType.LPStr)] string password);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_addmatch(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string rule);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_removematch(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string rule);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_setsessionlistener(IntPtr bus, uint sessionId,
 				IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_leavesession(IntPtr bus, uint sessionId);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_setlinktimeout(IntPtr bus, uint sessionid, ref uint linkTimeout);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_namehasowner(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref int hasOwner);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_getpeerguid(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				IntPtr guid, ref UIntPtr guidSz);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busattachment_setdaemondebug(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string module,
 				uint level);

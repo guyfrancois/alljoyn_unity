@@ -102,12 +102,17 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			public delegate void MethodHandler(InterfaceDescription.Member member, Message message);
-
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalMethodHandler(IntPtr bus, IntPtr member, IntPtr message);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertyGetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertySetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectRegisteredEventHandler(IntPtr context);
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectUnregisteredEventHandler(IntPtr context);
 			#endregion
 
@@ -154,7 +159,7 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busobject_create(
 				IntPtr busAttachment,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
@@ -162,32 +167,32 @@ namespace AllJoynUnity
 				IntPtr callbacks_in,
 				IntPtr context_in);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busobject_destroy(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_busobject_getpath(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static UIntPtr alljoyn_busobject_getname(IntPtr bus, IntPtr buffer, UIntPtr bufferSz);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busobject_addinterface(IntPtr bus, IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busobject_addmethodhandlers(IntPtr bus,
 				IntPtr entries, UIntPtr numEntries);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busobject_methodreply_args(IntPtr bus,
 				IntPtr msg, IntPtr msgArgs, UIntPtr numArgs);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busobject_methodreply_err(IntPtr bus, IntPtr msg,
 				[MarshalAs(UnmanagedType.LPStr)] string error,
 				[MarshalAs(UnmanagedType.LPStr)] string errorMsg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_busobject_methodreply_status(IntPtr bus, IntPtr msg, int status);
 			#endregion
 

@@ -109,12 +109,12 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_buslistener_create(
 				IntPtr callbacks,
 				IntPtr context);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_buslistener_destroy(IntPtr listener);
 			#endregion
 

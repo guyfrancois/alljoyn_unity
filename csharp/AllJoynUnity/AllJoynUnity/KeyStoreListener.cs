@@ -83,20 +83,20 @@ namespace AllJoynUnity
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_keystorelistener_create(
 				IntPtr callbacks,
 				IntPtr context);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_keystorelistener_destroy(IntPtr listener);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_keystorelistener_putkeys(IntPtr listener, IntPtr keyStore,
 				[MarshalAs(UnmanagedType.LPStr)] string source,
 				[MarshalAs(UnmanagedType.LPStr)] string password);
 			
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_keystorelistener_getkeys(IntPtr listener, IntPtr keyStore,
 				IntPtr sink, UIntPtr sink_sz);
 			#endregion

@@ -139,52 +139,52 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_create();
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_destroy(IntPtr msg);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern int alljoyn_credentials_isset(IntPtr cred, ushort creds);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setpassword(IntPtr cred, [MarshalAs(UnmanagedType.LPStr)] string pwd);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setusername(IntPtr cred, [MarshalAs(UnmanagedType.LPStr)] string userName);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setcertchain(IntPtr cred, [MarshalAs(UnmanagedType.LPStr)] string certChain);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setprivatekey(IntPtr cred, [MarshalAs(UnmanagedType.LPStr)] string pk);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setlogonentry(IntPtr cred, [MarshalAs(UnmanagedType.LPStr)] string logonEntry);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_setexpiration(IntPtr cred, uint expiration);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_getpassword(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_getusername(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_getcertchain(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_getprivateKey(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern IntPtr alljoyn_credentials_getlogonentry(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern uint alljoyn_credentials_getexpiration(IntPtr cred);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private static extern void alljoyn_credentials_clear(IntPtr cred);
 			#endregion
 

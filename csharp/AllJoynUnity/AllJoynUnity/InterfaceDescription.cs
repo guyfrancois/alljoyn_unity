@@ -302,7 +302,7 @@ namespace AllJoynUnity
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_addmember(
 				IntPtr iface,
 				int type,
@@ -312,53 +312,53 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string argNames,
 				byte annotation);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static void alljoyn_interfacedescription_activate(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_getmember(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref _Member member);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static UIntPtr alljoyn_interfacedescription_getmembers(IntPtr iface,
 				IntPtr members, UIntPtr numMembers);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_hasmember(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				[MarshalAs(UnmanagedType.LPStr)] string inSig,
 				[MarshalAs(UnmanagedType.LPStr)] string outSig);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_getproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref _Property property);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static UIntPtr alljoyn_interfacedescription_getproperties(IntPtr iface,
 				IntPtr props, UIntPtr numProps);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_addproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				[MarshalAs(UnmanagedType.LPStr)] string signature,
 				byte access);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_hasproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_eql(IntPtr one, IntPtr other);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_hasproperties(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static IntPtr alljoyn_interfacedescription_getname(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET)]
+			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 			private extern static int alljoyn_interfacedescription_issecure(IntPtr iface);
 			#endregion
 

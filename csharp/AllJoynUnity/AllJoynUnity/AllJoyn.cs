@@ -331,19 +331,19 @@ namespace AllJoynUnity
 		}
 
 		#region DLL Imports
-		[DllImport(DLL_IMPORT_TARGET)]
+		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 		private extern static IntPtr alljoyn_getversion();
 
-		[DllImport(DLL_IMPORT_TARGET)]
+		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 		private extern static IntPtr alljoyn_getbuildinfo();
 
-		[DllImport(DLL_IMPORT_TARGET)]
+		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 		private extern static IntPtr QCC_StatusText(int status);
 
-		[DllImport(DLL_IMPORT_TARGET)]
+		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 		private extern static int alljoyn_unity_deferred_callbacks_process();
 
-		[DllImport(DLL_IMPORT_TARGET)]
+		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
 		private extern static void alljoin_unity_set_deferred_callback_mainthread_only(int mainthread_only);
 		#endregion
 	}

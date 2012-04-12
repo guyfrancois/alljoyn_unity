@@ -7,10 +7,10 @@ public class AllJoynClientServer : MonoBehaviour
 	void OnGUI ()
 	{
 		if(BasicServer.serverText != null){
-			GUI.TextArea (new Rect (0, 0, Screen.width, (Screen.height / 3)), BasicServer.serverText);
+			GUI.TextArea (new Rect (0, 0, Screen.width, (Screen.height / 2)), BasicServer.serverText);
 		}
 		if(BasicClient.clientText != null){
-			GUI.TextArea (new Rect (0, (Screen.height / 3), Screen.width, (Screen.height * 2 / 3)), BasicClient.clientText);
+			GUI.TextArea (new Rect (0, (Screen.height / 2), Screen.width, (Screen.height * 1 / 2)), BasicClient.clientText);
 		}
 	}
 	
