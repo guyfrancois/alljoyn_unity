@@ -136,6 +136,8 @@ extern AJ_API void alljoyn_msgarg_destroy(alljoyn_msgarg arg);
  * }
  * @endcode
  *
+ * @param size the size of the array of alljoyn_msgargs
+ *
  * @return the created array of message arguments
  */
 extern AJ_API alljoyn_msgarg alljoyn_msgarg_array_create(size_t size);

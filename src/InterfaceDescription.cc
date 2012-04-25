@@ -203,9 +203,21 @@ const char* alljoyn_interfacedescription_getname(const alljoyn_interfacedescript
     return ((const ajn::InterfaceDescription*)iface)->GetName();
 }
 
-extern AJ_API char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent)
+size_t alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, char* str, size_t buf, size_t indent)
 {
-    return strdup(((const ajn::InterfaceDescription*)iface)->Introspect(indent).c_str());
+    if (!iface) {
+        return (size_t)0;
+    }
+    qcc::String s = ((const ajn::InterfaceDescription*)iface)->Introspect(indent);
+    /*
+     * it is ok to send in NULL for str when the user is only interested in the
+     * size of the resulting string.
+     */
+    if (str) {
+        strncpy(str, s.c_str(), buf);
+        str[buf] = '\0'; //prevent sting not being null terminated.
+    }
+    return s.size();
 }
 
 QC_BOOL alljoyn_interfacedescription_issecure(const alljoyn_interfacedescription iface)

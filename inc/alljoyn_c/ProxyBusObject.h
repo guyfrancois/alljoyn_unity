@@ -52,8 +52,8 @@ typedef struct _alljoyn_busattachment_handle*               alljoyn_busattachmen
 typedef void (*alljoyn_proxybusobject_listener_introspectcb_ptr)(QStatus status, alljoyn_proxybusobject obj, void* context);
 
 /**
- * Create an empty proxy object that refers to an object at given remote service name. Note
- * that the created proxy object does not contain information about the interfaces that the
+ * Create an empty proxy bus object that refers to an object at given remote service name. Note
+ * that the created proxy bus object does not contain information about the interfaces that the
  * actual remote object implements with the exception that org.freedesktop.DBus.Peer
  * interface is special-cased (per the DBus spec) and can always be called on any object. Nor
  * does it contain information about the child objects that the actual remote object might
@@ -107,6 +107,55 @@ extern AJ_API QStatus alljoyn_proxybusobject_addinterface(alljoyn_proxybusobject
  *      - An error status otherwise.
  */
 extern AJ_API QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxybusobject proxyObj, const char* name);
+
+/**
+ * Get a path descendant ProxyBusObject (child) by its relative path name.
+ *
+ * For example, if this ProxyBusObject's path is @c "/foo/bar", then you can
+ * retrieve the ProxyBusObject for @c "/foo/bar/bat/baz" by calling
+ * @c GetChild("bat/baz")
+ *
+ * @param proxyObj The proxybus object we are getting the descendant from
+ * @param path     The relative path for the child.
+ *
+ * @return
+ *      - The (potentially deep) descendant ProxyBusObject
+ *      - NULL if not found.
+ */
+extern AJ_API alljoyn_proxybusobject alljoyn_proxybusobject_getchild(alljoyn_proxybusobject proxyObj, const char* path);
+
+/**
+ * Add a child object (direct or deep object path descendant) to this object.
+ * If you add a deep path descendant, this method will create intermediate
+ * ProxyBusObject children as needed.
+ *
+ * @remark
+ *  - It is an error to try to add a child that already exists.
+ *  - It is an error to try to add a child that has an object path that is not a descendant of this object's path.
+ *
+ * @param proxyObj The proxy bus object onto which the child object is to be added
+ * @param child    Child ProxyBusObject
+ *
+ * @return
+ *      - #ER_OK if successful.
+ *      - #ER_BUS_BAD_CHILD_PATH if the path is a bad path
+ *      - #ER_BUS_OBJ_ALREADY_EXISTS the the object already exists on the ProxyBusObject
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_addchild(alljoyn_proxybusobject proxyObj, const alljoyn_proxybusobject child);
+
+/**
+ * Remove a child object and any descendants it may have.
+ *
+ * @param proxyObj The proxy bus object off of which the child object is to be removed
+ * @param path     Absolute or relative (to this ProxyBusObject) object path.
+ *
+ * @return
+ *      - #ER_OK if successful.
+ *      - #ER_BUS_BAD_CHILD_PATH if the path given was not a valid path
+ *      - #ER_BUS_OBJ_NOT_FOUND if the Child object was not found
+ *      - #ER_FAIL any other unexpected error.
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_removechild(alljoyn_proxybusobject proxyObj, const char* path);
 
 /**
  * Query the remote object on the bus to determine the interfaces and
@@ -378,6 +427,7 @@ extern AJ_API QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_prox
  * may be registered with the bus. Similarly, any objects that were successfully created
  * before the failure will exist in this object's set of children.
  *
+ * @param proxyObj    ProxyBusObject which will be initialized from the XML string
  * @param xml         An XML string in DBus introspection format.
  * @param identifier  An optional identifying string to include in error logging messages.
  *
@@ -386,6 +436,51 @@ extern AJ_API QStatus alljoyn_proxybusobject_methodcallasync_member(alljoyn_prox
  *      - An error status otherwise.
  */
 extern AJ_API QStatus alljoyn_proxybusobject_parsexml(alljoyn_proxybusobject proxyObj, const char* xml, const char* identifier);
+
+/**
+ * Explicitly secure the connection to the remote peer for this proxy object. Peer-to-peer
+ * connections can only be secured if EnablePeerSecurity() was previously called on the bus
+ * attachment for this proxy object. If the peer-to-peer connection is already secure this
+ * function does nothing. Note that peer-to-peer connections are automatically secured when a
+ * method call or signal requiring encryption is sent or received.
+ *
+ * This call causes messages to be send on the bus, therefore it cannot be called within AllJoyn
+ * callbacks (method/signal/reply handlers or ObjectRegistered callbacks, etc.)
+ *
+ * @param proxyObj   ProxyBusObject to explicitly set up a secure a connection
+ * @param forceAuth  If true, forces an re-authentication even if the peer connection is already
+ *                   authenticated.
+ *                   Recommended default QC_FALSE
+ *
+ * @return
+ *          - #ER_OK if the connection was secured or an error status indicating that the
+ *            connection could not be secured.
+ *          - #ER_BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment::EnablePeerSecurity() has not been called.
+ *          - #ER_AUTH_FAIL if the attempt(s) to authenticate the peer failed.
+ *          - Other error status codes indicating a failure.
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_secureconnection(alljoyn_proxybusobject proxyObj, QC_BOOL forceAuth);
+
+/**
+ * Asynchronously secure the connection to the remote peer for this proxy object. Peer-to-peer
+ * connections can only be secured if EnablePeerSecurity() was previously called on the bus
+ * attachment for this proxy object. If the peer-to-peer connection is already secure this
+ * function does nothing. Note that peer-to-peer connections are automatically secured when a
+ * method call or signal requiring encryption is sent or received.
+ *
+ * Notification of success or failure is via the AuthListener passed to EnablePeerSecurity().
+ *
+ * @param proxyObj   ProxyBusObject to explicitly set up a secure a connection
+ * @param forceAuth  If true, forces an re-authentication even if the peer connection is already
+ *                   authenticated.
+ *                   Recommended default QC_FALSE
+ *
+ * @return
+ *          - #ER_OK if securing could begin.
+ *          - #ER_BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment::EnablePeerSecurity() has not been called.
+ *          - Other error status codes indicating a failure.
+ */
+extern AJ_API QStatus alljoyn_proxybusobject_secureconnectionasync(alljoyn_proxybusobject proxyObj, QC_BOOL forceAuth);
 
 /**
  * Returns a pointer to an interface description. Returns NULL if the object does not implement
@@ -454,11 +549,21 @@ extern AJ_API alljoyn_sessionid alljoyn_proxybusobject_getsessionid(alljoyn_prox
 extern AJ_API QC_BOOL alljoyn_proxybusobject_implementsinterface(alljoyn_proxybusobject proxyObj, const char* iface);
 
 /**
+ * create a copy of a proxybusobject.  This will create a new alljoyn_proxybusobject and
+ * must be cleaned up using alljoyn_proxybusobject_destroy.
+ *
+ * @param source      the alljoyn_proxybusobject to be copied
+ *
+ * @return copy of the alljoyn_proxybusobject argument is returned
+ */
+extern AJ_API alljoyn_proxybusobject alljoyn_proxybusobject_copy(const alljoyn_proxybusobject source);
+
+/**
  * Indicates if this is a valid (usable) proxy bus object.
  *
  * @return true if a valid proxy bus object, false otherwise.
  */
-extern AJ_API QC_BOOL alljoyn_proxybusobj_isvalid(alljoyn_proxybusobject proxyObj);
+extern AJ_API QC_BOOL alljoyn_proxybusobject_isvalid(alljoyn_proxybusobject proxyObj);
 
 #if 0
 /*TODO create C bindings for the following C++ methods */
@@ -475,107 +580,6 @@ extern AJ_API QC_BOOL alljoyn_proxybusobj_isvalid(alljoyn_proxybusobject proxyOb
  * @return  The number of children returned or the total number of children if children is NULL.
  */
 size_t GetChildren(ProxyBusObject** children = NULL, size_t numChildren = 0);
-
-/**
- * Get a path descendant ProxyBusObject (child) by its relative path name.
- *
- * For example, if this ProxyBusObject's path is @c "/foo/bar", then you can
- * retrieve the ProxyBusObject for @c "/foo/bar/bat/baz" by calling
- * @c GetChild("bat/baz")
- *
- * @param path the relative path for the child.
- *
- * @return
- *      - The (potentially deep) descendant ProxyBusObject
- *      - NULL if not found.
- */
-ProxyBusObject* GetChild(const char* path);
-
-/**
- * Add a child object (direct or deep object path descendant) to this object.
- * If you add a deep path descendant, this method will create intermediate
- * ProxyBusObject children as needed.
- *
- * @remark
- *  - It is an error to try to add a child that already exists.
- *  - It is an error to try to add a child that has an object path that is not a descendant of this object's path.
- *
- * @param child  Child ProxyBusObject
- * @return
- *      - #ER_OK if successful.
- *      - #ER_BUS_BAD_CHILD_PATH if the path is a bad path
- *      - #ER_BUS_OBJ_ALREADY_EXISTS the the object already exists on the ProxyBusObject
- */
-QStatus AddChild(const ProxyBusObject& child);
-
-/**
- * Remove a child object and any descendants it may have.
- *
- * @param path   Absolute or relative (to this ProxyBusObject) object path.
- * @return
- *      - #ER_OK if successful.
- *      - #ER_BUS_BAD_CHILD_PATH if the path given was not a valid path
- *      - #ER_BUS_OBJ_NOT_FOUND if the Child object was not found
- *      - #ER_FAIL any other unexpected error.
- */
-QStatus RemoveChild(const char* path);
-
-/**
- * Explicitly secure the connection to the remote peer for this proxy object. Peer-to-peer
- * connections can only be secured if EnablePeerSecurity() was previously called on the bus
- * attachment for this proxy object. If the peer-to-peer connection is already secure this
- * function does nothing. Note that peer-to-peer connections are automatically secured when a
- * method call or signal requiring encryption is sent or received.
- *
- * This call causes messages to be send on the bus, therefore it cannot be called within AllJoyn
- * callbacks (method/signal/reply handlers or ObjectRegistered callbacks, etc.)
- *
- * @param forceAuth  If true, forces an re-authentication even if the peer connection is already
- *                   authenticated.
- *
- * @return
- *          - #ER_OK if the connection was secured or an error status indicating that the
- *            connection could not be secured.
- *          - #ER_BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment::EnablePeerSecurity() has not been called.
- *          - #ER_AUTH_FAIL if the attempt(s) to authenticate the peer failed.
- *          - Other error status codes indicating a failure.
- */
-QStatus SecureConnection(bool forceAuth = false);
-
-/**
- * Asynchronously secure the connection to the remote peer for this proxy object. Peer-to-peer
- * connections can only be secured if EnablePeerSecurity() was previously called on the bus
- * attachment for this proxy object. If the peer-to-peer connection is already secure this
- * function does nothing. Note that peer-to-peer connections are automatically secured when a
- * method call or signal requiring encryption is sent or received.
- *
- * Notification of success or failure is via the AuthListener passed to EnablePeerSecurity().
- *
- * @param forceAuth  If true, forces an re-authentication even if the peer connection is already
- *                   authenticated.
- *
- * @return
- *          - #ER_OK if securing could begin.
- *          - #ER_BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment::EnablePeerSecurity() has not been called.
- *          - Other error status codes indicating a failure.
- */
-QStatus SecureConnectionAsync(bool forceAuth = false);
-
-/**
- * Assignment operator.
- *
- * @param other  The object being assigned from
- * @return a copy of the ProxyBusObject
- */
-ProxyBusObject& operator=(const ProxyBusObject& other);
-
-/**
- * Copy constructor
- *
- * @param other  The object being copied from.
- */
-ProxyBusObject(const ProxyBusObject &other);
-
 #endif
 
 #ifdef __cplusplus

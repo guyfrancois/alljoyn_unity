@@ -123,19 +123,6 @@ QStatus BusAttachmentC::UnregisterAllHandlersC() {
     return UnregisterAllHandlers(this);
 }
 
-//void BusAttachmentC::UnregisterAllHandlersC() {
-//    std::multimap<const ajn::InterfaceDescription::Member*, signalCallbackMapEntry>::iterator it;
-//    it = signalCallbackMap.begin();
-//    signalCallbackMapLock.Lock(MUTEX_CONTEXT);
-//    for (it = signalCallbackMap.begin(); it != signalCallbackMap.end(); ++it) {
-//        if (this == it->second.bus) {
-//            signalCallbackMap.erase(it);
-//        }
-//    }
-//
-//    signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
-//}
-
 void BusAttachmentC::SignalHandlerRemap(const InterfaceDescription::Member* member, const char* srcPath, Message& message)
 {
     alljoyn_interfacedescription_member c_member;

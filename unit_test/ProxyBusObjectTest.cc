@@ -186,7 +186,12 @@ TEST_F(ProxyBusObjectTest, introspectremoteobject) {
     status = alljoyn_proxybusobject_introspectremoteobject(proxyObj);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(proxyObj, "org.freedesktop.DBus.Introspectable");
-    char* str = alljoyn_interfacedescription_introspect(intf, 0);
+    size_t buf;
+    char* str;
+    buf = alljoyn_interfacedescription_introspect(intf, NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(intf, str, buf, 0);
     EXPECT_STREQ(
         "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
         "  <method name=\"Introspect\">\n"
@@ -204,7 +209,12 @@ void introspect_callback(QStatus status, alljoyn_proxybusobject obj, void* conte
 {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(obj, "org.freedesktop.DBus.Introspectable");
-    char* str = alljoyn_interfacedescription_introspect(intf, 0);
+    size_t buf;
+    char* str;
+    buf = alljoyn_interfacedescription_introspect(intf, NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(intf, str, buf, 0);
     EXPECT_STREQ(
         "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
         "  <method name=\"Introspect\">\n"
@@ -230,7 +240,12 @@ TEST_F(ProxyBusObjectTest, introspectremoteobjectasync) {
     }
     EXPECT_TRUE(introspect_callback_flag);
     alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(proxyObj, "org.freedesktop.DBus.Introspectable");
-    char* str = alljoyn_interfacedescription_introspect(intf, 0);
+    size_t buf;
+    char* str;
+    buf = alljoyn_interfacedescription_introspect(intf, NULL, 0, 0);
+    buf++;
+    str = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(intf, str, buf, 0);
     EXPECT_STREQ(
         "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
         "  <method name=\"Introspect\">\n"
@@ -249,7 +264,11 @@ TEST_F(ProxyBusObjectTest, getinterface_getinterfaces) {
     status = alljoyn_proxybusobject_introspectremoteobject(proxyObj);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(proxyObj, "org.freedesktop.DBus.Introspectable");
-    char* intf_introspect = alljoyn_interfacedescription_introspect(intf, 0);
+    char* intf_introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(intf, NULL, 0, 0);
+    buf++;
+    intf_introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(intf, intf_introspect, buf, 0);
     EXPECT_STREQ(
         "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
         "  <method name=\"Introspect\">\n"
@@ -326,7 +345,11 @@ TEST_F(ProxyBusObjectTest, addinterface_by_name) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
     alljoyn_interfacedescription intf = alljoyn_proxybusobject_getinterface(proxyObj, "org.freedesktop.DBus.Introspectable");
-    char* intf_introspect = alljoyn_interfacedescription_introspect(intf, 0);
+    char* intf_introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(intf, NULL, 0, 0);
+    buf++;
+    intf_introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(intf, intf_introspect, buf, 0);
     EXPECT_STREQ(
         "<interface name=\"org.freedesktop.DBus.Introspectable\">\n"
         "  <method name=\"Introspect\">\n"
@@ -357,8 +380,11 @@ TEST_F(ProxyBusObjectTest, addinterface) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
 
     EXPECT_TRUE(alljoyn_proxybusobject_implementsinterface(proxyObj, "org.alljoyn.test.ProxyBusObjectTest"));
-
-    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
     const char* expectedIntrospect =
         "<interface name=\"org.alljoyn.test.ProxyBusObjectTest\">\n"
         "  <signal name=\"chirp\">\n"
@@ -586,3 +612,124 @@ TEST_F(ProxyBusObjectTest, methodcallasync_member) {
 
     TearDownProxyBusObjectTestService();
 }
+
+// TODO: enable this test when ALLJOYN-1001 is resolved
+TEST_F(ProxyBusObjectTest, DISABLED_parsexml) {
+    const char* busObjectXML =
+        "<node name=\"/org/alljoyn/test/ProxyObjectTest\">"
+        "  <interface name=\"org.alljoyn.test.ProxyBusObjectTest\">\n"
+        "    <signal name=\"chirp\">\n"
+        "      <arg name=\"chirp\" type=\"s\" direction=\"out\"/>\n"
+        "    </signal>\n"
+        "    <method name=\"ping\">\n"
+        "      <arg name=\"in\" type=\"s\" direction=\"in\"/>\n"
+        "      <arg name=\"out\" type=\"s\" direction=\"out\"/>\n"
+        "    </method>\n"
+        "  </interface>\n"
+        "</node>\n";
+    QStatus status;
+
+    alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, NULL, NULL, 0);
+    EXPECT_TRUE(proxyObj);
+
+    status = alljoyn_proxybusobject_parsexml(proxyObj, busObjectXML, NULL);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    EXPECT_TRUE(alljoyn_proxybusobject_implementsinterface(proxyObj, "org.alljoyn.test.ProxyBusObjectTest"));
+
+    alljoyn_interfacedescription testIntf = alljoyn_proxybusobject_getinterface(proxyObj, "org.alljoyn.test.ProxyBusObjectTest");
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
+
+    const char* expectedIntrospect =
+        "<interface name=\"org.alljoyn.test.ProxyBusObjectTest\">\n"
+        "  <signal name=\"chirp\">\n"
+        "    <arg name=\"chirp\" type=\"s\" direction=\"out\"/>\n"
+        "  </signal>\n"
+        "  <method name=\"ping\">\n"
+        "    <arg name=\"in\" type=\"s\" direction=\"in\"/>\n"
+        "    <arg name=\"out\" type=\"s\" direction=\"out\"/>\n"
+        "  </method>\n"
+        "</interface>\n";
+    EXPECT_STREQ(expectedIntrospect, introspect);
+    free(introspect);
+    alljoyn_proxybusobject_destroy(proxyObj);
+}
+
+TEST_F(ProxyBusObjectTest, Add_Get_Remove_Child) {
+    QStatus status;
+    alljoyn_interfacedescription testIntf = NULL;
+    status = alljoyn_busattachment_createinterface(bus, "org.alljoyn.test.ProxyBusObjectTest", &testIntf, QC_FALSE);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+    status = alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_METHOD_CALL, "ping", "s", "s", "in,out", 0);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_proxybusobject proxyObjChildOne = alljoyn_proxybusobject_create(bus, "org.alljoyn.test.ProxyBusObjectTest", "/org/alljoyn/test/ProxyObjectTest/ChildOne", 0);
+    EXPECT_TRUE(proxyObjChildOne);
+
+    status = alljoyn_proxybusobject_addinterface(proxyObjChildOne, testIntf);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_proxybusobject proxyObjChildTwo = alljoyn_proxybusobject_create(bus, "org.alljoyn.test.ProxyBusObjectTest", "/org/alljoyn/test/ProxyObjectTest/ChildTwo", 0);
+    EXPECT_TRUE(proxyObjChildOne);
+
+    status = alljoyn_proxybusobject_addinterface(proxyObjChildTwo, testIntf);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    alljoyn_proxybusobject proxyObj = alljoyn_proxybusobject_create(bus, NULL, NULL, 0);
+    EXPECT_TRUE(proxyObj);
+
+    status = alljoyn_proxybusobject_addchild(proxyObj, proxyObjChildOne);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    status = alljoyn_proxybusobject_addchild(proxyObj, proxyObjChildTwo);
+    EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
+
+    ASSERT_TRUE(alljoyn_proxybusobject_isvalid(proxyObj));
+
+    alljoyn_proxybusobject proxyObjChild1 = alljoyn_proxybusobject_getchild(proxyObj, "/org/alljoyn/test/ProxyObjectTest/ChildOne");
+    ASSERT_TRUE(proxyObjChild1);
+    ASSERT_TRUE(alljoyn_proxybusobject_isvalid(proxyObjChild1));
+    EXPECT_TRUE(alljoyn_proxybusobject_implementsinterface(proxyObjChild1, "org.alljoyn.test.ProxyBusObjectTest"));
+
+    alljoyn_interfacedescription testIntfChild1 = alljoyn_proxybusobject_getinterface(proxyObjChild1, "org.alljoyn.test.ProxyBusObjectTest");
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntfChild1, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntfChild1, introspect, buf, 0);
+
+    const char* expectedIntrospect =
+        "<interface name=\"org.alljoyn.test.ProxyBusObjectTest\">\n"
+        "  <method name=\"ping\">\n"
+        "    <arg name=\"in\" type=\"s\" direction=\"in\"/>\n"
+        "    <arg name=\"out\" type=\"s\" direction=\"out\"/>\n"
+        "  </method>\n"
+        "</interface>\n";
+    EXPECT_STREQ(expectedIntrospect, introspect);
+    free(introspect);
+
+    alljoyn_proxybusobject proxyObjChild2 = alljoyn_proxybusobject_getchild(proxyObj, "/org/alljoyn/test/ProxyObjectTest/ChildTwo");
+    EXPECT_TRUE(alljoyn_proxybusobject_implementsinterface(proxyObjChild2, "org.alljoyn.test.ProxyBusObjectTest"));
+
+    alljoyn_interfacedescription testIntfChild2 = alljoyn_proxybusobject_getinterface(proxyObjChild2, "org.alljoyn.test.ProxyBusObjectTest");
+    buf  = alljoyn_interfacedescription_introspect(testIntfChild2, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntfChild2, introspect, buf, 0);
+
+    EXPECT_STREQ(expectedIntrospect, introspect);
+    free(introspect);
+
+    status = alljoyn_proxybusobject_removechild(proxyObj, "/org/alljoyn/test/ProxyObjectTest/ChildOne");
+    alljoyn_proxybusobject proxyObjChildRemoved = alljoyn_proxybusobject_getchild(proxyObj, "/org/alljoyn/test/ProxyObjectTest/ChildOne");
+    EXPECT_FALSE(proxyObjChildRemoved);
+
+    alljoyn_proxybusobject_destroy(proxyObjChildOne);
+    alljoyn_proxybusobject_destroy(proxyObjChildTwo);
+    alljoyn_proxybusobject_destroy(proxyObj);
+}
+

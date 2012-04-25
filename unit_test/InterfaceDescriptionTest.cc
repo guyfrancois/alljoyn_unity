@@ -171,7 +171,12 @@ TEST(InterfaceDescriptionTest, introspect) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_interfacedescription_addmember(testIntf, ALLJOYN_MESSAGE_SIGNAL, "chirp", "", "s", "chirp", 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
+
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
     /*
      * NOTE there is nothing that specifies the order the members are organized
      * when they are added to the interface.  As can be seen here even though
@@ -222,7 +227,11 @@ TEST(InterfaceDescriptionTest, addproperty) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_interfacedescription_addproperty(testIntf, "prop3", "u", ALLJOYN_PROP_ACCESS_RW);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
     const char* expectedIntrospect =
         "<interface name=\"org.alljoyn.test.InterfaceDescription\">\n"
         "  <property name=\"prop1\" type=\"s\" access=\"read\"/>\n"
@@ -316,7 +325,11 @@ TEST(InterfaceDescriptionTest, addmethod) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_interfacedescription_addmethod(testIntf, "method1", "ss", "b", "string1,string2,bool", 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
     const char* expectedIntrospect =
         "<interface name=\"org.alljoyn.test.InterfaceDescription\">\n"
         "  <method name=\"method1\">\n"
@@ -375,7 +388,11 @@ TEST(InterfaceDescriptionTest, addsignal) {
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
     status = alljoyn_interfacedescription_addsignal(testIntf, "signal1", "s", "string", 0, 0);
     EXPECT_EQ(ER_OK, status) << "  Actual Status: " << QCC_StatusText(status);
-    char* introspect = alljoyn_interfacedescription_introspect(testIntf, 0);
+    char* introspect;
+    size_t buf  = alljoyn_interfacedescription_introspect(testIntf, NULL, 0, 0);
+    buf++;
+    introspect = (char*)malloc(sizeof(char) * buf);
+    alljoyn_interfacedescription_introspect(testIntf, introspect, buf, 0);
     const char* expectedIntrospect =
         "<interface name=\"org.alljoyn.test.InterfaceDescription\">\n"
         "  <signal name=\"signal1\">\n"

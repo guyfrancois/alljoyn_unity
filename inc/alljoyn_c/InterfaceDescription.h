@@ -264,14 +264,16 @@ extern AJ_API const char* alljoyn_interfacedescription_getname(const alljoyn_int
  * @return The interface description in introspection XML format.
  *
  * @param iface      Interface to query
- * @param indent   Number of space chars to use in XML indentation.
- * @return The XML introspection data.
- *
- * This function copies the null-terminated string into a newly allocated string.
- * The string is allocated using malloc. The return string must be freed by the
- * caller.
+ * @param[out] str   The character string that will hold the XML string
+ *                   representation of the interface
+ * @param[in]  buf   The size of the char* array that will hold the string
+ * @param indent     Number of space chars to use in XML indentation.
+ * @return  The number of characters (excluding the terminating null byte) which
+ *          would have been written to the final string if enough space is
+ *          available.  Thus returning a value of buf or larger means the output
+ *          was truncated.
  */
-extern AJ_API char* alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, size_t indent);
+extern AJ_API size_t alljoyn_interfacedescription_introspect(const alljoyn_interfacedescription iface, char* str, size_t buf, size_t indent);
 
 /**
  * Indicates if this interface is secure. Secure interfaces require end-to-end authentication.

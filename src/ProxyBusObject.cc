@@ -60,6 +60,21 @@ QStatus alljoyn_proxybusobject_addinterface_by_name(alljoyn_proxybusobject proxy
     return ((ajn::ProxyBusObject*)proxyObj)->AddInterface(name);
 }
 
+alljoyn_proxybusobject alljoyn_proxybusobject_getchild(alljoyn_proxybusobject proxyObj, const char* path)
+{
+    return (alljoyn_proxybusobject)((ajn::ProxyBusObject*)proxyObj)->GetChild(path);
+}
+
+QStatus alljoyn_proxybusobject_addchild(alljoyn_proxybusobject proxyObj, const alljoyn_proxybusobject child)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->AddChild(*(ajn::ProxyBusObject*)child);
+}
+
+QStatus alljoyn_proxybusobject_removechild(alljoyn_proxybusobject proxyObj, const char* path)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->RemoveChild(path);
+}
+
 QStatus alljoyn_proxybusobject_introspectremoteobject(alljoyn_proxybusobject proxyObj)
 {
     return ((ajn::ProxyBusObject*)proxyObj)->IntrospectRemoteObject();
@@ -183,6 +198,15 @@ QStatus alljoyn_proxybusobject_parsexml(alljoyn_proxybusobject proxyObj, const c
     return ((ajn::ProxyBusObject*)proxyObj)->ParseXml(xml, identifier);
 }
 
+QStatus alljoyn_proxybusobject_secureconnection(alljoyn_proxybusobject proxyObj, QC_BOOL forceAuth)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->SecureConnection(forceAuth);
+}
+
+QStatus alljoyn_proxybusobject_secureconnectionasync(alljoyn_proxybusobject proxyObj, QC_BOOL forceAuth)
+{
+    return ((ajn::ProxyBusObject*)proxyObj)->SecureConnectionAsync(forceAuth);
+}
 const alljoyn_interfacedescription alljoyn_proxybusobject_getinterface(alljoyn_proxybusobject proxyObj, const char* iface)
 {
     return (const alljoyn_interfacedescription)((ajn::ProxyBusObject*)proxyObj)->GetInterface(iface);
@@ -213,7 +237,17 @@ QC_BOOL alljoyn_proxybusobject_implementsinterface(alljoyn_proxybusobject proxyO
     return (QC_BOOL)((ajn::ProxyBusObject*)proxyObj)->ImplementsInterface(iface);
 }
 
-QC_BOOL alljoyn_proxybusobj_isvalid(alljoyn_proxybusobject proxyObj)
+alljoyn_proxybusobject alljoyn_proxybusobject_copy(const alljoyn_proxybusobject source)
+{
+    if (!source) {
+        return NULL;
+    }
+    ajn::ProxyBusObject* ret = new ajn::ProxyBusObject;
+    *ret = *(ajn::ProxyBusObject*)source;
+    return (alljoyn_proxybusobject) ret;
+}
+
+QC_BOOL alljoyn_proxybusobject_isvalid(alljoyn_proxybusobject proxyObj)
 {
     return (QC_BOOL)((ajn::ProxyBusObject*)proxyObj)->IsValid();
 }

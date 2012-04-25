@@ -76,6 +76,7 @@ class BusListenerTest : public testing::Test {
 
     virtual void TearDown() {
         EXPECT_NO_FATAL_FAILURE(alljoyn_buslistener_destroy(buslistener));
+        EXPECT_NO_FATAL_FAILURE(alljoyn_busattachment_destroy(bus));
     }
 
     void resetFlags() {
