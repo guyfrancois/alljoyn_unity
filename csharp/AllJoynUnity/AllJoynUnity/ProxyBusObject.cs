@@ -9,41 +9,45 @@ namespace AllJoynUnity
 		{
 			public ProxyBusObject(BusAttachment bus, string service, string path, uint sessionId)
 			{
+			
 				_proxyBusObject = alljoyn_proxybusobject_create(bus.UnmanagedPtr, service, path, sessionId);
 			}
 
 			internal ProxyBusObject(IntPtr busObject)
 			{
+			
 				_proxyBusObject = busObject;
 				_isDisposed = true;
 			}
 
 			public QStatus AddInterface(InterfaceDescription iface)
 			{
+			
 				return alljoyn_proxybusobject_addinterface(_proxyBusObject, iface.UnmanagedPtr);
 			}
 
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
 			{
+			
 				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}
 
-			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+            #region DLL Imports
+            [DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string service,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
 				uint sessionId);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern void alljoyn_proxybusobject_destroy(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_proxybusobject_addinterface(IntPtr bus, IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_proxybusobject_methodcall(IntPtr obj,
 				[MarshalAs(UnmanagedType.LPStr)] string ifaceName,
 				[MarshalAs(UnmanagedType.LPStr)] string methodName,
@@ -56,13 +60,14 @@ namespace AllJoynUnity
 
 			#region IDisposable
 			public void Dispose()
-			{
-				Dispose(true);
+            {
+                Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_proxybusobject_destroy(_proxyBusObject);
@@ -73,6 +78,7 @@ namespace AllJoynUnity
 
 			~ProxyBusObject()
 			{
+			
 				Dispose(false);
 			}
 			#endregion

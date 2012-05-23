@@ -10,6 +10,7 @@ namespace AllJoynUnity
 		{
 			public BusListener()
 			{
+			
 				// Can't let the GC free these delegates so they must be members
 				_listenerRegistered = new InternalListenerRegisteredDelegate(_ListenerRegistered);
 				_listenerUnregistered = new InternalListenerUnregisteredDelegate(_ListenerUnregistered);
@@ -19,18 +20,16 @@ namespace AllJoynUnity
 				_busStopping = new InternalBusStoppingDelegate(_BusStopping);
 				_busDisconnected = new InternalBusDisconnectedDelegate(_BusDisconnected);
 
-				BusListenerCallbacks callbacks;
 				callbacks.listenerRegistered = Marshal.GetFunctionPointerForDelegate(_listenerRegistered);
 				callbacks.listenerUnregistered = Marshal.GetFunctionPointerForDelegate(_listenerUnregistered);
-				callbacks.foundAdvertisedName = Marshal.GetFunctionPointerForDelegate(_foundAdvertisedName);
-				callbacks.lostAdvertisedName = Marshal.GetFunctionPointerForDelegate(_lostAdvertisedName);
-				callbacks.nameOwnerChanged = Marshal.GetFunctionPointerForDelegate(_nameOwnerChanged);
+                callbacks.foundAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_foundAdvertisedName);
+                callbacks.lostAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_lostAdvertisedName);
+                callbacks.nameOwnerChanged = Marshal.GetFunctionPointerForDelegate(_nameOwnerChanged);
 				callbacks.busStopping = Marshal.GetFunctionPointerForDelegate(_busStopping);
 				callbacks.busDisconnected = Marshal.GetFunctionPointerForDelegate(_busDisconnected);
 
-				GCHandle gch = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
-				_busListener = alljoyn_buslistener_create(gch.AddrOfPinnedObject(), IntPtr.Zero);
-				gch.Free();
+				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
+				_busListener = alljoyn_buslistener_create(main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
 			#region Virtual Methods
@@ -55,7 +54,7 @@ namespace AllJoynUnity
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalListenerUnregisteredDelegate(IntPtr context);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			private delegate void InternalFoundAdvertisedNameDelegate(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix);
+			private delegate void InternalFoundAdvertisedNameDelegate(IntPtr context, IntPtr name, System.UInt16 transport, IntPtr namePrefix);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalLostAdvertisedNameDelegate(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
@@ -69,52 +68,59 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _ListenerRegistered(IntPtr context, IntPtr bus)
 			{
+			
 				_registeredBus = BusAttachment.MapBusAttachment(bus);
 				ListenerRegistered(_registeredBus);
 			}
 
 			private void _ListenerUnregistered(IntPtr context)
 			{
+			
 				ListenerUnregistered();
 				_registeredBus = null;
 			}
 
-			private void _FoundAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
+			private void _FoundAdvertisedName(IntPtr context, IntPtr name, System.UInt16 transport, IntPtr namePrefix)
 			{
+			
 				FoundAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
 							Marshal.PtrToStringAnsi(namePrefix));
 			}
 
 			private void _LostAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
 			{
+			
 				LostAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
 							Marshal.PtrToStringAnsi(namePrefix));
 			}
 
 			private void _NameOwnerChanged(IntPtr context, IntPtr busName, IntPtr previousOwner, IntPtr newOwner)
 			{
-				NameOwnerChanged(Marshal.PtrToStringAnsi(busName), Marshal.PtrToStringAnsi(previousOwner),
+			
+                NameOwnerChanged(Marshal.PtrToStringAnsi(busName), Marshal.PtrToStringAnsi(previousOwner),
 							Marshal.PtrToStringAnsi(newOwner));
 			}
 
 			private void _BusStopping(IntPtr context)
 			{
+			
 				BusStopping();
 			}
 
 			private void _BusDisconnected(IntPtr context)
 			{
+			
 				BusDisconnected();
 			}
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_buslistener_create(
 				IntPtr callbacks,
 				IntPtr context);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_buslistener_destroy(IntPtr listener);
 			#endregion
 
@@ -127,29 +133,34 @@ namespace AllJoynUnity
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
-					// Dispose of BusAttachment before listeners
+                	// Dispose of BusAttachment before listeners
 					if(_registeredBus != null)
 					{
 						_registeredBus.Dispose();
 					}
 					
-					Thread destroyThread = new Thread((object o) => { alljoyn_buslistener_destroy(_busListener); });
+					Thread destroyThread = new Thread((object o) => {
+                        alljoyn_buslistener_destroy(_busListener);
+                    });
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
 						AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
-					
-					_busListener = IntPtr.Zero;
+
+                    _busListener = IntPtr.Zero;
+                    main.Free();
 				}
 				_isDisposed = true;
 			}
 
 			~BusListener()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
@@ -183,6 +194,8 @@ namespace AllJoynUnity
 			bool _isDisposed = false;
 			BusAttachment _registeredBus;
 
+            GCHandle main;
+            BusListenerCallbacks callbacks;
 			InternalListenerRegisteredDelegate _listenerRegistered;
 			InternalListenerUnregisteredDelegate _listenerUnregistered;
 			InternalFoundAdvertisedNameDelegate _foundAdvertisedName;

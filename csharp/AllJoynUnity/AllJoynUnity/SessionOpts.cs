@@ -57,49 +57,53 @@ namespace AllJoynUnity
 
 			public SessionOpts(TrafficType trafficType, bool isMultipoint, ProximityType proximity, TransportMask transports)
 			{
+			
 				_sessionOpts = alljoyn_sessionopts_create((byte)trafficType, isMultipoint ? 1 : 0, (byte)proximity, (ushort)transports);
 			}
 
 			internal SessionOpts(IntPtr sessionOpts)
 			{
+			
 				_sessionOpts = sessionOpts;
 				_isDisposed = true;
 			}
 
 			public bool IsCompatible(SessionOpts other)
 			{
+			
 				return (alljoyn_sessionopts_iscompatible(_sessionOpts, other._sessionOpts) == 1 ? true : false);
 			}
 
 			public static int Compare(SessionOpts one, SessionOpts other)
 			{
+			
 				return alljoyn_sessionopts_cmp(one._sessionOpts, other._sessionOpts);
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_sessionopts_create(byte traffic, int isMultipoint,
 				byte proximity, ushort transports);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern void alljoyn_sessionopts_destroy(IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern byte alljoyn_sessionopts_traffic(IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_sessionopts_multipoint(IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern byte alljoyn_sessionopts_proximity(IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern ushort alljoyn_sessionopts_transports(IntPtr opts);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_sessionopts_iscompatible(IntPtr one, IntPtr other);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_sessionopts_cmp(IntPtr one, IntPtr other);
 			#endregion
 
@@ -112,6 +116,7 @@ namespace AllJoynUnity
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_sessionopts_destroy(_sessionOpts);
@@ -122,6 +127,7 @@ namespace AllJoynUnity
 
 			~SessionOpts()
 			{
+			
 				Dispose(false);
 			}
 			#endregion

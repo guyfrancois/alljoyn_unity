@@ -18,20 +18,29 @@ namespace AllJoynUnity
 
 			public Message(BusAttachment bus)
 			{
+			
 				_message = alljoyn_message_create(bus.UnmanagedPtr);
 			}
 
 			internal Message(IntPtr message)
 			{
+			
 				_message = message;
 				_isDisposed = true;
 			}
 
 			public MsgArg GetArg(int index)
 			{
+			
 				IntPtr msgArgs = alljoyn_message_getarg(_message, (UIntPtr)index);
 				return (msgArgs != IntPtr.Zero ? new MsgArg(msgArgs) : null);
 			}
+
+            public string GetSender()
+            {
+                IntPtr sender = alljoyn_message_getsender(_message);
+                return (sender != IntPtr.Zero ? Marshal.PtrToStringAnsi(sender) : null);
+            }
 
 			public MsgArg this[int i]
 			{
@@ -50,6 +59,7 @@ namespace AllJoynUnity
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_message_destroy(_message);
@@ -60,19 +70,23 @@ namespace AllJoynUnity
 
 			~Message()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_message_create(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern void alljoyn_message_destroy(IntPtr msg);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_message_getarg(IntPtr msg, UIntPtr argN);
+
+            [DllImport(DLL_IMPORT_TARGET)]
+            private static extern IntPtr alljoyn_message_getsender(IntPtr msg);
 			#endregion
 
 			#region Internal Properties

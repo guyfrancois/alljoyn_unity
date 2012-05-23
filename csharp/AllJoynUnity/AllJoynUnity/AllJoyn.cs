@@ -1,5 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+
 
 namespace AllJoynUnity
 {
@@ -23,7 +25,7 @@ namespace AllJoynUnity
 		/// Call to trigger callbacks on main thread.
 		public static int TriggerCallbacks()
 		{
-			return alljoyn_unity_deferred_callbacks_process();
+            return alljoyn_unity_deferred_callbacks_process();
 		}
 
 		/// Enable/disable main-thread-only callbacks.
@@ -48,31 +50,37 @@ namespace AllJoynUnity
 		{
 			private QStatus(int x)
 			{
+			
 				value = x;
 			}
 
 			public static implicit operator QStatus(int x)
 			{
+			
 				return new QStatus(x);
 			}
 
 			public static implicit operator int(QStatus x)
 			{
+			
 				return x.value;
 			}
 
 			public static bool operator true(QStatus x)
 			{
+			
 				return (x == OK);
 			}
 
 			public static bool operator false(QStatus x)
 			{
+			
 				return (x != OK);
 			}
 
 			public static bool operator ==(QStatus x, QStatus y)
 			{
+			
 				return x.value == y.value;
 			}
 
@@ -90,26 +98,31 @@ namespace AllJoynUnity
 
 			public override int GetHashCode()
 			{
+			
 				return value;
 			}
 
 			public override string ToString()
 			{
-				return Marshal.PtrToStringAnsi(QCC_StatusText(value));
+			
+                return Marshal.PtrToStringAnsi(QCC_StatusText(value));
 			}
 
 			public static implicit operator string(QStatus x)
 			{
+			
 				return x.value.ToString();
 			}
 
 			public static bool operator !=(QStatus x, QStatus y)
 			{
+			
 				return x.value != y.value;
 			}
 
 			public static bool operator !(QStatus x)
 			{
+			
 				return (x != OK);
 			}
 
@@ -331,20 +344,21 @@ namespace AllJoynUnity
 		}
 
 		#region DLL Imports
-		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+        [DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
 		private extern static IntPtr alljoyn_getversion();
 
-		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(DLL_IMPORT_TARGET)]
 		private extern static IntPtr alljoyn_getbuildinfo();
 
-		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(DLL_IMPORT_TARGET)]
 		private extern static IntPtr QCC_StatusText(int status);
 
-		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(DLL_IMPORT_TARGET)]
 		private extern static int alljoyn_unity_deferred_callbacks_process();
 
-		[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+		[DllImport(DLL_IMPORT_TARGET)]
 		private extern static void alljoin_unity_set_deferred_callback_mainthread_only(int mainthread_only);
+
 		#endregion
 	}
 }

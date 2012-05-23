@@ -11,6 +11,7 @@ namespace AllJoynUnity
 		{
 			public BusObject(BusAttachment bus, string path, bool isPlaceholder)
 			{
+			
 				// Can't let the GC free these delegates so they must be members
 				_propertyGet = new InternalPropertyGetEventHandler(this._PropertyGet);
 				_propertySet = new InternalPropertySetEventHandler(this._PropertySet);
@@ -20,24 +21,29 @@ namespace AllJoynUnity
 				// Ref holder for method handler internal delegates
 				_methodHandlerDelegateRefHolder = new List<InternalMethodHandler>();
 
-				BusObjectCallbacks callbacks;
 				callbacks.property_get = Marshal.GetFunctionPointerForDelegate(_propertyGet);
 				callbacks.property_set = Marshal.GetFunctionPointerForDelegate(_propertySet);
 				callbacks.object_registered = Marshal.GetFunctionPointerForDelegate(_objectRegistered);
 				callbacks.object_unregistered = Marshal.GetFunctionPointerForDelegate(_objectUnregistered);
 
-				GCHandle gch = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
-				_busObject = alljoyn_busobject_create(bus.UnmanagedPtr, path, isPlaceholder ? 1 : 0, gch.AddrOfPinnedObject(), IntPtr.Zero);
-				gch.Free();
+				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
+				_busObject = alljoyn_busobject_create(bus.UnmanagedPtr, path, isPlaceholder ? 1 : 0, main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
+
+            public IntPtr getAddr()
+            {
+                return _busObject;
+            }
 
 			public QStatus AddInterface(InterfaceDescription iface)
 			{
+			
 				return alljoyn_busobject_addinterface(_busObject, iface.UnmanagedPtr);
 			}
 
 			public QStatus AddMethodHandler(InterfaceDescription.Member member, MethodHandler handler)
 			{
+			
 				InternalMethodHandler internalMethodHandler = (IntPtr bus, IntPtr m, IntPtr msg) =>
 				{
 					MethodHandler h = handler;
@@ -61,20 +67,34 @@ namespace AllJoynUnity
 
 			protected QStatus MethodReply(Message message, MsgArgs args)
 			{
+			
 				return alljoyn_busobject_methodreply_args(_busObject, message.UnmanagedPtr, args.UnmanagedPtr,
 					(UIntPtr)args.Length);
 			}
 
 			protected QStatus MethodReply(Message message, string error, string errorMessage)
 			{
+			
 				return alljoyn_busobject_methodreply_err(_busObject, message.UnmanagedPtr, error,
 					errorMessage);
 			}
 
 			protected QStatus MethodReply(Message message, QStatus status)
 			{
+			
 				return alljoyn_busobject_methodreply_status(_busObject, message.UnmanagedPtr, status.value);
 			}
+
+            protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
+            {
+                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0);
+            }
+
+            protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
+                MsgArgs args, ushort timeToLife, byte flags)
+            {
+                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags);
+            }
 
 			#region Properties
 			public string Path
@@ -102,64 +122,72 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			public delegate void MethodHandler(InterfaceDescription.Member member, Message message);
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalMethodHandler(IntPtr bus, IntPtr member, IntPtr message);
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertyGetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertySetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectRegisteredEventHandler(IntPtr context);
-			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectUnregisteredEventHandler(IntPtr context);
 			#endregion
 
 			#region Virtual Methods
 			protected virtual void OnPropertyGet(string ifcName, string propName, MsgArg val)
 			{
+			
 			}
 
 			protected virtual void OnPropertySet(string ifcName, string propName, MsgArg val)
 			{
+			
 			}
 
 			protected virtual void OnObjectRegistered()
 			{
+			
 			}
 
 			protected virtual void OnObjectUnregistered()
 			{
+			
 			}
 			#endregion
 
 			#region Callbacks
 			private void _PropertyGet(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val)
 			{
+			
 				OnPropertyGet(Marshal.PtrToStringAnsi(ifcName),
 					Marshal.PtrToStringAnsi(propName), new MsgArg(val));
 			}
 
 			private void _PropertySet(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val)
 			{
+			
 				OnPropertySet(Marshal.PtrToStringAnsi(ifcName),
 					Marshal.PtrToStringAnsi(propName), new MsgArg(val));
 			}
 
 			private void _ObjectRegistered(IntPtr context)
 			{
+			
 				OnObjectRegistered();
 			}
 
 			private void _ObjectUnregistered(IntPtr context)
 			{
+			
 				OnObjectUnregistered();
 			}
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_busobject_create(
 				IntPtr busAttachment,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
@@ -167,33 +195,42 @@ namespace AllJoynUnity
 				IntPtr callbacks_in,
 				IntPtr context_in);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_busobject_destroy(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_busobject_getpath(IntPtr bus);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static UIntPtr alljoyn_busobject_getname(IntPtr bus, IntPtr buffer, UIntPtr bufferSz);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_addinterface(IntPtr bus, IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_addmethodhandlers(IntPtr bus,
 				IntPtr entries, UIntPtr numEntries);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_methodreply_args(IntPtr bus,
 				IntPtr msg, IntPtr msgArgs, UIntPtr numArgs);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_methodreply_err(IntPtr bus, IntPtr msg,
 				[MarshalAs(UnmanagedType.LPStr)] string error,
 				[MarshalAs(UnmanagedType.LPStr)] string errorMsg);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_methodreply_status(IntPtr bus, IntPtr msg, int status);
+
+            [DllImport(DLL_IMPORT_TARGET)]
+            private extern static int alljoyn_busobject_signal(IntPtr bus,
+                [MarshalAs(UnmanagedType.LPStr)] string destination,
+                uint sessionId,
+                InterfaceDescription._Member signal,
+                IntPtr msgArgs, UIntPtr numArgs,
+                ushort timeToLive, byte flags);
+
 			#endregion
 
 			#region IDisposable
@@ -205,9 +242,12 @@ namespace AllJoynUnity
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
-					Thread destroyThread = new Thread((object o) => { alljoyn_busobject_destroy(_busObject); });
+					Thread destroyThread = new Thread((object o) => {
+                        alljoyn_busobject_destroy(_busObject); 
+                    });
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
@@ -215,12 +255,14 @@ namespace AllJoynUnity
 						Thread.Sleep(0);
 					}
 					_busObject = IntPtr.Zero;
+                    main.Free();
 				}
 				_isDisposed = true;
 			}
 
 			~BusObject()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
@@ -257,10 +299,13 @@ namespace AllJoynUnity
 			IntPtr _busObject;
 			bool _isDisposed = false;
 
+            GCHandle main;
 			InternalPropertyGetEventHandler _propertyGet;
 			InternalPropertySetEventHandler _propertySet;
 			InternalObjectRegisteredEventHandler _objectRegistered;
 			InternalObjectUnregisteredEventHandler _objectUnregistered;
+
+            BusObjectCallbacks callbacks;
 
 			List<InternalMethodHandler> _methodHandlerDelegateRefHolder;
 			#endregion

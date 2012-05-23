@@ -10,6 +10,7 @@ namespace AllJoynUnity
 		{
 			public AuthListener()
 			{
+			
 				_requestCredentials = new InternalRequestCredentials(this._RequestCredentials);
 				_verifyCredentials = new InternalVerifyCredentials(this._VerifyCredentials);
 				_securityViolation = new InternalSecurityViolation(this._SecurityViolation);
@@ -21,9 +22,8 @@ namespace AllJoynUnity
 				callbacks.securityViolation = Marshal.GetFunctionPointerForDelegate(_securityViolation);
 				callbacks.authenticationComplete = Marshal.GetFunctionPointerForDelegate(_authenticationComplete);
 
-				GCHandle gch = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
-				_authListener = alljoyn_authlistener_create(gch.AddrOfPinnedObject(), IntPtr.Zero);
-				gch.Free();
+				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
+				_authListener = alljoyn_authlistener_create(main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
 			#region Virtual Methods
@@ -32,11 +32,13 @@ namespace AllJoynUnity
 
 			protected virtual bool VerifyCredentials(string authMechanism, string peerName, Credentials credentials)
 			{
+			
 				return false;
 			}
 
 			protected virtual void SecurityViolation(QStatus status, Message msg)
 			{
+			
 			}
 
 			protected abstract void AuthenticationComplete(string authMechanism, string peerName, bool success);
@@ -46,6 +48,7 @@ namespace AllJoynUnity
 			private int _RequestCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName, ushort authCount,
 				IntPtr userName, ushort credMask, IntPtr credentials)
 			{
+			
 				return (RequestCredentials(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
 					authCount, Marshal.PtrToStringAnsi(userName), (Credentials.CredentialFlags)credMask, new Credentials(credentials)) ? 1 : 0);
 			}
@@ -53,17 +56,20 @@ namespace AllJoynUnity
 			private int _VerifyCredentials(IntPtr context, IntPtr authMechanism, IntPtr peerName,
 				IntPtr credentials)
 			{
+			
 				return (VerifyCredentials(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
 					new Credentials(credentials)) ? 1 : 0);
 			}
 
 			private void _SecurityViolation(IntPtr context, int status, IntPtr msg)
 			{
+			
 				SecurityViolation(status, new Message(msg));
 			}
 
 			private void _AuthenticationComplete(IntPtr context, IntPtr authMechanism, IntPtr peerName, int success)
 			{
+			
 				AuthenticationComplete(Marshal.PtrToStringAnsi(authMechanism), Marshal.PtrToStringAnsi(peerName),
 					success == 1 ? true : false);
 			}
@@ -83,34 +89,38 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_authlistener_create(
 				IntPtr callbacks,
 				IntPtr context);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_authlistener_destroy(IntPtr listener);
 			#endregion
 
 			#region IDisposable
 			public void Dispose()
 			{
+			
 				Dispose(true);
 				GC.SuppressFinalize(this);
 			}
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_authlistener_destroy(_authListener);
 					_authListener = IntPtr.Zero;
+                    main.Free();
 				}
 				_isDisposed = true;
 			}
 
 			~AuthListener()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
@@ -138,6 +148,8 @@ namespace AllJoynUnity
 			#region Data
 			IntPtr _authListener;
 			bool _isDisposed = false;
+
+            GCHandle main;
 
 			InternalRequestCredentials _requestCredentials;
 			InternalVerifyCredentials _verifyCredentials;

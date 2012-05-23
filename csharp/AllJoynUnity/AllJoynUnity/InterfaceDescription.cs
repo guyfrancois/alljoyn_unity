@@ -24,12 +24,14 @@ namespace AllJoynUnity
 
 			internal InterfaceDescription(IntPtr interfaceDescription)
 			{
+			
 				_interfaceDescription = interfaceDescription;
 			}
 
 			#region Equality
 			public static bool operator ==(InterfaceDescription one, InterfaceDescription other)
 			{
+			
 				if((object)one == null && (object)other == null) return true;
 				else if((object)one == null || (object)other == null) return false;
 				return (alljoyn_interfacedescription_eql(one.UnmanagedPtr, other.UnmanagedPtr) == 1 ? true : false);
@@ -37,6 +39,7 @@ namespace AllJoynUnity
 
 			public static bool operator !=(InterfaceDescription one, InterfaceDescription other)
 			{
+			
 				return !(one == other);
 			}
 
@@ -54,6 +57,7 @@ namespace AllJoynUnity
 
 			public override int GetHashCode()
 			{
+			
 				return (int)_interfaceDescription;
 			}
 			#endregion
@@ -86,6 +90,7 @@ namespace AllJoynUnity
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames)
 			{
+			
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)AnnotationFlags.Default);
 			}
@@ -93,17 +98,26 @@ namespace AllJoynUnity
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames, AnnotationFlags annotation)
 			{
+			
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
 			}
 
+            public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
+            {
+                return alljoyn_interfacedescription_addmember(_interfaceDescription,
+                    (int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
+            }
+
 			public void Activate()
 			{
+			
 				alljoyn_interfacedescription_activate(_interfaceDescription);
 			}
 
 			public Member GetMember(string name)
 			{
+			
 				_Member retMember = new _Member();
 				if(alljoyn_interfacedescription_getmember(_interfaceDescription, name, ref retMember) == 1)
 				{
@@ -117,6 +131,7 @@ namespace AllJoynUnity
 
 			public Member[] GetMembers()
 			{
+			
 				UIntPtr numMembers = alljoyn_interfacedescription_getmembers(_interfaceDescription,
 					IntPtr.Zero, (UIntPtr)0);
 				_Member[] members = new _Member[(int)numMembers];
@@ -138,12 +153,14 @@ namespace AllJoynUnity
 
 			public bool HasMember(string name, string inSig, string outSig)
 			{
+			
 				return (alljoyn_interfacedescription_hasmember(_interfaceDescription,
 					name, inSig, outSig) == 1 ? true : false );
 			}
 
 			public Property GetProperty(string name)
 			{
+			
 				_Property retProp = new _Property();
 				if(alljoyn_interfacedescription_getproperty(_interfaceDescription, name, ref retProp) == 1)
 				{
@@ -157,6 +174,7 @@ namespace AllJoynUnity
 
 			public Property[] GetProperties()
 			{
+			
 				UIntPtr numProperties = alljoyn_interfacedescription_getproperties(_interfaceDescription,
 					IntPtr.Zero, (UIntPtr)0);
 				_Property[] props = new _Property[(int)numProperties];
@@ -178,12 +196,14 @@ namespace AllJoynUnity
 
 			public QStatus AddProperty(string name, string signature, AccessFlags access)
 			{
+			
 				return alljoyn_interfacedescription_addproperty(_interfaceDescription,
 					name, signature, (byte)access);
 			}
 
 			public bool HasProperty(string name)
 			{
+			
 				return (alljoyn_interfacedescription_hasproperty(_interfaceDescription, name) == 1 ? true : false);
 			}
 
@@ -302,7 +322,7 @@ namespace AllJoynUnity
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_addmember(
 				IntPtr iface,
 				int type,
@@ -312,53 +332,53 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string argNames,
 				byte annotation);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_interfacedescription_activate(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_getmember(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref _Member member);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static UIntPtr alljoyn_interfacedescription_getmembers(IntPtr iface,
 				IntPtr members, UIntPtr numMembers);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_hasmember(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				[MarshalAs(UnmanagedType.LPStr)] string inSig,
 				[MarshalAs(UnmanagedType.LPStr)] string outSig);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_getproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref _Property property);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static UIntPtr alljoyn_interfacedescription_getproperties(IntPtr iface,
 				IntPtr props, UIntPtr numProps);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_addproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				[MarshalAs(UnmanagedType.LPStr)] string signature,
 				byte access);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_hasproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_eql(IntPtr one, IntPtr other);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_hasproperties(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_interfacedescription_getname(IntPtr iface);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_issecure(IntPtr iface);
 			#endregion
 
@@ -374,7 +394,7 @@ namespace AllJoynUnity
 				public IntPtr argNames;
 				public byte annotation;
 #pragma warning disable 169 // Field is never used
-				private IntPtr internal_member;
+				public IntPtr internal_member;
 #pragma warning restore 169
 			}
 

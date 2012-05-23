@@ -20,6 +20,7 @@
 #include <alljoyn_c/InterfaceDescription.h>
 #include <qcc/Mutex.h>
 #include <stdio.h>
+#include "DeferredCallback.h"
 
 using namespace std;
 using namespace qcc;
@@ -54,6 +55,7 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_messagereceiver_signalhan
      *
      */
     if (signalCallbackMap.find(cpp_member) == signalCallbackMap.end()) {
+		AJ_DEBUG_LOG("Should add in the handler");
         ret = RegisterSignalHandler(this,
                                     static_cast<ajn::MessageReceiver::SignalHandler>(&BusAttachmentC::SignalHandlerRemap),
                                     cpp_member,
@@ -152,7 +154,13 @@ void BusAttachmentC::SignalHandlerRemap(const InterfaceDescription::Member* memb
              */
             if (it->second.sourcePath == NULL || strcmp(it->second.sourcePath, srcPath) == 0) {
                 alljoyn_messagereceiver_signalhandler_ptr remappedHandler = it->second.handler;
-                remappedHandler(&c_member, srcPath, (alljoyn_message) & message);
+// TODO This MUST change to a compile flag
+//This code is specific to Unity
+				DeferredCallback_3<void, const alljoyn_interfacedescription_member*, const char *, alljoyn_message>* dcb =
+					new DeferredCallback_3<void, const alljoyn_interfacedescription_member*, const char *, alljoyn_message>(remappedHandler, &c_member, srcPath, (alljoyn_message) & message);
+				DEFERRED_CALLBACK_EXECUTE(dcb);		
+//THis code is generic C
+//                remappedHandler(&c_member, srcPath, (alljoyn_message) & message);
             }
         }
     }

@@ -15,10 +15,14 @@ namespace basic_clientserver
 														"launchd:"};
 
 		private static bool sJoinComplete = false;
+		private bool sJoinCalled = false;
 		private static AllJoyn.BusAttachment sMsgBus;
 		private static MyBusListener sBusListener;
 		private static uint sSessionId;
 		public static string clientText;
+        private AllJoyn.SessionOpts opts;
+		
+		private static string sFoundName = null;
 
 		class MyBusListener : AllJoyn.BusListener
 		{
@@ -28,27 +32,13 @@ namespace basic_clientserver
 				Debug.Log("Client FoundAdvertisedName(name=" + name + ", prefix=" + namePrefix + ")");
 				if(string.Compare(SERVICE_NAME, name) == 0)
 				{
-					// We found a remote bus that is advertising basic service's  well-known name so connect to it
-					AllJoyn.SessionOpts opts = new AllJoyn.SessionOpts(AllJoyn.SessionOpts.TrafficType.Messages, false,
-						AllJoyn.SessionOpts.ProximityType.Any, AllJoyn.TransportMask.Any);
-
-					AllJoyn.QStatus status = sMsgBus.JoinSession(name, SERVICE_PORT, null, out sSessionId, opts);
-					if(status)
-					{
-						clientText += "Client JoinSession SUCCESS (Session id=" + sSessionId + ")\n";
-						Debug.Log("Client JoinSession SUCCESS (Session id=" + sSessionId + ")");
-					}
-					else
-					{
-						clientText += "Client JoinSession failed (status=" + status.ToString() + ")\n";
-						Debug.Log("Client JoinSession failed (status=" + status.ToString() + ")");
-					}
+					sFoundName = name;
 				}
-				sJoinComplete = true;
 			}
 
 			protected override void NameOwnerChanged(string busName, string previousOwner, string newOwner)
 			{
+			
 				if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
 					clientText += "Client NameOwnerChanged: name=" + busName + ", oldOwner=" +
@@ -70,9 +60,11 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
 			if(status)
 			{
+			
 				clientText += "Client Interface Created.\n";
 				Debug.Log("Client Interface Created.");
 				testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "cat", "ss", "s", "inStr1,inStr2,outStr");
+				testIntf.AddSignal("chat", "s", "str", 0);
 				testIntf.Activate();
 			}
 			else
@@ -84,6 +76,7 @@ namespace basic_clientserver
 			// Start the msg bus
 			if(status)
 			{
+			
 				status = sMsgBus.Start();
 				if(status)
 				{
@@ -100,6 +93,7 @@ namespace basic_clientserver
 			// Connect to the bus
 			if(status)
 			{
+			
 				for (int i = 0; i < connectArgs.Length; ++i)
 				{
 					status = sMsgBus.Connect(connectArgs[i]);
@@ -127,10 +121,69 @@ namespace basic_clientserver
 
 			if(status)
 			{
+			
 				sMsgBus.RegisterBusListener(sBusListener);
 				clientText += "Client BusListener Registered.\n";
 				Debug.Log("Client BusListener Registered.");
 			}
+			
+			// Begin discovery on the well-known name of the service to be called
+			status = sMsgBus.FindAdvertisedName(SERVICE_NAME);
+			if(!status)
+			{
+			
+				clientText += "Client org.alljoyn.Bus.FindAdvertisedName failed.\n";
+				Debug.Log("Client org.alljoyn.Bus.FindAdvertisedName failed.");
+			}
+			
+			AllJoyn.InterfaceDescription.Member chatMember = testIntf.GetMember("chat");
+			status = sMsgBus.RegisterSignalHandler(this.ChatSignalHandler, chatMember, null);
+			if(!status)
+			{
+				clientText +="Client Failed to add signal handler " + status + "\n";
+				Debug.Log("Client Failed to add signal handler " + status);
+			}
+			else {			
+				clientText +="Client add signal handler " + status + "\n";
+				Debug.Log("Client add signal handler " + status);
+			}
+			
+			status = sMsgBus.AddMatch("type='signal',member='chat'");
+			if(!status)
+			{
+				clientText +="Client Failed to add Match " + status.ToString() + "\n";
+				Debug.Log("Client Failed to add Match " + status.ToString());
+			}
+			else {			
+				clientText +="Client add Match " + status.ToString() + "\n";
+				Debug.Log("Client add Match " + status.ToString());
+			}
+		}
+		
+		public void ConnectToFoundName() {
+			sJoinCalled = true;
+			// We found a remote bus that is advertising basic service's  well-known name so connect to it
+			AllJoyn.SessionOpts opts = new AllJoyn.SessionOpts(AllJoyn.SessionOpts.TrafficType.Messages, false,
+				AllJoyn.SessionOpts.ProximityType.Any, AllJoyn.TransportMask.Any);
+
+			AllJoyn.QStatus status = sMsgBus.JoinSession(sFoundName, SERVICE_PORT, null, out sSessionId, opts);
+			if(status)
+			{
+				clientText += "Client JoinSession SUCCESS (Session id=" + sSessionId + ")\n";
+				Debug.Log("Client JoinSession SUCCESS (Session id=" + sSessionId + ")");
+				sJoinComplete = true;
+			}
+			else
+			{
+				clientText += "Client JoinSession failed (status=" + status.ToString() + ")\n";
+				Debug.Log("Client JoinSession failed (status=" + status.ToString() + ")");
+			}
+		}
+		
+		public void ChatSignalHandler(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
+		{
+			Debug.Log("Client Chat msg - "+message+": "+message[0]);
+			clientText += "Client Chat msg - "+message+": "+message[0]+ "\n";
 		}
 
 		public AllJoyn.QStatus Connect()
@@ -139,6 +192,7 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = sMsgBus.FindAdvertisedName(SERVICE_NAME);
 			if(!status)
 			{
+			
 				clientText += "Client org.alljoyn.Bus.FindAdvertisedName failed.\n";
 				Debug.Log("Client org.alljoyn.Bus.FindAdvertisedName failed.");
 			}
@@ -153,11 +207,20 @@ namespace basic_clientserver
 				return sJoinComplete;
 			}
 		}
+		
+		public bool FoundAdvertisedName
+		{
+			get
+			{
+				return sFoundName != null && !sJoinCalled;
+			}
+		}
 
 		public string CallRemoteMethod()
 		{
 			using(AllJoyn.ProxyBusObject remoteObj = new AllJoyn.ProxyBusObject(sMsgBus, SERVICE_NAME, SERVICE_PATH, sSessionId))
 			{
+			
 				AllJoyn.InterfaceDescription alljoynTestIntf = sMsgBus.GetInterface(INTERFACE_NAME);
 				if(alljoynTestIntf == null)
 				{

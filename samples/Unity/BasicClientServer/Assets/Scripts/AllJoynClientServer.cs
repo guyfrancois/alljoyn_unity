@@ -7,10 +7,10 @@ public class AllJoynClientServer : MonoBehaviour
 	void OnGUI ()
 	{
 		if(BasicServer.serverText != null){
-			GUI.TextArea (new Rect (0, 0, Screen.width, (Screen.height / 2)), BasicServer.serverText);
+			GUI.TextArea (new Rect (0, 0, Screen.width, (Screen.height / 3)), BasicServer.serverText);
 		}
 		if(BasicClient.clientText != null){
-			GUI.TextArea (new Rect (0, (Screen.height / 2), Screen.width, (Screen.height * 1 / 2)), BasicClient.clientText);
+			GUI.TextArea (new Rect (0, (Screen.height / 3), Screen.width, (Screen.height * 2 / 3)), BasicClient.clientText);
 		}
 	}
 	
@@ -21,17 +21,24 @@ public class AllJoynClientServer : MonoBehaviour
 		basicServer = new BasicServer();
 		basicClient = new BasicClient();
 
-		basicClient.Connect();
+		//basicClient.Connect();
 	}
 
 	// Update is called once per frame
-	void Update()
+    void Update()
 	{
-		if(basicClient.Connected && !gotReply)
+            System.GC.Collect();
+		if(basicClient.FoundAdvertisedName)
 		{
-			gotReply = true;
-			Debug.Log("BasicClient.CallRemoteMethod returned '" + basicClient.CallRemoteMethod() + "'");
+			basicClient.ConnectToFoundName();	
 		}
+		else if(basicClient.Connected)
+		{
+			//gotReply = true;
+		    Debug.Log("BasicClient.CallRemoteMethod returned '" + basicClient.CallRemoteMethod() + "'");
+			basicServer.SendTheMsg();
+		}
+        if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
 	}
 
 	BasicServer basicServer;

@@ -9,47 +9,57 @@ namespace AllJoynUnity
 		{
 			public SessionListener()
 			{
+			
 				_sessionLost = new InternalSessionLost(this._SessionLost);
 				_sessionMemberAdded = new InternalSessionMemberAdded(this._SessionMemberAdded);
 				_sessionMemberRemoved = new InternalSessionMemberRemoved(this._SessionMemberRemoved);
 
-				SessionListenerCallbacks callbacks;
 				callbacks.sessionLost = Marshal.GetFunctionPointerForDelegate(_sessionLost);
 				callbacks.sessionMemberAdded = Marshal.GetFunctionPointerForDelegate(_sessionMemberAdded);
 				callbacks.sessionMemberRemoved = Marshal.GetFunctionPointerForDelegate(_sessionMemberRemoved);
 
-				GCHandle gch = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
-				_sessionListener = alljoyn_sessionlistener_create(gch.AddrOfPinnedObject(), IntPtr.Zero);
-				gch.Free();
+				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
+				_sessionListener = alljoyn_sessionlistener_create(main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
+
+            public IntPtr getAddr()
+            {
+                return _sessionListener;
+            }
 
 			#region Virtual Methods
 			protected virtual void SessionLost(uint sessionId)
 			{
+			
 			}
 
 			protected virtual void SessionMemberAdded(uint sessionId, string uniqueName)
 			{
+			
 			}
 
 			protected virtual void SessionMemberRemoved(uint sessionId, string uniqueName)
 			{
+			
 			}
 			#endregion
 
 			#region Callbacks
 			private void _SessionLost(IntPtr context, uint sessionId)
 			{
+			
 				SessionLost(sessionId);
 			}
 
 			private void _SessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
+			
 				SessionMemberAdded(sessionId, Marshal.PtrToStringAnsi(uniqueName));
 			}
 
 			private void _SessionMemberRemoved(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
+			
 				SessionMemberRemoved(sessionId, Marshal.PtrToStringAnsi(uniqueName));
 			}
 			#endregion
@@ -64,12 +74,12 @@ namespace AllJoynUnity
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_sessionlistener_create(
 				IntPtr callbacks,
 				IntPtr context);
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_sessionlistener_destroy(IntPtr listener);
 			#endregion
 
@@ -82,16 +92,19 @@ namespace AllJoynUnity
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_sessionlistener_destroy(_sessionListener);
 					_sessionListener = IntPtr.Zero;
+                    main.Free();
 				}
 				_isDisposed = true;
 			}
 
 			~SessionListener()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
@@ -119,9 +132,11 @@ namespace AllJoynUnity
 			IntPtr _sessionListener;
 			bool _isDisposed = false;
 
+            GCHandle main;
 			InternalSessionLost _sessionLost;
 			InternalSessionMemberAdded _sessionMemberAdded;
 			InternalSessionMemberRemoved _sessionMemberRemoved;
+            SessionListenerCallbacks callbacks;
 			#endregion
 		}
 	}

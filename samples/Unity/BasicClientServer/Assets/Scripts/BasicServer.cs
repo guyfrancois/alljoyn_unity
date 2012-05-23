@@ -1,5 +1,6 @@
 using UnityEngine;
 using AllJoynUnity;
+using System.Runtime.InteropServices;
 
 namespace basic_clientserver
 {
@@ -13,6 +14,7 @@ namespace basic_clientserver
 		private static readonly string[] connectArgs = {"unix:abstract=alljoyn",
 														"tcp:addr=127.0.0.1,port=9955",
 														"launchd:"};
+        
 
 		private AllJoyn.BusAttachment msgBus;
 		private MyBusListener busListener;
@@ -20,36 +22,44 @@ namespace basic_clientserver
 		private TestBusObject testObj;
 		private AllJoyn.InterfaceDescription testIntf;
 		public static string serverText;
-
+        public AllJoyn.SessionOpts opts;
+       
 		class TestBusObject : AllJoyn.BusObject
 		{
+			private AllJoyn.InterfaceDescription.Member chatMember;
+			
 			public TestBusObject(AllJoyn.BusAttachment bus, string path) : base(bus, path, false)
 			{
+			
 				AllJoyn.InterfaceDescription exampleIntf = bus.GetInterface(INTERFACE_NAME);
 				AllJoyn.QStatus status = AddInterface(exampleIntf);
 				if(!status)
 				{
-					serverText += "Server Failed to add interface " + status + "\n";
-					Debug.Log("Server Failed to add interface " + status);
+					serverText += "Server Failed to add interface " + status.ToString() + "\n";
+					Debug.Log("Server Failed to add interface " + status.ToString());
 				}
 
 				AllJoyn.InterfaceDescription.Member catMember = exampleIntf.GetMember("cat");
 				status = AddMethodHandler(catMember, this.Cat);
 				if(!status)
 				{
-					serverText +="Server Failed to add method handler " + status + "\n";
-					Debug.Log("Server Failed to add method handler " + status);
+					serverText +="Server Failed to add method handler " + status.ToString() + "\n";
+					Debug.Log("Server Failed to add method handler " + status.ToString());
 				}
+				
+				chatMember = exampleIntf.GetMember("chat");
 			}
 
 			protected override void OnObjectRegistered ()
 			{
+			
 				serverText += "Server ObjectRegistered has been called\n";
 				Debug.Log("Server ObjectRegistered has been called");
 			}
 
 			protected void Cat(AllJoyn.InterfaceDescription.Member member, AllJoyn.Message message)
 			{
+			
 				string outStr = (string)message[0] + (string)message[1];
 				AllJoyn.MsgArgs outArgs = new AllJoyn.MsgArgs(1);
 				outArgs[0] = outStr;
@@ -61,12 +71,29 @@ namespace basic_clientserver
 					Debug.Log("Server Ping: Error sending reply");
 				}
 			}
+			
+			public void SendChatSignal(string msg) {
+				AllJoyn.MsgArgs payload = new AllJoyn.MsgArgs(1);
+				payload[0] = msg;
+				AllJoyn.QStatus status = Signal(null, theSessionId, chatMember, payload, 0, 0);
+				if(!status) {
+					Debug.Log("Server failed to send signal: "+status.ToString());	
+				}
+			}
 		}
 
 		class MyBusListener : AllJoyn.BusListener
 		{
+
+            protected override void ListenerRegistered(AllJoyn.BusAttachment busAttachment)
+            {
+                serverText += "Server ListenerRegistered: busAttachment=" + busAttachment + "\n";
+                Debug.Log("Server ListenerRegistered: busAttachment=" + busAttachment);
+            }
+
 			protected override void NameOwnerChanged(string busName, string previousOwner, string newOwner)
 			{
+			
 				if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
 					serverText += "Server NameOwnerChanged: name=" + busName + ", oldOwner=" +
@@ -81,6 +108,7 @@ namespace basic_clientserver
 		{
 			protected override bool AcceptSessionJoiner(ushort sessionPort, string joiner, AllJoyn.SessionOpts opts)
 			{
+			
 				if (sessionPort != SERVICE_PORT)
 				{
 					serverText += "Server Rejecting join attempt on unexpected session port " + sessionPort + "\n";
@@ -95,7 +123,15 @@ namespace basic_clientserver
 					", opts.transports=" + opts.Transports + ")");
 				return true;
 			}
+					
+			protected override void SessionJoined(ushort sessionPort, uint sessionId, string joiner)
+			{
+						Debug.Log("Session Joined!!!!!!");
+				theSessionId = sessionId;
+			}
 		}
+				
+		private static uint theSessionId = 0;
 
 		public BasicServer()
 		{
@@ -107,9 +143,11 @@ namespace basic_clientserver
 			AllJoyn.QStatus status = msgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
 			if(status)
 			{
+			
 				serverText += "Server Interface Created.\n";
 				Debug.Log("Server Interface Created.");
 				testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "cat", "ss", "s", "inStr1,inStr2,outStr");
+				testIntf.AddSignal("chat", "s", "str", 0);
 				testIntf.Activate();
 			}
 			else
@@ -122,6 +160,7 @@ namespace basic_clientserver
 			busListener = new MyBusListener();
 			if(status)
 			{
+			
 				msgBus.RegisterBusListener(busListener);
 				serverText += "Server BusListener Registered.\n";
 				Debug.Log("Server BusListener Registered.");
@@ -129,10 +168,10 @@ namespace basic_clientserver
 
 			// Set up bus object
 			testObj = new TestBusObject(msgBus, SERVICE_PATH);
-
 			// Start the msg bus
 			if(status)
 			{
+			
 				status = msgBus.Start();
 				if(status)
 				{
@@ -171,6 +210,7 @@ namespace basic_clientserver
 			// Request name
 			if(status)
 			{
+			
 				status = msgBus.RequestName(SERVICE_NAME,
 					AllJoyn.DBus.NameFlags.ReplaceExisting | AllJoyn.DBus.NameFlags.DoNotQueue);
 				if(!status)
@@ -181,10 +221,11 @@ namespace basic_clientserver
 			}
 
 			// Create session
-			AllJoyn.SessionOpts opts = new AllJoyn.SessionOpts(AllJoyn.SessionOpts.TrafficType.Messages, false,
+			opts = new AllJoyn.SessionOpts(AllJoyn.SessionOpts.TrafficType.Messages, false,
 					AllJoyn.SessionOpts.ProximityType.Any, AllJoyn.TransportMask.Any);
 			if(status)
 			{
+			
 				ushort sessionPort = SERVICE_PORT;
 				sessionPortListener = new MySessionPortListener();
 				status = msgBus.BindSessionPort(ref sessionPort, opts, sessionPortListener);
@@ -198,6 +239,7 @@ namespace basic_clientserver
 			// Advertise name
 			if(status)
 			{
+			
 				status = msgBus.AdvertiseName(SERVICE_NAME, opts.Transports);
 				if(!status)
 				{
@@ -205,6 +247,8 @@ namespace basic_clientserver
 					Debug.Log("Server Failed to advertise name " + SERVICE_NAME + " (" + status + ")");
 				}
 			}
+            serverText += "Completed BasicService Constructor\n";
+            Debug.Log("Completed BasicService Constructor");
 		}
 
 		public bool KeepRunning
@@ -212,6 +256,12 @@ namespace basic_clientserver
 			get
 			{
 				return true;
+			}
+		}
+		
+		public void SendTheMsg() {
+			if(theSessionId != 0) {
+				testObj.SendChatSignal("this is a signal test");
 			}
 		}
 	}

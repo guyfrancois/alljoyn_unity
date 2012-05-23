@@ -9,6 +9,7 @@ namespace AllJoynUnity
 		{
 			public MsgArgs(uint numArgs)
 			{
+			
 				_msgArgs = alljoyn_msgarg_array_create((UIntPtr)numArgs);
 				_argArray = new MsgArg[numArgs];
 				for(uint i = 0; i < numArgs; i++)
@@ -47,12 +48,14 @@ namespace AllJoynUnity
 			#region IDisposable
 			public void Dispose()
 			{
+			
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
 			protected virtual void Dispose(bool disposing)
 			{
+			
 				if(!_isDisposed)
 				{
 					alljoyn_msgarg_destroy(_msgArgs);
@@ -63,15 +66,16 @@ namespace AllJoynUnity
 
 			~MsgArgs()
 			{
+			
 				Dispose(false);
 			}
 			#endregion
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_array_create(UIntPtr numArgs); // UIntPtr must map to the same size as size_t, not a typo
 
-			[DllImport(DLL_IMPORT_TARGET, CallingConvention=CallingConvention.Cdecl)]
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern void alljoyn_msgarg_destroy(IntPtr arg);
 			#endregion
 
