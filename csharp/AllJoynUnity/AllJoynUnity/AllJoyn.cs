@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
-
+using System.Threading;
 
 namespace AllJoynUnity
 {
@@ -9,6 +9,8 @@ namespace AllJoynUnity
 	{
 		// DLL name for externs
 		private const string DLL_IMPORT_TARGET = "alljoyn_c";
+
+        private static Thread callbackPumpThread = null;
 
 		/// Get the version string from AllJoyn.
 		public static string GetVersion()
@@ -21,6 +23,27 @@ namespace AllJoynUnity
 		{
 			return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
 		}
+
+        public static void StartAllJoynCallbackProcessing()
+        {
+            if (callbackPumpThread == null)
+            {
+                alljoin_unity_set_deferred_callback_mainthread_only(1);
+                callbackPumpThread = new Thread((object o) =>
+                {
+                    int numProcessed = 0;
+                    while (true)
+                    {
+                        numProcessed = alljoyn_unity_deferred_callbacks_process();
+                        Thread.Sleep(numProcessed == 0 ? 3 : 5);
+                    }
+                });
+            }
+            if (!callbackPumpThread.IsAlive)
+            {
+                callbackPumpThread.Start();
+            }
+        }
 
 		/// Call to trigger callbacks on main thread.
 		public static int TriggerCallbacks()

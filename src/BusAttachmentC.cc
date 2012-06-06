@@ -55,7 +55,6 @@ QStatus BusAttachmentC::RegisterSignalHandlerC(alljoyn_messagereceiver_signalhan
      *
      */
     if (signalCallbackMap.find(cpp_member) == signalCallbackMap.end()) {
-		AJ_DEBUG_LOG("Should add in the handler");
         ret = RegisterSignalHandler(this,
                                     static_cast<ajn::MessageReceiver::SignalHandler>(&BusAttachmentC::SignalHandlerRemap),
                                     cpp_member,

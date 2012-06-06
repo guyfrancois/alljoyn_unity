@@ -251,7 +251,7 @@ namespace AllJoynUnity
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
-						AllJoyn.TriggerCallbacks();
+						//AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
 					_busObject = IntPtr.Zero;

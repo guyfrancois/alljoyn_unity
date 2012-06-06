@@ -96,7 +96,7 @@ namespace AllJoynUnity
 				joinSessionThread.Start();
 				while(joinSessionThread.IsAlive)
 				{
-					AllJoyn.TriggerCallbacks();
+					//AllJoyn.TriggerCallbacks();
 					Thread.Sleep(1);
 				}
 				
@@ -195,7 +195,7 @@ namespace AllJoynUnity
 				bindThread.Start();
 				while(bindThread.IsAlive)
 				{
-					AllJoyn.TriggerCallbacks();
+					//AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
 				}
 				sessionPort = otherSessionPort;
@@ -212,7 +212,7 @@ namespace AllJoynUnity
 				bindThread.Start();
 				while(bindThread.IsAlive)
 				{
-					AllJoyn.TriggerCallbacks();
+					//AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
 				}
 				return ret;
@@ -499,7 +499,7 @@ namespace AllJoynUnity
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
-						AllJoyn.TriggerCallbacks();
+						//AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
 					_busAttachment = IntPtr.Zero;
