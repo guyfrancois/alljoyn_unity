@@ -62,7 +62,7 @@ namespace basic_clientserver
 		{
 			protected override void NameOwnerChanged(string busName, string previousOwner, string newOwner)
 			{
-				if(string.Compare(SERVICE_NAME, busName) == 0)
+				//if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
 					Console.WriteLine("Server NameOwnerChanged: name=" + busName + ", oldOwner=" +
 						previousOwner + ", newOwner=" + newOwner);
@@ -181,6 +181,7 @@ namespace basic_clientserver
 					Console.WriteLine("Server Failed to advertise name {0} ({1})", SERVICE_NAME, status);
 				}
 			}
+            Console.WriteLine("Should have setup server");
 		}
 
 		public bool KeepRunning

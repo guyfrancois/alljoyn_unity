@@ -10,9 +10,6 @@ namespace basic_clientserver
 			Console.WriteLine("AllJoyn Library version: " + AllJoyn.GetVersion());
 			Console.WriteLine("AllJoyn Library buildInfo: " + AllJoyn.GetBuildInfo());
 
-			// Enable callbacks on main thread only
-			AllJoyn.SetMainThreadOnlyCallbacks(true);
-
 			BasicServer basicServer = new BasicServer();
 			BasicClient basicClient = new BasicClient();
 
@@ -20,16 +17,20 @@ namespace basic_clientserver
 
 			while(!basicClient.Connected)
 			{
-				AllJoyn.TriggerCallbacks(); // Pump messages
 				System.Threading.Thread.Sleep(1);
 			}
 
 			Console.WriteLine("BasicClient.CallRemoteMethod returned '{0}'", basicClient.CallRemoteMethod());
-
+            
 			while(basicServer.KeepRunning)
 			{
-				AllJoyn.TriggerCallbacks(); // Pump messages
 				System.Threading.Thread.Sleep(1);
+                //System.GC.Collect();
+                //System.GC.WaitForPendingFinalizers();
+                //System.GC.WaitForFullGCComplete();
+                //System.GC.Collect();
+                Console.WriteLine("BasicClient.CallRemoteMethod returned '{0}'", basicClient.CallRemoteMethod());
+
 			}
 		}
 	}

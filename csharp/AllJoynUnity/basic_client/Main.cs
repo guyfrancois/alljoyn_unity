@@ -58,9 +58,6 @@ namespace basic_client
 			Console.WriteLine("AllJoyn Library version: " + AllJoyn.GetVersion());
 			Console.WriteLine("AllJoyn Library buildInfo: " + AllJoyn.GetBuildInfo());
 
-			// Enable callbacks on main thread only
-			AllJoyn.SetMainThreadOnlyCallbacks(true);
-
 			// Create message bus
 			sMsgBus = new AllJoyn.BusAttachment("myApp", true);
 
@@ -136,7 +133,6 @@ namespace basic_client
 			// Wait for join session to complete
 			while(sJoinComplete == false)
 			{
-				AllJoyn.TriggerCallbacks(); // Pump messages
 				System.Threading.Thread.Sleep(1);
 			}
 

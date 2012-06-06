@@ -5,8 +5,8 @@ namespace basic_clientserver
 {
 	class BasicClient
 	{
-		private const string INTERFACE_NAME = "org.alljoyn.Bus.method_sample";
-		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample";
+		private const string INTERFACE_NAME = "org.alljoyn.Bus.method_sample.tw";
+		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample.tw";
 		private const string SERVICE_PATH = "/method_sample";
 		private const ushort SERVICE_PORT = 25;
 
