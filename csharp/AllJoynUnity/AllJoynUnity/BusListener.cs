@@ -10,7 +10,6 @@ namespace AllJoynUnity
 		{
 			public BusListener()
 			{
-			
 				// Can't let the GC free these delegates so they must be members
 				_listenerRegistered = new InternalListenerRegisteredDelegate(_ListenerRegistered);
 				_listenerUnregistered = new InternalListenerUnregisteredDelegate(_ListenerUnregistered);
@@ -68,49 +67,77 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _ListenerRegistered(IntPtr context, IntPtr bus)
 			{
-			
-				_registeredBus = BusAttachment.MapBusAttachment(bus);
-				ListenerRegistered(_registeredBus);
+                IntPtr _bus = bus;
+			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+				        _registeredBus = BusAttachment.MapBusAttachment(_bus);
+				        ListenerRegistered(_registeredBus);
+                    });
+                callIt.Start();
 			}
 
 			private void _ListenerUnregistered(IntPtr context)
 			{
-			
-				ListenerUnregistered();
-				_registeredBus = null;
+			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                {
+				    ListenerUnregistered();
+				    _registeredBus = null;
+                });
+                callIt.Start();
 			}
 
 			private void _FoundAdvertisedName(IntPtr context, IntPtr name, System.UInt16 transport, IntPtr namePrefix)
 			{
-			
-				FoundAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
-							Marshal.PtrToStringAnsi(namePrefix));
+                String _name = Marshal.PtrToStringAnsi(name);
+                TransportMask _transport = (TransportMask)transport;
+                String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                        {
+                            FoundAdvertisedName(_name, _transport, _namePrefix);
+                        });
+                callIt.Start();
 			}
 
 			private void _LostAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
 			{
-			
-				LostAdvertisedName(Marshal.PtrToStringAnsi(name), (TransportMask)transport,
-							Marshal.PtrToStringAnsi(namePrefix));
+                String _name = Marshal.PtrToStringAnsi(name);
+                TransportMask _transport = (TransportMask)transport;
+                String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
+			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                        {
+				            LostAdvertisedName(_name, _transport, _namePrefix);
+                        });
+                callIt.Start();
 			}
 
 			private void _NameOwnerChanged(IntPtr context, IntPtr busName, IntPtr previousOwner, IntPtr newOwner)
 			{
-			
-                NameOwnerChanged(Marshal.PtrToStringAnsi(busName), Marshal.PtrToStringAnsi(previousOwner),
-							Marshal.PtrToStringAnsi(newOwner));
+                String _busName = Marshal.PtrToStringAnsi(busName);
+                String _previousOwner = Marshal.PtrToStringAnsi(previousOwner);
+                String _newOwner = Marshal.PtrToStringAnsi(newOwner);
+			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        NameOwnerChanged(_busName, _previousOwner, _newOwner);
+                    });
+                callIt.Start();
 			}
 
 			private void _BusStopping(IntPtr context)
 			{
-			
-				BusStopping();
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        BusStopping();
+                    });
+                callIt.Start();
 			}
 
 			private void _BusDisconnected(IntPtr context)
 			{
-			
-				BusDisconnected();
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        BusDisconnected();
+                    });
+                callIt.Start();
 			}
 			#endregion
 
@@ -148,7 +175,7 @@ namespace AllJoynUnity
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
-						//AllJoyn.TriggerCallbacks();
+						AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
 

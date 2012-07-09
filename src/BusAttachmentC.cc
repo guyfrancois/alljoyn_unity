@@ -95,6 +95,7 @@ QStatus BusAttachmentC::UnregisterSignalHandlerC(alljoyn_messagereceiver_signalh
                 if (srcPath == NULL || strcmp(it->second.sourcePath, srcPath) == 0) {
                     signalCallbackMap.erase(it);
                     return_status = ER_OK;
+					break;
                 }
             }
         }
@@ -119,7 +120,6 @@ QStatus BusAttachmentC::UnregisterAllHandlersC() {
             signalCallbackMap.erase(it);
         }
     }
-
     signalCallbackMapLock.Unlock(MUTEX_CONTEXT);
     return UnregisterAllHandlers(this);
 }

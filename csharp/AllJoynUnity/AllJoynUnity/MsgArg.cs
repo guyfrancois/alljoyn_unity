@@ -95,6 +95,11 @@ namespace AllJoynUnity
 				return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
 			}
 
+            public static implicit operator byte[](MsgArg arg)
+            {
+                return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
+            }
+
 			public string ObjectPath
 			{
 				get
@@ -233,6 +238,9 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_as_variant(IntPtr args, UIntPtr idx);
+
+            [DllImport(DLL_IMPORT_TARGET)]
+            private static extern byte[] alljoyn_msgarg_as_array(IntPtr args, UIntPtr idx);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 

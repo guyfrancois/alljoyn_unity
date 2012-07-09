@@ -36,14 +36,19 @@ namespace AllJoynUnity
 			#region Callbacks
 			private int _AcceptSessionJoiner(IntPtr context, ushort sessionPort, IntPtr joiner, IntPtr opts)
 			{
-			
 				return (AcceptSessionJoiner(sessionPort, Marshal.PtrToStringAnsi(joiner), new SessionOpts(opts)) ? 1 : 0);
 			}
 
 			private void _SessionJoined(IntPtr context, ushort sessionPort, uint sessionId, IntPtr joiner)
 			{
-			
-				SessionJoined(sessionPort, sessionId, Marshal.PtrToStringAnsi(joiner));
+                ushort _sessionPort = sessionPort;
+                uint _sessionId = sessionId;
+                String _joiner = Marshal.PtrToStringAnsi(joiner);
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        SessionJoined(_sessionPort, _sessionId, _joiner);
+                    });
+                callIt.Start();
 			}
 			#endregion
 

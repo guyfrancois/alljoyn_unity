@@ -287,6 +287,8 @@ QStatus alljoyn_busattachment_removematch(alljoyn_busattachment bus, const char*
 QStatus alljoyn_busattachment_setsessionlistener(alljoyn_busattachment bus, alljoyn_sessionid sessionId,
                                                  alljoyn_sessionlistener listener)
 {
+	if(listener == NULL)
+		return ((ajn::BusAttachmentC*)bus)->SetSessionListener(sessionId, NULL);
     return ((ajn::BusAttachmentC*)bus)->SetSessionListener(sessionId, (ajn::SessionListener*)listener);
 }
 

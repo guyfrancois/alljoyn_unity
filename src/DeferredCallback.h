@@ -31,6 +31,9 @@
 #   define DEFERRED_CALLBACK_EXECUTE(cb) cb->Execute()
 #endif
 
+//#include <android/log.h>
+//#define AJ_DEBUG_LOG(s, ...) __android_log_print(ANDROID_LOG_DEBUG, "Unity", s, ## __VA_ARGS__)
+
 namespace ajn {
 
 class DeferredCallback {

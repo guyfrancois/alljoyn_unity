@@ -11,9 +11,10 @@ namespace AllJoynUnity
 		{
 			public BusAttachment(string applicationName, bool allowRemoteMessages)
             {
+                SetMainThreadOnlyCallbacks(true);
                 _busAttachment = alljoyn_busattachment_create(applicationName, allowRemoteMessages ? 1 : 0);
 
-                _signalHandlerDelegateRefHolder = new List<InternalSignalHandler>();
+                _signalHandlerDelegateRefHolder = new Dictionary<SignalHandler, InternalSignalHandler>();
                 if(_sBusAttachmentMap == null) _sBusAttachmentMap = new Dictionary<IntPtr, BusAttachment>();
                 _sBusAttachmentMap.Add(_busAttachment, this);
 			}
@@ -54,7 +55,7 @@ namespace AllJoynUnity
 
 			public QStatus Connect(string connectSpec)
 			{
-			
+                StartAllJoynCallbackProcessing();
 				return alljoyn_busattachment_connect(_busAttachment, connectSpec);
 			}
 
@@ -96,8 +97,8 @@ namespace AllJoynUnity
 				joinSessionThread.Start();
 				while(joinSessionThread.IsAlive)
 				{
-					//AllJoyn.TriggerCallbacks();
-					Thread.Sleep(1);
+					AllJoyn.TriggerCallbacks();
+					Thread.Sleep(0);
 				}
 				
 				sessionId = sessionId_out;
@@ -141,11 +142,10 @@ namespace AllJoynUnity
             {
                 InternalSignalHandler internalSignalHandler = (IntPtr m, IntPtr s, IntPtr msg) =>
                 {
-                    SignalHandler h = handler;
-                    h(new InterfaceDescription.Member(m), Marshal.PtrToStringAnsi(s), new Message(msg));
+                            SignalHandler h = handler;
+                            h(new InterfaceDescription.Member(m), Marshal.PtrToStringAnsi(s), new Message(msg));
                 };
-                _signalHandlerDelegateRefHolder.Add(internalSignalHandler);
-                //_signalHandlerDelegateRefHolder.Add(handler);
+                _signalHandlerDelegateRefHolder.Add(handler, internalSignalHandler);
 
                 QStatus ret = alljoyn_busattachment_registersignalhandler(_busAttachment,
                     Marshal.GetFunctionPointerForDelegate(internalSignalHandler),
@@ -158,12 +158,13 @@ namespace AllJoynUnity
                 InterfaceDescription.Member member, string srcPath)
             {
                 QStatus ret = QStatus.OS_ERROR;
-                //if (_signalHandlerDelegateRefHolder.Remove(handler))
-                //{
-                //    ret = alljoyn_busattachment_unregistersignalhandler(_busAttachment,
-                //        Marshal.GetFunctionPointerForDelegate(handler),
-                //        member._member, srcPath);
-                //}
+                if (_signalHandlerDelegateRefHolder.ContainsKey(handler))
+                {
+                    ret = alljoyn_busattachment_unregistersignalhandler(_busAttachment,
+                        Marshal.GetFunctionPointerForDelegate(_signalHandlerDelegateRefHolder[handler]),
+                        member._member, srcPath);
+                    _signalHandlerDelegateRefHolder.Remove(handler);
+                }
                 return ret;
             }
 
@@ -195,7 +196,7 @@ namespace AllJoynUnity
 				bindThread.Start();
 				while(bindThread.IsAlive)
 				{
-					//AllJoyn.TriggerCallbacks();
+					AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
 				}
 				sessionPort = otherSessionPort;
@@ -212,7 +213,7 @@ namespace AllJoynUnity
 				bindThread.Start();
 				while(bindThread.IsAlive)
 				{
-					//AllJoyn.TriggerCallbacks();
+					AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
 				}
 				return ret;
@@ -324,8 +325,18 @@ namespace AllJoynUnity
 
 			public QStatus SetSessionListener(SessionListener listener, uint sessionId)
 			{
-			
-				return alljoyn_busattachment_setsessionlistener(_busAttachment, sessionId, listener.UnmanagedPtr);
+                QStatus ret = QStatus.OK;
+                Thread bindThread = new Thread((object o) =>
+                {
+                    ret = alljoyn_busattachment_setsessionlistener(_busAttachment, sessionId, listener == null ? IntPtr.Zero : listener.UnmanagedPtr);
+                });
+                bindThread.Start();
+                while (bindThread.IsAlive)
+                {
+                    AllJoyn.TriggerCallbacks();
+                    Thread.Sleep(0);
+                }
+                return ret;
 			}
 
 			public QStatus LeaveSession(uint sessionId)
@@ -494,12 +505,16 @@ namespace AllJoynUnity
 				if(!_isDisposed)
 				{
 					Thread destroyThread = new Thread((object o) => {
+                        if (_signalHandlerDelegateRefHolder.Count > 0)
+                        {
+                            //UnregisterAllHandlers();
+                        }
                         alljoyn_busattachment_destroy(_busAttachment);
                     });
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
-						//AllJoyn.TriggerCallbacks();
+						AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
 					_busAttachment = IntPtr.Zero;
@@ -748,7 +763,7 @@ namespace AllJoynUnity
 			IntPtr _busAttachment;
 			bool _isDisposed = false;
 
-            List<InternalSignalHandler> _signalHandlerDelegateRefHolder;
+            Dictionary<SignalHandler, InternalSignalHandler> _signalHandlerDelegateRefHolder;
 			static Dictionary<IntPtr, BusAttachment> _sBusAttachmentMap;
 			#endregion
 		}

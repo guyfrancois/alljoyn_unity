@@ -47,20 +47,34 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _SessionLost(IntPtr context, uint sessionId)
 			{
-			
-				SessionLost(sessionId);
+                uint _sessionId = sessionId;
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        SessionLost(_sessionId);
+                    });
+                callIt.Start();
 			}
 
 			private void _SessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
-			
-				SessionMemberAdded(sessionId, Marshal.PtrToStringAnsi(uniqueName));
+                uint _sessionId = sessionId;
+                String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
+                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        SessionMemberAdded(_sessionId, _uniqueName);
+                    });
+                callIt.Start();
 			}
 
 			private void _SessionMemberRemoved(IntPtr context, uint sessionId, IntPtr uniqueName)
-			{
-			
-				SessionMemberRemoved(sessionId, Marshal.PtrToStringAnsi(uniqueName));
+            {
+                uint _sessionId = sessionId;
+                String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+                    {
+                        SessionMemberRemoved(_sessionId, _uniqueName);
+                    });
+                 callIt.Start();
 			}
 			#endregion
 

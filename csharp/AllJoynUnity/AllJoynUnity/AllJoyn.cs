@@ -9,8 +9,15 @@ namespace AllJoynUnity
 	{
 		// DLL name for externs
 		private const string DLL_IMPORT_TARGET = "alljoyn_c";
+        private const string UNITY_VERSION = ".2";
 
         private static Thread callbackPumpThread = null;
+        private static Boolean isProcessing = false;
+
+        public static string GetExtensionVersion()
+        {
+            return UNITY_VERSION;
+        }
 
 		/// Get the version string from AllJoyn.
 		public static string GetVersion()
@@ -31,31 +38,44 @@ namespace AllJoynUnity
                 alljoin_unity_set_deferred_callback_mainthread_only(1);
                 callbackPumpThread = new Thread((object o) =>
                 {
-                    int numProcessed = 0;
-                    while (true)
+                    int numprocessed = 0;
+                    while (isProcessing)
                     {
-                        numProcessed = alljoyn_unity_deferred_callbacks_process();
-                        Thread.Sleep(numProcessed == 0 ? 3 : 5);
+                        numprocessed = alljoyn_unity_deferred_callbacks_process();
+                        Thread.Sleep(5);
                     }
                 });
             }
             if (!callbackPumpThread.IsAlive)
             {
+                isProcessing = true;
                 callbackPumpThread.Start();
             }
+            alljoyn_unity_deferred_callbacks_process();
+        }
+
+        public static void StopAllJoynProcessing()
+        {
+            if (callbackPumpThread != null && callbackPumpThread.IsAlive)
+            {
+                isProcessing = false;
+                Thread.Sleep(5);
+                callbackPumpThread.Join();
+            }
+            callbackPumpThread = null;
         }
 
 		/// Call to trigger callbacks on main thread.
-		public static int TriggerCallbacks()
-		{
+        public static int TriggerCallbacks()
+        {
             return alljoyn_unity_deferred_callbacks_process();
-		}
+        }
 
-		/// Enable/disable main-thread-only callbacks.
-		public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
-		{
-			alljoin_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
-		}
+        ///// Enable/disable main-thread-only callbacks.
+        private static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
+        {
+            alljoin_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
+        }
 
 		[Flags]
 		public enum TransportMask : ushort
