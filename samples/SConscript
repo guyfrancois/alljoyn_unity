@@ -15,8 +15,4 @@
 
 Import('env')
 
-# Basic Sample programs
-env.SConscript('basic/SConscript')
-
-# Security Sample programs
-env.SConscript('secure/SConscript')
+#TODO install the library into the samples

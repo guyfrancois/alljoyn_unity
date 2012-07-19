@@ -23,35 +23,21 @@ vars = Variables();
 vars.Update(env)
 
 Help(vars.GenerateHelpText(env))
+print env.subst('$DISTDIR')
+print env.subst('$OBJDIR')
 
 sys.path.append('../build_core/tools/scons')
 
 # Dependent Projects
 if not env.has_key('_ALLJOYNCORE_'):
     env.SConscript('../alljoyn_core/SConscript')
+    env.SConscript('../alljoyn_c/SConscript')
+
+print env['ALLJOYN_C_LIB_SHARED']
 
 # Add support for multiple build targets in the same workset
 env.VariantDir('$OBJDIR', 'src', duplicate = 0)
 env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
-
-# Install headers
-env.Install('$DISTDIR/inc/alljoyn_c', env.Glob('inc/alljoyn_c/*.h'))
-
-# Header file includes
-env.Append(CPPPATH = [env.Dir('inc')])
-
-# Make private headers available
-env.Append(CPPPATH = [env.Dir('src')])
-
-# AllJoyn Libraries
-libs = env.SConscript('$OBJDIR/SConscript')
-dlibs = env.Install('$DISTDIR/lib', libs)
-env.Append(LIBPATH = [env.Dir('$DISTDIR/lib')])
-env['ALLJOYN_C_LIB_SHARED'] = dlibs[0]
-env['ALLJOYN_C_LIB_STATIC'] = dlibs[1]
-
-# Build unit Tests
-env.SConscript('unit_test/SConscript', variant_dir='$OBJDIR/unittest', duplicate=0)
 
 # Sample programs
 progs = env.SConscript('$OBJDIR/samples/SConscript')

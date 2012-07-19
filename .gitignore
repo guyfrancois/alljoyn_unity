@@ -1,2 +1,6 @@
+AllJoynUnity.suo
 .sconsign.dblite
 build/
+src/bin
+src/obj
+
