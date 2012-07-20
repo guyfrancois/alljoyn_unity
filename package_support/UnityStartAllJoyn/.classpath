@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6"/>
+	<classpathentry exported="true" kind="lib" path="C:/Development/Alljoyn/src/alljoyn_c/samples/Unity/src/alljoyn.jar"/>
+	<classpathentry exported="true" kind="lib" path="C:/Development/Alljoyn/src/alljoyn_c/samples/Unity/src/bundle.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Alljoyn/src/alljoyn_c/samples/Unity/src/classes.jar"/>
+	<classpathentry kind="lib" path="C:/Development/Android/android-sdk/platforms/android-8/android.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
+	<classpathentry kind="src" path="gen"/>
+	<classpathentry kind="lib" path="C:/Development/random/UnityStartAllJoyn/QCARUnityPlayer.jar"/>
+	<classpathentry kind="output" path="bin/classes"/>
+</classpath>
