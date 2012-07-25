@@ -29,17 +29,6 @@ if env['OS_GROUP'] == 'windows':
         cs_lib_compiler = 'csc.exe /target:library /out:${TARGET} ${SOURCE.dir}\*.cs'
         cs_suffix = '.exe'
         cs_lib_suffix = '.dll'
-if env['OS_GROUP'] == 'posix':
-    if env['VARIANT'] == 'debug':
-        cs_compiler = 'msc -out:${TARGET} -debug ${SOURCE.dir}\*.cs'
-        cs_lib_compiler = 'msc -t:library -out:${TARGET} ${SOURCE.dir}\*.cs'
-        cs_suffix = '.exe'
-        cs_lib_suffix = '.dll'
-    else:
-        cs_compiler = 'msc -out:${TARGET} ${SOURCE.dir}\*.cs'
-        cs_lib_compiler = 'msc -t:library -out:${TARGET} ${SOURCE.dir}\*.cs'
-        cs_suffix = '.exe'
-        cs_lib_suffix = '.dll'
 
 cs_builder = Builder(action = cs_compiler, src_suffix = '.cs', suffix = cs_suffix)
 cs_lib_builder = Builder(action = cs_lib_compiler, src_suffix = '.cs', suffix = cs_lib_suffix)
