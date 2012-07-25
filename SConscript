@@ -19,7 +19,7 @@ import sys
 Import('env')
 
 vars = Variables();
-
+#TODO place any environment vars here
 vars.Update(env)
 
 Help(vars.GenerateHelpText(env))
@@ -33,17 +33,22 @@ if not env.has_key('_ALLJOYNCORE_'):
     #alljoyn_java is required for the bundled daemon
     env.SConscript('../alljoyn_java/SConscript')
 
+# Make alljoyn_unity dist a sub-directory of the alljoyn dist.  This avoids any conflicts with alljoyn dist targets.
+env['UNITY_DISTDIR'] = env['DISTDIR'] + '/unity'
+env['UNITY_TESTDIR'] = env['TESTDIR'] + '/unity'
 
 # Add support for multiple build targets in the same workset
 env.VariantDir('$OBJDIR', 'src', duplicate = 0)
 env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
 
-#AllJoynUnity.dll
-alljoyn_unity_lib = env.SConscript('src/SConscript')
+#alljoyn_unity.dll
+env['ALLJOYN_UNITY_LIB'] = env.SConscript('src/SConscript')
 
 # Sample programs
-progs = env.SConscript('$OBJDIR/samples/SConscript')
-env.Install('$DISTDIR/bin/samples', progs)
+progs = env.SConscript('samples/SConscript')
+#env.Install('$UNITY_DISTDIR/bin/samples', progs)
 
+package_support_dir = env.Dir('package_support/UnityPackage')
+env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
 
 

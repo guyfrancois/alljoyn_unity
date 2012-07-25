@@ -18,6 +18,34 @@ Import('env')
 # AllJoyn Sources
 srcs = env.Glob('*.cs')
 
-#TODO figure out how to build the alljoyn_unity.dll
-#liballjoyn_unity = 
-#Return('liballjoyn_unity')
+if env['OS_GROUP'] == 'windows':
+    if env['VARIANT'] == 'debug':
+        cs_compiler = 'csc.exe /target:exe /out:${TARGET} /nologo /debug ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'csc.exe /target:library /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+    else:
+        cs_compiler = 'csc.exe /target:exe /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'csc.exe /target:library /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+if env['OS_GROUP'] == 'posix':
+    if env['VARIANT'] == 'debug':
+        cs_compiler = 'msc -out:${TARGET} -debug ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'msc -t:library -out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+    else:
+        cs_compiler = 'msc -out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'msc -t:library -out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+
+cs_builder = Builder(action = cs_compiler, src_suffix = '.cs', suffix = cs_suffix)
+cs_lib_builder = Builder(action = cs_lib_compiler, src_suffix = '.cs', suffix = cs_lib_suffix)
+
+#Use the C# builder
+env.Append(BUILDERS = {'cs_lib_bld': cs_lib_builder})
+liballjoyn_unity = env.cs_lib_bld(source = srcs , target='$UNITY_DISTDIR/lib/alljoyn_unity.dll')
+
+Return('liballjoyn_unity')
