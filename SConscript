@@ -28,15 +28,22 @@ sys.path.append('../build_core/tools/scons')
 
 # Dependent Projects
 if not env.has_key('_ALLJOYNCORE_'):
-    env.SConscript('../alljoyn_core/SConscript')
+    #alljoyn_c is required for the unity_bindings
     env.SConscript('../alljoyn_c/SConscript')
+    #alljoyn_java is required for the bundled daemon
+    env.SConscript('../alljoyn_java/SConscript')
 
 
 # Add support for multiple build targets in the same workset
 env.VariantDir('$OBJDIR', 'src', duplicate = 0)
 env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
 
+#AllJoynUnity.dll
+alljoyn_unity_lib = env.SConscript('src/SConscript')
+
 # Sample programs
 progs = env.SConscript('$OBJDIR/samples/SConscript')
 env.Install('$DISTDIR/bin/samples', progs)
+
+
 
