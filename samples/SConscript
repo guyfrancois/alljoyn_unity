@@ -24,27 +24,45 @@ env.Install('$UNITY_DISTDIR/samples/Unity', env.Dir('Unity/BasicClient'))
 env.Install('$UNITY_DISTDIR/samples/Unity', env.Dir('Unity/BasicServer'))
 env.Install('$UNITY_DISTDIR/samples/Unity', env.Dir('Unity/Chat'))
 
-
 #install libraries into samples in the source and the distdir
 if env['OS_GROUP'] == 'windows':
+    #place alljoyn_unity.dll into the samples
+    env.Install('Unity/BasicClient/Assets/Plugins/Android', env['ALLJOYN_UNITY_LIB'])
+    env.Install('Unity/BasicServer/Assets/Plugins/Android', env['ALLJOYN_UNITY_LIB'])
+    env.Install('Unity/Chat/Assets/Plugins/Android', env['ALLJOYN_UNITY_LIB'])
+
+    #place alljoyn_c.dll into the samples
+    liballjoyn_c = '$DISTDIR/lib/alljoyn_c.dll'
+    env.Install('Unity/BasicClient/Assets/Plugins/Android', liballjoyn_c)
+    env.Install('Unity/BasicServer/Assets/Plugins/Android', liballjoyn_c)
+    env.Install('Unity/Chat/Assets/Plugins/Android', liballjoyn_c)
+
+if env['OS'] == 'android':
     #place alljoyn_unity.dll into the samples
     env.Install('Unity/BasicClient/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
     env.Install('Unity/BasicServer/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
     env.Install('Unity/Chat/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
 
-    #place alljoyn_c.dll into the samples
-    liballjoyn_c = '$DISTDIR/lib/alljoyn_c.dll'
-    env.Install('Unity/BasicClient/Assets/Plugins', liballjoyn_c)
-    env.Install('Unity/BasicServer/Assets/Plugins', liballjoyn_c)
-    env.Install('Unity/Chat/Assets/Plugins', liballjoyn_c)
+    #place liballjoyn_c.so into the samples
+    liballjoyn_c = '$DISTDIR/lib/liballjoyn_c.so'
+    env.Install('Unity/BasicClient/Assets/Plugins/Android', liballjoyn_c)
+    env.Install('Unity/BasicServer/Assets/Plugins/Android', liballjoyn_c)
+    env.Install('Unity/Chat/Assets/Plugins/Android', liballjoyn_c)
 
-
-if env['OS_GROUP'] == 'posix':
-    #Install alljoyn_jar into each of the samples
+    #place alljoyn.jar into the samples
     alljoyn_jar = '$DISTDIR/java/jar/alljoyn.jar'
-    #TODO figure out how to obtain bundle_jar
-    #bundle_jar =
+    env.Install('Unity/BasicClient/Assets/Plugins/Android', alljoyn_jar)
+    env.Install('Unity/BasicServer/Assets/Plugins/Android', alljoyn_jar)
+    env.Install('Unity/Chat/Assets/Plugins/Android', alljoyn_jar)
 
-if env['OS'] == 'android':
-    liballjoyn_c = 'liballjoyn_c.so'
-    #TODO copy android .so library files
+    #place liballjoyn_java.so into the samples
+    liballjoyn_java = '$DISTDIR/java/lib/liballjoyn_java.so'
+    env.Install('Unity/BasicClient/Assets/Plugins/Android', liballjoyn_java)
+    env.Install('Unity/BasicServer/Assets/Plugins/Android', liballjoyn_java)
+    env.Install('Unity/Chat/Assets/Plugins/Android', liballjoyn_java)
+
+    #TODO figure out how to obtain bundle_jar
+    bundle_jar = ''
+    #TODO figure out how to obtain libdaemon-jni.so
+    libdaemon_jni = ''
+    

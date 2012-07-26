@@ -51,4 +51,34 @@ progs = env.SConscript('samples/SConscript')
 package_support_dir = env.Dir('package_support/UnityPackage')
 env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
 
+#install libraries into the package support directory
+if env['OS_GROUP'] == 'windows':
+    #place alljoyn_unity.dll into the samples
+    env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+
+    #place alljoyn_c.dll into the samples
+    liballjoyn_c = '$DISTDIR/lib/alljoyn_c.dll'
+    env.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
+
+if env['OS'] == 'android':
+    #place alljoyn_unity.dll into the samples
+    env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+
+    #place liballjoyn_c.so into the samples
+    liballjoyn_c = '$DISTDIR/lib/liballjoyn_c.so'
+    env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
+
+    #place alljoyn.jar into the samples
+    alljoyn_jar = '$DISTDIR/java/jar/alljoyn.jar'
+    env.Install('package_support/UnityPackage/Assets/Plugins/Android', alljoyn_jar)
+
+    #place liballjoyn_java.so into the samples
+    liballjoyn_java = '$DISTDIR/java/lib/liballjoyn_java.so'
+    env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_java)
+
+    #TODO figure out how to obtain bundle_jar
+    bundle_jar = ''
+    #TODO figure out how to obtain libdaemon-jni.so
+    libdaemon_jni = ''
+
 
