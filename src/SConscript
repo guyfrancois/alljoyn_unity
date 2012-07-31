@@ -1,3 +1,4 @@
+
 # Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +13,10 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 # 
-
+import os
+import sys
+sys.path.append('../../build_core/tools/scons')
+from unitystatus import UnityStatus
 Import('env')
 
 # AllJoyn Sources
@@ -49,8 +53,21 @@ else:
 cs_builder = Builder(action = cs_compiler, src_suffix = '.cs', suffix = cs_suffix)
 cs_lib_builder = Builder(action = cs_lib_compiler, src_suffix = '.cs', suffix = cs_lib_suffix)
 
+#UnityStatus('Status.xml', 'Status.cs')
+# AllJoyn Unity status codes
+def unity_status_build_function(target, source, env):
+    basedir = os.path.normpath(os.path.dirname(source[0].get_abspath()) + '/..')
+    UnityStatus(source[0], target[0], basedir)
+
+unity_status_builder = Builder(action = unity_status_build_function, suffix = '.cs', src_suffix = '.xml')
+
 #Use the C# builder
-env.Append(BUILDERS = {'cs_lib_bld': cs_lib_builder})
+env.Append(BUILDERS = {'cs_lib_bld': cs_lib_builder, 'unity_status_bld': unity_status_builder})
+# The unity_status_builder does not know about the dependencies from includes inside
+# the Status.xml file.  If the Status.xml file found in common or alljoyn_core is 
+# changed Status.cs must manually be deleted to cause the Status to be rebuilt
+cs_status = env.unity_status_bld(source = 'Status', target = 'Status')
 liballjoyn_unity = env.cs_lib_bld(source = srcs , target='$UNITY_DISTDIR/lib/alljoyn_unity.dll')
+env.Depends(liballjoyn_unity, cs_status);
 
 Return('liballjoyn_unity')
