@@ -49,6 +49,7 @@
     <Compile Include="AuthListener.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="KeyStoreListener.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
