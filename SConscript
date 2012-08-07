@@ -48,6 +48,7 @@ env['ALLJOYN_UNITY_LIB'] = env.SConscript('src/SConscript')
 progs = env.SConscript('samples/SConscript')
 #env.Install('$UNITY_DISTDIR/bin/samples', progs)
 
+#install Package support files
 package_support_dir = env.Dir('package_support/UnityPackage')
 env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
 
@@ -81,4 +82,18 @@ if env['OS'] == 'android':
     #TODO figure out how to obtain libdaemon-jni.so
     libdaemon_jni = ''
 
-
+    #install UnityStartAllJoyn into the DISTDIR
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn', 
+                'package_support/UnityStartAllJoyn/project.properties')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn/res/values', 
+                'package_support/UnityStartAllJoyn/res/values/styles.xml')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn/res/values', 
+                'package_support/UnityStartAllJoyn/res/values/strings.xml')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn/src/org/alljoyn/bus/unity', 
+                'package_support/UnityStartAllJoyn/src/org/alljoyn/bus/unity/StartAllJoynActivity.java')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn', 
+                'package_support/UnityStartAllJoyn/AndroidManifest.xml')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn', 
+                'package_support/UnityStartAllJoyn/.project')
+    env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn', 
+                'package_support/UnityStartAllJoyn/.classpath')
