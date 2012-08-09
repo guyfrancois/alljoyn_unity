@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -8,7 +8,7 @@
     <ProjectGuid>{17D5862E-E517-4677-9D55-6BE01FEC4D9D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>AllJoynUnity</RootNamespace>
-    <AssemblyName>AllJoynUnity</AssemblyName>
+    <AssemblyName>alljoyn_unity</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,6 +49,7 @@
     <Compile Include="AuthListener.cs" />
     <Compile Include="Credentials.cs" />
     <Compile Include="KeyStoreListener.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,0 +1,73 @@
+
+# Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+# 
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+# 
+#        http://www.apache.org/licenses/LICENSE-2.0
+# 
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+# 
+import os
+import sys
+sys.path.append('../../build_core/tools/scons')
+from unitystatus import UnityStatus
+Import('env')
+
+# AllJoyn Sources
+srcs = env.Glob('*.cs')
+
+if env['OS_GROUP'] == 'windows':
+    if env['VARIANT'] == 'debug':
+        cs_compiler = 'csc.exe /target:exe /out:${TARGET} /nologo /debug ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'csc.exe /target:library /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+    else:
+        cs_compiler = 'csc.exe /target:exe /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_lib_compiler = 'csc.exe /target:library /out:${TARGET} ${SOURCE.dir}\*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+elif env['OS_GROUP'] == 'posix':
+    if env['VARIANT'] == 'debug':
+        cs_compiler = 'gmcs -out:${TARGET} -debug ${SOURCE.dir}/*.cs'
+        cs_lib_compiler = 'gmcs -t:library -out:${TARGET} ${SOURCE.dir}/*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+    else:
+        cs_compiler = 'gmcs -out:${TARGET} ${SOURCE.dir}/*.cs'
+        cs_lib_compiler = 'gmcs -t:library -out:${TARGET} ${SOURCE.dir}/*.cs'
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+else:
+        cs_compiler = ''
+        cs_lib_compiler = ''
+        cs_suffix = '.exe'
+        cs_lib_suffix = '.dll'
+
+cs_builder = Builder(action = cs_compiler, src_suffix = '.cs', suffix = cs_suffix)
+cs_lib_builder = Builder(action = cs_lib_compiler, src_suffix = '.cs', suffix = cs_lib_suffix)
+
+#UnityStatus('Status.xml', 'Status.cs')
+# AllJoyn Unity status codes
+def unity_status_build_function(target, source, env):
+    basedir = os.path.normpath(os.path.dirname(source[0].get_abspath()) + '/..')
+    UnityStatus(source[0], target[0], basedir)
+
+unity_status_builder = Builder(action = unity_status_build_function, suffix = '.cs', src_suffix = '.xml')
+
+#Use the C# builder
+env.Append(BUILDERS = {'cs_lib_bld': cs_lib_builder, 'unity_status_bld': unity_status_builder})
+# The unity_status_builder does not know about the dependencies from includes inside
+# the Status.xml file.  If the Status.xml file found in common or alljoyn_core is 
+# changed Status.cs must manually be deleted to cause the Status to be rebuilt
+cs_status = env.unity_status_bld(source = 'Status', target = 'Status')
+liballjoyn_unity = env.cs_lib_bld(source = srcs , target='$UNITY_DISTDIR/lib/alljoyn_unity.dll')
+env.Depends(liballjoyn_unity, cs_status);
+
+Return('liballjoyn_unity')
