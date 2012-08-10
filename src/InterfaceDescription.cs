@@ -37,7 +37,8 @@ namespace AllJoynUnity
 			public enum AccessFlags : byte
 			{
 				Read = 1,
-				Write = 2
+				Write = 2,
+				ReadWrite = 3
 			}
 
 			internal InterfaceDescription(IntPtr interfaceDescription)

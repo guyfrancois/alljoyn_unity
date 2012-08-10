@@ -53,7 +53,7 @@ namespace AllJoynUnity
         {
             if (callbackPumpThread == null)
             {
-                alljoin_unity_set_deferred_callback_mainthread_only(1);
+                alljoin_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
                 callbackPumpThread = new Thread((object o) =>
                 {
                     int numprocessed = 0;

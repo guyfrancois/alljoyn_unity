@@ -525,7 +525,7 @@ namespace AllJoynUnity
 					Thread destroyThread = new Thread((object o) => {
                         if (_signalHandlerDelegateRefHolder.Count > 0)
                         {
-                            //UnregisterAllHandlers();
+                            UnregisterAllHandlers();
                         }
                         alljoyn_busattachment_destroy(_busAttachment);
                     });
@@ -535,6 +535,7 @@ namespace AllJoynUnity
 						AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
 					}
+                    _sBusAttachmentMap.Remove(_busAttachment);
 					_busAttachment = IntPtr.Zero;
 				}
 				_isDisposed = true;
