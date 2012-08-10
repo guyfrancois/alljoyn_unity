@@ -225,7 +225,7 @@ namespace AllJoynUnityTest
             Assert.Equal(AllJoyn.QStatus.OK, status);
             status = testIntf.AddProperty("prop2", "i", AllJoyn.InterfaceDescription.AccessFlags.Write);
             Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.Read);
+            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.ReadWrite);
             Assert.Equal(AllJoyn.QStatus.OK, status);
 
             bus.Dispose();
@@ -250,7 +250,7 @@ namespace AllJoynUnityTest
             Assert.Equal(AllJoyn.QStatus.OK, status);
             status = testIntf.AddProperty("prop2", "i", AllJoyn.InterfaceDescription.AccessFlags.Write);
             Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.Read);
+            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.ReadWrite);
             Assert.Equal(AllJoyn.QStatus.OK, status);
 
             // check for the properties
@@ -300,7 +300,7 @@ namespace AllJoynUnityTest
             Assert.True(testIntf.HasProperties);
             status = testIntf.AddProperty("prop2", "i", AllJoyn.InterfaceDescription.AccessFlags.Write);
             Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.Read);
+            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.ReadWrite);
             Assert.Equal(AllJoyn.QStatus.OK, status);
 
             /*
@@ -331,7 +331,7 @@ namespace AllJoynUnityTest
             Assert.Equal(AllJoyn.QStatus.OK, status);
             status = testIntf.AddProperty("prop2", "i", AllJoyn.InterfaceDescription.AccessFlags.Write);
             Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.Read);
+            status = testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.ReadWrite);
             Assert.Equal(AllJoyn.QStatus.OK, status);
 
             AllJoyn.InterfaceDescription.Property prop1 = testIntf.GetProperty("prop1");
@@ -347,7 +347,7 @@ namespace AllJoynUnityTest
             AllJoyn.InterfaceDescription.Property prop3 = testIntf.GetProperty("prop3");
             Assert.Equal("prop3", prop3.Name);
             Assert.Equal("u", prop3.Signature);
-            Assert.Equal(AllJoyn.InterfaceDescription.AccessFlags.Read, prop3.Access);
+            Assert.Equal(AllJoyn.InterfaceDescription.AccessFlags.ReadWrite, prop3.Access);
 
             bus.Dispose();
         }
