@@ -23,10 +23,10 @@ using System.Threading;
 
 namespace AllJoynUnity
 {
-    public partial class AllJoyn
-    {
-        // DLL name for externs
-        private const string DLL_IMPORT_TARGET = "alljoyn_c";
+	public partial class AllJoyn
+	{
+		// DLL name for externs
+		private const string DLL_IMPORT_TARGET = "alljoyn_c";
         private const string UNITY_VERSION = ".3";
 
         private static Thread callbackPumpThread = null;
@@ -37,23 +37,23 @@ namespace AllJoynUnity
             return UNITY_VERSION;
         }
 
-        /// Get the version string from AllJoyn.
-        public static string GetVersion()
-        {
-            return Marshal.PtrToStringAnsi(alljoyn_getversion());
-        }
+		/// Get the version string from AllJoyn.
+		public static string GetVersion()
+		{
+			return Marshal.PtrToStringAnsi(alljoyn_getversion());
+		}
 
-        /// Get the build info string from AllJoyn.
-        public static string GetBuildInfo()
-        {
-            return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
-        }
+		/// Get the build info string from AllJoyn.
+		public static string GetBuildInfo()
+		{
+			return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
+		}
 
         public static void StartAllJoynCallbackProcessing()
         {
             if (callbackPumpThread == null)
             {
-                alljoin_unity_set_deferred_callback_mainthread_only(1);//FOR ANDROID THIS NEEDS TO BE SET TO 1
+                alljoin_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
                 callbackPumpThread = new Thread((object o) =>
                 {
                     int numprocessed = 0;
@@ -83,7 +83,7 @@ namespace AllJoynUnity
             callbackPumpThread = null;
         }
 
-        /// Call to trigger callbacks on main thread.
+		/// Call to trigger callbacks on main thread.
         public static int TriggerCallbacks()
         {
             return alljoyn_unity_deferred_callbacks_process();
@@ -95,35 +95,32 @@ namespace AllJoynUnity
             alljoin_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
         }
 
-        [Flags]
-        public enum TransportMask : ushort
-        {
-            None = 0x0000,
-            Any = 0xFFFF,
-            Local = 0x0001,
-            Bluetooth = 0x0002,
-            WLAN = 0x0004,
-            WWAN = 0x0008,
-            LAN = 0x0010
-        }
+		[Flags]
+		public enum TransportMask : ushort
+		{
+			None = 0x0000,
+			Any = 0xFFFF,
+			Local = 0x0001,
+			Bluetooth = 0x0002,
+			WLAN = 0x0004,
+			WWAN = 0x0008,
+			LAN = 0x0010
+		}
 
-        #region DLL Imports
+		#region DLL Imports
         [DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-        private extern static IntPtr alljoyn_getversion();
+		private extern static IntPtr alljoyn_getversion();
 
-        [DllImport(DLL_IMPORT_TARGET)]
-        private extern static IntPtr alljoyn_getbuildinfo();
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static IntPtr alljoyn_getbuildinfo();
 
-        [DllImport(DLL_IMPORT_TARGET)]
-        private extern static IntPtr QCC_StatusText(int status);
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static int alljoyn_unity_deferred_callbacks_process();
 
-        [DllImport(DLL_IMPORT_TARGET)]
-        private extern static int alljoyn_unity_deferred_callbacks_process();
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static void alljoin_unity_set_deferred_callback_mainthread_only(int mainthread_only);
 
-        [DllImport(DLL_IMPORT_TARGET)]
-        private extern static void alljoin_unity_set_deferred_callback_mainthread_only(int mainthread_only);
-
-        #endregion
-    }
+		#endregion
+	}
 }
 
