@@ -184,8 +184,8 @@ namespace AllJoynUnity
 			     * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
 			     *
 			     * @return
-			     *      - #ER_OK if successful
-			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus#OK if successful
+			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames)
@@ -206,8 +206,8 @@ namespace AllJoynUnity
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
-			     *      - #ER_OK if successful
-			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus#OK if successful
+			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames, AnnotationFlags annotation)
@@ -226,8 +226,8 @@ namespace AllJoynUnity
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
-			     *      - #ER_OK if successful
-			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus#OK if successful
+			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 		    public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
 		    {
@@ -365,10 +365,10 @@ namespace AllJoynUnity
 			     *
 			     * @param name       Name of property.
 			     * @param signature  Property type.
-			     * @param access     #PROP_ACCESS_READ, #PROP_ACCESS_WRITE or #PROP_ACCESS_RW
+			     * @param access     Read, Write or ReadWrite
 			     * @return
-			     *      - #ER_OK if successful.
-			     *      - #ER_BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			     *      - QStatus#OK if successful.
+			     *      - QStatus#BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
 			     *                                        because it already exists.
 			     */
 			public QStatus AddProperty(string name, string signature, AccessFlags access)
@@ -392,6 +392,7 @@ namespace AllJoynUnity
 
 			public class Member
 			{
+				/** Interface that this member belongs to */
 				public InterfaceDescription Iface
 				{
 					get
@@ -400,6 +401,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** %Member type */
 				public Message.Type MemberType
 				{
 					get
@@ -408,6 +410,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** %Member name */
 				public string Name
 				{
 					get
@@ -416,6 +419,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** Method call IN arguments (NULL for signals) */
 				public string Signature
 				{
 					get
@@ -424,6 +428,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** Signal or method call OUT arguments */
 				public string ReturnSignature
 				{
 					get
@@ -432,6 +437,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** Comma separated list of argument names - can be NULL */
 				public string ArgNames
 				{
 					get
@@ -440,6 +446,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** Exclusive OR of flags NoReply and Deprecated */
 				public AnnotationFlags Annotation
 				{
 					get
@@ -463,8 +470,12 @@ namespace AllJoynUnity
 				#endregion
 			}
 
+			/**
+			 * Structure representing properties of the Interface
+			 */
 			public class Property
 			{
+				/** %Property name */
 				public string Name
 				{
 					get
@@ -473,6 +484,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** %Property type */
 				public string Signature
 				{
 					get
@@ -481,6 +493,7 @@ namespace AllJoynUnity
 					}
 				}
 
+				/** Access is Read, Write, or ReadWrite */
 				public AccessFlags Access
 				{
 					get

@@ -87,6 +87,9 @@ namespace AllJoynUnity
 			}
 
 			#region Properties
+			/**
+			 * Gets or Sets a requested password, pincode, or passphrase.
+			 */
 			public string Password
 			{
 				get
@@ -99,6 +102,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets or Sets a requested user name.
+			 */
 			public string UserName
 			{
 				get
@@ -111,6 +117,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets or Sets a requested public key certificate chain. The certificates must be PEM encoded.
+			 */
 			public string CertChain
 			{
 				get
@@ -147,6 +156,12 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets or Sets an expiration time in seconds relative to the current time for the credentials. This value is optional and
+			 * can be set on any response to a credentials request. After the specified expiration time has elapsed any secret
+			 * keys based on the provided credentials are invalidated and a new authentication exchange will be required. If an
+			 * expiration is not set the default expiration time for the requested authentication mechanism is used.
+			 */
 			public uint Expiration
 			{
 				get

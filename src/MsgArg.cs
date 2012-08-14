@@ -32,7 +32,7 @@ namespace AllJoynUnity
 		 *
 		 * MsgArg's are designed to be light-weight. A MsgArg will normally hold references to the data
 		 * (strings etc.) it wraps and will only copy that data if the MsgArg is assigned. For example no
-		 * additional memory is allocated for an #ALLJOYN_STRING that references an existing const char*.
+		 * additional memory is allocated for an ALLJOYN_STRING that references an existing const char*.
 		 * If a MsgArg is assigned the destination receives a copy of the contents of the source. The
 		 * Stabilize() methods can also be called to explicitly force contents of the MsgArg to be copied.
 		 */
@@ -60,77 +60,152 @@ namespace AllJoynUnity
 				_setValue = val;
 			}
 
+			/** 
+			 * Gets a new MsgArg containing the string arg value
+			 *
+			 * @param arg string to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
 			public static implicit operator MsgArg(string arg)
 			{
 			
 				return new MsgArg(arg);
 			}
 
+			/** 
+			 * Gets the byte value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return byte value of the MsgArg Object
+			 */
 			public static implicit operator byte(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_uint8(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the bool value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return bool value of a MsgArg Object
+			 */
 			public static implicit operator bool(MsgArg arg)
 			{
 			
 				return (alljoyn_msgarg_as_bool(arg._msgArgs, (UIntPtr)arg._index) == 1 ? true : false);
 			}
 
+			/** 
+			 * Gets the short value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return short value of a MsgArg Object
+			 */
 			public static implicit operator short(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_int16(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the ushort value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return ushort value of a MsgArg Object
+			 */
 			public static implicit operator ushort(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_uint16(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the int value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return int value of a MsgArg Object
+			 */
 			public static implicit operator int(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_int32(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the uint value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return uint value of a MsgArg Object
+			 */
 			public static implicit operator uint(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_uint32(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the long value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return long value of a MsgArg Object
+			 */
 			public static implicit operator long(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_int64(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the ulong value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return ulong value of a MsgArg Object
+			 */
 			public static implicit operator ulong(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_uint64(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the double value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return double value of a MsgArg Object
+			 */
 			public static implicit operator double(MsgArg arg)
 			{
 			
 				return alljoyn_msgarg_as_double(arg._msgArgs, (UIntPtr)arg._index);
 			}
 
+			/** 
+			 * Gets the string value of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return string value of a MsgArg Object
+			 */
 			public static implicit operator string(MsgArg arg)
 			{
 			
 				return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
 			}
 
+			/** 
+			 * Gets the byte array of a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return byte array of a MsgArg Object
+			 */
 		    public static implicit operator byte[](MsgArg arg)
 		    {
 			return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
 		    }
 
+			/**
+			 * Gets or Sets the value of the ObjectPath
+			 */
 			public string ObjectPath
 			{
 				get
@@ -150,6 +225,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets the value of the Variant
+			 */
 			public MsgArg Variant
 			{
 				get
@@ -167,8 +245,8 @@ namespace AllJoynUnity
 			     *            - If the element type is string a pointer to array of const char*, if array length is
 			     *              non-zero, and the char* pointer is NULL, the NULL must be followed by a pointer to
 			     *              an array of const qcc::String.
-			     *            - If the element type is an @ref ALLJOYN_ARRAY "ARRAY", @ref ALLJOYN_STRUCT "STRUCT",
-			     *              @ref ALLJOYN_DICT_ENTRY "DICT_ENTRY" or @ref ALLJOYN_VARIANT "VARIANT" a pointer to an
+			     *            - If the element type is an ALLJOYN_ARRAY "ARRAY", ALLJOYN_STRUCT "STRUCT",
+			     *              ALLJOYN_DICT_ENTRY "DICT_ENTRY" or ALLJOYN_VARIANT "VARIANT" a pointer to an
 			     *              array of MsgArgs where each MsgArg has the signature specified by the element type.
 			     *            - If the element type is specified using the wildcard character '*', a pointer to
 			     *              an  array of MsgArgs. The array element type is determined from the type of the
@@ -206,7 +284,7 @@ namespace AllJoynUnity
 			     * @param value   The value for MsgArg value
 			     *
 			     * @return
-			     *      - #ER_OK if the MsgArg was successfully set
+			     *      - QStatus#OK if the MsgArg was successfully set
 			     *      - An error status otherwise
 			     */
 			public void Set(object value)

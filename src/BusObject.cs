@@ -88,8 +88,8 @@ namespace AllJoynUnity
 			     * @param iface  The interface to add
 			     *
 			     * @return
-			     *      - #ER_OK if the interface was successfully added.
-			     *      - #ER_BUS_IFACE_ALREADY_EXISTS if the interface already exists.
+			     *      - QStatus#OK if the interface was successfully added.
+			     *      - QStatus#BUS_IFACE_ALREADY_EXISTS if the interface already exists.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddInterface(InterfaceDescription iface)
@@ -106,7 +106,7 @@ namespace AllJoynUnity
 			     * @param handler  Method handler.
 			     *
 			     * @return
-			     *      - #ER_OK if the method handler was added.
+			     *      - QStatus#OK if the method handler was added.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddMethodHandler(InterfaceDescription.Member member, MethodHandler handler)
@@ -139,7 +139,7 @@ namespace AllJoynUnity
 			     * @param message      The method call message
 			     * @param args     The reply arguments (can be NULL)
 			     * @return
-			     *      - #ER_OK if successful
+			     *      - QStatus#OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, MsgArgs args)
@@ -156,7 +156,7 @@ namespace AllJoynUnity
 			     * @param error            The name of the error
 			     * @param errorMessage     An error message string
 			     * @return
-			     *      - #ER_OK if successful
+			     *      - QStatus#OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, string error, string errorMessage)
@@ -172,7 +172,7 @@ namespace AllJoynUnity
 			     * @param message        The method call message
 			     * @param status     The status code for the error
 			     * @return
-			     *      - #ER_OK if successful
+			     *      - QStatus#OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, QStatus status)
@@ -189,7 +189,7 @@ namespace AllJoynUnity
 			     * @param signal           Interface member of signal being emitted.
 			     * @param args             The arguments for the signal (can be NULL)
 			     * @return
-			     *      - #ER_OK if successful
+			     *      - QStatus#OK if successful
 			     *      - An error status otherwise
 			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
@@ -213,7 +213,7 @@ namespace AllJoynUnity
 			     *                         - If ::ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
 			     *                         - If ::ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
 			     * @return
-			     *      - #ER_OK if successful
+			     *      - QStatus#OK if successful
 			     *      - An error status otherwise
 			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
@@ -281,11 +281,31 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Virtual Methods
+			/**
+			 * Handle a bus request to read a property from this object.
+			 * BusObjects that implement properties should override this method.
+			 * The default version simply returns ER_BUS_NO_SUCH_PROPERTY
+			 *
+			 * @param ifcName    Identifies the interface that the property is defined on
+			 * @param propName  Identifies the the property to get
+			 * @param[out] val        Returns the property value. The type of this value is the actual value
+			 *                   type.
+			 */
 			protected virtual void OnPropertyGet(string ifcName, string propName, MsgArg val)
 			{
 			
 			}
 
+			/**
+			 * Handle a bus attempt to write a property value to this object.
+			 * BusObjects that implement properties should override this method.
+			 * This default version just replies with ER_BUS_NO_SUCH_PROPERTY
+			 *
+			 * @param ifcName    Identifies the interface that the property is defined on
+			 * @param propName  Identifies the the property to set
+			 * @param val        The property value to set. The type of this value is the actual value
+			 *                   type.
+			 */
 			protected virtual void OnPropertySet(string ifcName, string propName, MsgArg val)
 			{
 			

@@ -78,7 +78,7 @@ namespace AllJoynUnity
 			     *
 			     * @param iface    The interface to add to this object. Must come from Bus::GetInterface().
 			     * @return
-			     *      - #ER_OK if successful.
+			     *      - QStatus#OK if successful.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddInterface(InterfaceDescription iface)
@@ -96,14 +96,14 @@ namespace AllJoynUnity
 			     * @param replyMsg     The reply message received for the method call
 			     * @param timeout      Timeout specified in milliseconds to wait for a reply
 			     * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
-			     *                     - If #ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
-			     *                     - If #ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
-			     *                     - If #ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+			     *                     - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			     *                     - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+			     *                     - If ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
 			     *
 			     *
 			     * @return
-			     *      - #ER_OK if the method call succeeded and the reply message type is #MESSAGE_METHOD_RET
-			     *      - #ER_BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is #MESSAGE_ERROR
+			     *      - QStatus#OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
+			     *      - QStatus#BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
 			     */
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
