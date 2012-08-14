@@ -54,13 +54,13 @@ namespace AllJoynUnity
 			#region Abstract Methods
 			    /**
 			     * This method is called when a key store needs to be loaded.
-			     * @remark The application must call <tt>#PutKeys</tt> to put the new key store data into the
+			     * @remark The application must call <tt>KeyStore#PutKeys</tt> to put the new key store data into the
 			     * internal key store.
 			     *
 			     * @param store   Reference to the KeyStore to be loaded.
 			     *
 			     * @return
-			     *      - #ER_OK if the load request was satisfied
+			     *      - QStatus#OK if the load request was satisfied
 			     *      - An error status otherwise
 			     *
 			     */
@@ -68,12 +68,12 @@ namespace AllJoynUnity
 
 			/**
 			     * This method is called when a key store needs to be stored.
-			     * @remark The application must call <tt>#GetKeys</tt> to obtain the key data to be stored.
+			     * @remark The application must call <tt>KeyStore#GetKeys</tt> to obtain the key data to be stored.
 			     *
 			     * @param store   Reference to the KeyStore to be stored.
 			     *
 			     * @return
-			     *      - #ER_OK if the store request was satisfied
+			     *      - QStatus#OK if the store request was satisfied
 			     *      - An error status otherwise
 			     */
 			public abstract QStatus StoreRequest(KeyStore store);
@@ -119,7 +119,7 @@ namespace AllJoynUnity
 				 * @param password  The password required to decrypt the key data
 				 *
 				 * @return
-				 *      - #ER_OK if successful
+				 *      - QStatus#OK if successful
 				 *      - An error status otherwise
 				 *
 				 */

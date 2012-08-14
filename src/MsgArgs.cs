@@ -32,7 +32,7 @@ namespace AllJoynUnity
 		 *
 		 * MsgArg's are designed to be light-weight. A MsgArg will normally hold references to the data
 		 * (strings etc.) it wraps and will only copy that data if the MsgArg is assigned. For example no
-		 * additional memory is allocated for an #ALLJOYN_STRING that references an existing const char*.
+		 * additional memory is allocated for an ALLJOYN_STRING that references an existing const char*.
 		 * If a MsgArg is assigned the destination receives a copy of the contents of the source. The
 		 * Stabilize() methods can also be called to explicitly force contents of the MsgArg to be copied.
 		 */
@@ -52,6 +52,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets the number of MsgArg that are contained in this MsgArgs Object
+			 */
 			public int Length
 			{
 				get
@@ -60,6 +63,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets or Sets the value of a specific MsgArg at index i
+			 */
 			public MsgArg this[int i]
 			{
 				get
