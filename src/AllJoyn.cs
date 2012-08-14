@@ -29,6 +29,8 @@ namespace AllJoynUnity
         private const string DLL_IMPORT_TARGET = "alljoyn_c";
         private const string UNITY_VERSION = ".3";
 
+        private static readonly int DEFERED_CALLBACK_WAIT_TIMER = 50;
+
         private static Thread callbackPumpThread = null;
         private static Boolean isProcessing = false;
 
@@ -60,7 +62,7 @@ namespace AllJoynUnity
                     while (isProcessing)
                     {
                         numprocessed = alljoyn_unity_deferred_callbacks_process();
-                        Thread.Sleep(50);
+                        Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
                     }
                 });
             }
@@ -77,7 +79,7 @@ namespace AllJoynUnity
             if (callbackPumpThread != null && callbackPumpThread.IsAlive)
             {
                 isProcessing = false;
-                Thread.Sleep(25);
+                Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
                 callbackPumpThread.Join();
             }
             callbackPumpThread = null;
