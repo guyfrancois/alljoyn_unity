@@ -1,21 +1,24 @@
-//-----------------------------------------------------------------------
-// <copyright file="SessionListener.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * SessionListener is an abstract base class (interface) implemented by users of the
+ * AllJoyn API in order to receive sessions related event information.
+ */
 
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 using System;
 using System.Runtime.InteropServices;
 
@@ -23,8 +26,15 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * Abstract base class implemented by AllJoyn users and called by AllJoyn to inform
+		 * users of session related events.
+		 */
 		public class SessionListener : IDisposable
 		{
+		    /**
+		     * Constructor for a SessionListener.
+		     */
 			public SessionListener()
 			{
 			
@@ -40,22 +50,44 @@ namespace AllJoynUnity
 				_sessionListener = alljoyn_sessionlistener_create(main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
-            public IntPtr getAddr()
-            {
-                return _sessionListener;
-            }
+		    /**
+		     * Request the raw pointer of the AllJoyn C SessionListener
+		     *
+		     * @return the raw pointer of the AllJoyn C SessionListener
+		     */ 
+		    public IntPtr getAddr()
+		    {
+			return _sessionListener;
+		    }
 
 			#region Virtual Methods
+			    /**
+			     * Called by the bus when an existing session becomes disconnected.
+			     *
+			     * @param sessionId     Id of session that was lost.
+			     */
 			protected virtual void SessionLost(uint sessionId)
 			{
 			
 			}
 
+			/**
+			     * Called by the bus when a member of a multipoint session is added.
+			     *
+			     * @param sessionId     Id of session whose member(s) changed.
+			     * @param uniqueName    Unique name of member who was added.
+			     */
 			protected virtual void SessionMemberAdded(uint sessionId, string uniqueName)
 			{
 			
 			}
 
+			/**
+			     * Called by the bus when a member of a multipoint session is removed.
+			     *
+			     * @param sessionId     Id of session whose member(s) changed.
+			     * @param uniqueName    Unique name of member who was removed.
+			     */
 			protected virtual void SessionMemberRemoved(uint sessionId, string uniqueName)
 			{
 			
@@ -116,12 +148,19 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the SessionListener
+			 */
 			public void Dispose()
 			{
 				Dispose(true);
 				GC.SuppressFinalize(this);
 			}
 
+			/**
+			 * Dispose the SessionListener
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

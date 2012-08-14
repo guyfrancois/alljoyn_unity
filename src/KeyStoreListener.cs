@@ -1,21 +1,23 @@
-//-----------------------------------------------------------------------
-// <copyright file="KeyStoreListener.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * The KeyStoreListener class handled requests to load or store the key store.
+ */
 
+/******************************************************************************
+ * Copyright 2010-2011, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Threading;
@@ -25,8 +27,15 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * An application can provide a key store listener to override the default key store Load and Store
+		 * behavior. This will override the default key store behavior.
+		 */
 		public abstract class KeyStoreListener : IDisposable
 		{
+			/**
+			 * Constructor for a KeyStoreListener object.
+			 */
 			public KeyStoreListener()
 			{
 			
@@ -43,7 +52,30 @@ namespace AllJoynUnity
 			}
 
 			#region Abstract Methods
+			    /**
+			     * This method is called when a key store needs to be loaded.
+			     * @remark The application must call <tt>#PutKeys</tt> to put the new key store data into the
+			     * internal key store.
+			     *
+			     * @param store   Reference to the KeyStore to be loaded.
+			     *
+			     * @return
+			     *      - #ER_OK if the load request was satisfied
+			     *      - An error status otherwise
+			     *
+			     */
 			public abstract QStatus LoadRequest(KeyStore store);
+
+			/**
+			     * This method is called when a key store needs to be stored.
+			     * @remark The application must call <tt>#GetKeys</tt> to obtain the key data to be stored.
+			     *
+			     * @param store   Reference to the KeyStore to be stored.
+			     *
+			     * @return
+			     *      - #ER_OK if the store request was satisfied
+			     *      - An error status otherwise
+			     */
 			public abstract QStatus StoreRequest(KeyStore store);
 			#endregion
 
@@ -68,6 +100,10 @@ namespace AllJoynUnity
 			private delegate int InternalStoreRequest(IntPtr context, IntPtr keyStore);
 			#endregion
 
+			/**
+			 * The %KeyStore class manages the storing and loading of key blobs from
+			 * external storage.
+			 */
 			public class KeyStore
 			{
 				internal KeyStore(IntPtr keyStore, IntPtr keyStoreListener)
@@ -76,12 +112,28 @@ namespace AllJoynUnity
 					_keyStoreListener = keyStoreListener;
 				}
 
+				/**
+				 * Put keys into the key store from an encrypted byte string.
+				 *
+				 * @param source    The byte string containing the encrypted key store contents.
+				 * @param password  The password required to decrypt the key data
+				 *
+				 * @return
+				 *      - #ER_OK if successful
+				 *      - An error status otherwise
+				 *
+				 */
 				public QStatus PutKeys(string source, string password)
 				{
 					return alljoyn_keystorelistener_putkeys(_keyStoreListener, _keyStore,
 						source, password);
 				}
 
+				 /**
+				 * Get the current keys from the key store as an encrypted byte string.
+				 *
+				 * @return current keys 
+				 */
 				public string GetKeys()
 				{
 					int sinkSz = 512;
@@ -124,6 +176,9 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the KeyStoreListener
+			 */
 			public void Dispose()
 			{
 			
@@ -131,6 +186,10 @@ namespace AllJoynUnity
 				GC.SuppressFinalize(this);
 			}
 
+			/**
+			 * Dispose the KeyStoreListener
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

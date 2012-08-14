@@ -97,3 +97,7 @@ if env['OS'] == 'android':
                 'package_support/UnityStartAllJoyn/.project')
     env.Install('$UNITY_DISTDIR/package_support/UnityStartAllJoyn', 
                 'package_support/UnityStartAllJoyn/.classpath')
+
+# Build docs
+env.SConscript('docs/SConscript')
+    

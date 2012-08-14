@@ -1,20 +1,23 @@
-//-----------------------------------------------------------------------
-// <copyright file="MsgArg.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * This file defines a class for message bus data types and values
+ */
+
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -23,6 +26,16 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * Class definition for a message arg.
+		 * This class deals with the message bus types and the operations on them
+		 *
+		 * MsgArg's are designed to be light-weight. A MsgArg will normally hold references to the data
+		 * (strings etc.) it wraps and will only copy that data if the MsgArg is assigned. For example no
+		 * additional memory is allocated for an #ALLJOYN_STRING that references an existing const char*.
+		 * If a MsgArg is assigned the destination receives a copy of the contents of the source. The
+		 * Stabilize() methods can also be called to explicitly force contents of the MsgArg to be copied.
+		 */
 		public class MsgArg : IDisposable
 		{
 			internal MsgArg(MsgArgs owner, uint index)
@@ -113,10 +126,10 @@ namespace AllJoynUnity
 				return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
 			}
 
-            public static implicit operator byte[](MsgArg arg)
-            {
-                return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
-            }
+		    public static implicit operator byte[](MsgArg arg)
+		    {
+			return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
+		    }
 
 			public string ObjectPath
 			{
@@ -145,6 +158,57 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			     * Set value of a message arg from a value. Note that any values or
+			     * MsgArg pointers passed in must remain valid until this MsgArg is freed.
+			     *
+			     *  - @c 'a'  The array length followed by:
+			     *            - If the element type is a basic type a pointer to an array of values of that type.
+			     *            - If the element type is string a pointer to array of const char*, if array length is
+			     *              non-zero, and the char* pointer is NULL, the NULL must be followed by a pointer to
+			     *              an array of const qcc::String.
+			     *            - If the element type is an @ref ALLJOYN_ARRAY "ARRAY", @ref ALLJOYN_STRUCT "STRUCT",
+			     *              @ref ALLJOYN_DICT_ENTRY "DICT_ENTRY" or @ref ALLJOYN_VARIANT "VARIANT" a pointer to an
+			     *              array of MsgArgs where each MsgArg has the signature specified by the element type.
+			     *            - If the element type is specified using the wildcard character '*', a pointer to
+			     *              an  array of MsgArgs. The array element type is determined from the type of the
+			     *              first MsgArg in the array, all the elements must have the same type.
+			     *  - @c 'b'  A bool value
+			     *  - @c 'd'  A double (64 bits)
+			     *  - @c 'g'  A pointer to a NUL terminated string (pointer must remain valid for lifetime of the MsgArg)
+			     *  - @c 'h'  A qcc::SocketFd
+			     *  - @c 'i'  An int (32 bits)
+			     *  - @c 'n'  An int (16 bits)
+			     *  - @c 'o'  A pointer to a NUL terminated string (pointer must remain valid for lifetime of the MsgArg)
+			     *  - @c 'q'  A uint (16 bits)
+			     *  - @c 's'  A pointer to a NUL terminated string (pointer must remain valid for lifetime of the MsgArg)
+			     *  - @c 't'  A uint (64 bits)
+			     *  - @c 'u'  A uint (32 bits)
+			     *  - @c 'v'  Not allowed, the actual type must be provided.
+			     *  - @c 'x'  An int (64 bits)
+			     *  - @c 'y'  A byte (8 bits)
+			     *
+			     *  - @c '(' and @c ')'  The list of values that appear between the parentheses using the notation above
+			     *  - @c '{' and @c '}'  A pair values using the notation above.
+			     *
+			     *  - @c '*'  A pointer to a MsgArg.
+			     *
+			     * Examples:
+			     *
+			     * An array of strings
+			     *
+			     *     @code
+			     *     string fruits[3] =  { "apple", "banana", "orange" };
+			     *     MsgArg bowl;
+			     *     bowl.Set(fruits);
+			     *     @endcode
+			     *
+			     * @param value   The value for MsgArg value
+			     *
+			     * @return
+			     *      - #ER_OK if the MsgArg was successfully set
+			     *      - An error status otherwise
+			     */
 			public void Set(object value)
 			{
 			
@@ -294,12 +358,19 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the MsgArg
+			 */
 			public void Dispose()
 			{
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
+			/**
+			 * Dispose the MsgArg
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

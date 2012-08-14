@@ -1,20 +1,23 @@
-//-----------------------------------------------------------------------
-// <copyright file="MsgArgs.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * This file defines a class for message bus data types and values
+ */
+
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -23,8 +26,21 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * Class definition for message args.
+		 * This class deals with the message bus types and the operations on them
+		 *
+		 * MsgArg's are designed to be light-weight. A MsgArg will normally hold references to the data
+		 * (strings etc.) it wraps and will only copy that data if the MsgArg is assigned. For example no
+		 * additional memory is allocated for an #ALLJOYN_STRING that references an existing const char*.
+		 * If a MsgArg is assigned the destination receives a copy of the contents of the source. The
+		 * Stabilize() methods can also be called to explicitly force contents of the MsgArg to be copied.
+		 */
 		public class MsgArgs : IDisposable
 		{
+			/**
+			 * Constructor for MsgArgs.
+			 */
 			public MsgArgs(uint numArgs)
 			{
 			
@@ -64,6 +80,9 @@ namespace AllJoynUnity
 			}
 
 			#region IDisposable
+			/**
+			 * Dispose the MsgArgs
+			 */
 			public void Dispose()
 			{
 			
@@ -71,6 +90,10 @@ namespace AllJoynUnity
 				GC.SuppressFinalize(this); 
 			}
 
+			/**
+			 * Dispose the MsgArgs
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

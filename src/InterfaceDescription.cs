@@ -1,20 +1,23 @@
-//-----------------------------------------------------------------------
-// <copyright file="InterfaceDescription.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * This file defines types for statically describing a message bus interface
+ */
+
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -23,22 +26,44 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * @class InterfaceDescription
+		 * Class for describing message bus interfaces. %InterfaceDescription objects describe the methods,
+		 * signals and properties of a BusObject or ProxyBusObject.
+		 *
+		 * Calling ProxyBusObject::AddInterface(const char*) adds the AllJoyn interface described by an
+		 * %InterfaceDescription to a ProxyBusObject instance. After an  %InterfaceDescription has been
+		 * added, the methods described in the interface can be called. Similarly calling
+		 * BusObject::AddInterface adds the interface and its methods, properties, and signal to a
+		 * BusObject. After an interface has been added method handlers for the methods described in the
+		 * interface can be added by calling BusObject::AddMethodHandler or BusObject::AddMethodHandlers.
+		 *
+		 * An %InterfaceDescription can be constructed piecemeal by calling InterfaceDescription::AddMethod,
+		 * InterfaceDescription::AddMember(), and InterfaceDescription::AddProperty(). Alternatively,
+		 * calling ProxyBusObject::ParseXml will create the %InterfaceDescription instances for that proxy
+		 * object directly from an XML string. Calling ProxyBusObject::IntrospectRemoteObject or
+		 * ProxyBusObject::IntrospectRemoteObjectAsync also creates the %InterfaceDescription
+		 * instances from XML but in this case the XML is obtained by making a remote Introspect method
+		 * call on a bus object.
+		 */
 		public class InterfaceDescription
 		{
 			[Flags]
+			/** @name Annotation flags */
 			public enum AnnotationFlags : byte
 			{
-				Default = 0,
-				NoReply = 1,
-				Deprecated = 2
+				Default = 0, /**< Default annotate flag */
+				NoReply = 1, /**< No reply annotate flag */
+				Deprecated = 2 /**< Deprecated annotate flag */
 			}
 
 			[Flags]
+			/** @name Access type */
 			public enum AccessFlags : byte
 			{
-				Read = 1,
-				Write = 2,
-				ReadWrite = 3
+				Read = 1, /**< Read Access type */
+				Write = 2, /**< Write Access type */
+				ReadWrite = 3 /**< Read-Write Access type */
 			}
 
 			internal InterfaceDescription(IntPtr interfaceDescription)
@@ -48,6 +73,14 @@ namespace AllJoynUnity
 			}
 
 			#region Equality
+			/**
+			 * Equality operation.
+			 *
+			 * @param one	InterfaceDescription to be compared to
+			 * @param other	InterfaceDescription to be compared against
+			 *
+			 * @return true if InterfaceDescriptions are equal
+			 */
 			public static bool operator ==(InterfaceDescription one, InterfaceDescription other)
 			{
 			
@@ -56,12 +89,26 @@ namespace AllJoynUnity
 				return (alljoyn_interfacedescription_eql(one.UnmanagedPtr, other.UnmanagedPtr) == 1 ? true : false);
 			}
 
-			public static bool operator !=(InterfaceDescription one, InterfaceDescription other)
+			/**
+			 * Not Equality operation.
+			 *
+			 * @param one	InterfaceDescription to be compared to
+			 * @param other	InterfaceDescription to be compared against
+			 *
+			 * @return true if InterfaceDescriptions are not equal
+			 */public static bool operator !=(InterfaceDescription one, InterfaceDescription other)
 			{
 			
 				return !(one == other);
 			}
 
+			/**
+			 * Equality operation.
+			 *
+			 * @param o	InterfaceDescription to be compared against
+			 *
+			 * @return true if InterfaceDescriptions are equal
+			 */
 			public override bool Equals(object o) 
 			{
 				try
@@ -74,6 +121,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Returns the raw pointer of the interfaceDescription.
+			 *
+			 * @return the raw pointer of the interfaceDescription
+			 */
 			public override int GetHashCode()
 			{
 			
@@ -82,6 +134,11 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Properties
+			/**
+			 * Check for existence of any properties
+			 *
+			 * @return  true if interface has any properties.
+			 */
 			public bool HasProperties
 			{
 				get
@@ -90,6 +147,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Returns the name of the interface
+			 *
+			 * @return the interface name.
+			 */
 			public string Name
 			{
 				get
@@ -98,6 +160,12 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Indicates if this interface is secure. Secure interfaces require end-to-end authentication.
+			 * The arguments for methods calls made to secure interfaces and signals emitted by secure
+			 * interfaces are encrypted.
+			 * @return true if the interface is secure.
+			 */
 			public bool IsSecure
 			{
 				get
@@ -106,6 +174,19 @@ namespace AllJoynUnity
 				}
 			}
 			#endregion
+			/**
+			     * Add a member to the interface.
+			     *
+			     * @param type        Message type.
+			     * @param name        Name of member.
+			     * @param inputSignature    Signature of input parameters or NULL for none.
+			     * @param outputSignature      Signature of output parameters or NULL for none.
+			     * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			     *
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames)
 			{
@@ -114,6 +195,20 @@ namespace AllJoynUnity
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)AnnotationFlags.Default);
 			}
 
+			/**
+			     * Add a member to the interface.
+			     *
+			     * @param type        Message type.
+			     * @param name        Name of member.
+			     * @param inputSignature    Signature of input parameters or NULL for none.
+			     * @param outputSignature      Signature of output parameters or NULL for none.
+			     * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			     * @param annotation  Annotation flags.
+			     *
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames, AnnotationFlags annotation)
 			{
@@ -122,18 +217,42 @@ namespace AllJoynUnity
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
 			}
 
-            public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
-            {
-                return alljoyn_interfacedescription_addmember(_interfaceDescription,
-                    (int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
-            }
+			/**
+			     * Add a signal member to the interface.
+			     *
+			     * @param name        Name of method call member.
+			     * @param inputSignature         Signature of parameters or NULL for none.
+			     * @param argNames    Comma separated list of arg names used in annotation XML.
+			     * @param annotation  Annotation flags.
+			     *
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - #ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     */
+		    public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
+		    {
+			return alljoyn_interfacedescription_addmember(_interfaceDescription,
+			    (int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
+		    }
 
+			/**
+			     * Activate this interface. An interface must be activated before it can be used. Activating an
+			     * interface locks the interface so that is can no longer be modified.
+			     */
 			public void Activate()
 			{
 			
 				alljoyn_interfacedescription_activate(_interfaceDescription);
 			}
 
+			/**
+			     * Lookup a member description by name
+			     *
+			     * @param name  Name of the member to lookup
+			     * @return
+			     *      - Pointer to member.
+			     *      - NULL if does not exist.
+			     */
 			public Member GetMember(string name)
 			{
 			
@@ -148,6 +267,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			     * Get all the members.
+			     *
+			     * @return  The members array to receive the members.
+			     */
 			public Member[] GetMembers()
 			{
 			
@@ -170,6 +294,18 @@ namespace AllJoynUnity
 				return ret;
 			}
 
+			/**
+			     * Check for existence of a member. Optionally check the signature also.
+			     * @remark
+			     * if the a signature is not provided this method will only check to see if
+			     * a member with the given @c name exists.  If a signature is provided a
+			     * member with the given @c name and @c signature must exist for this to return true.
+			     *
+			     * @param name       Name of the member to lookup
+			     * @param inSig      Input parameter signature of the member to lookup
+			     * @param outSig     Output parameter signature of the member to lookup (leave NULL for signals)
+			     * @return true if the member name exists.
+			     */
 			public bool HasMember(string name, string inSig, string outSig)
 			{
 			
@@ -177,6 +313,12 @@ namespace AllJoynUnity
 					name, inSig, outSig) == 1 ? true : false );
 			}
 
+			/**
+			     * Lookup a property description by name
+			     *
+			     * @param name  Name of the property to lookup
+			     * @return a structure representing the properties of the interface
+			     */
 			public Property GetProperty(string name)
 			{
 			
@@ -191,6 +333,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			     * Get all the properties.
+			     *
+			     * @return  The property array that represents the available properties.
+			     */
 			public Property[] GetProperties()
 			{
 			
@@ -213,6 +360,17 @@ namespace AllJoynUnity
 				return ret;
 			}
 
+			/**
+			     * Add a property to the interface.
+			     *
+			     * @param name       Name of property.
+			     * @param signature  Property type.
+			     * @param access     #PROP_ACCESS_READ, #PROP_ACCESS_WRITE or #PROP_ACCESS_RW
+			     * @return
+			     *      - #ER_OK if successful.
+			     *      - #ER_BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			     *                                        because it already exists.
+			     */
 			public QStatus AddProperty(string name, string signature, AccessFlags access)
 			{
 			
@@ -220,6 +378,12 @@ namespace AllJoynUnity
 					name, signature, (byte)access);
 			}
 
+			/**
+			     * Check for existence of a property.
+			     *
+			     * @param name       Name of the property to lookup
+			     * @return true if the property exists.
+			     */
 			public bool HasProperty(string name)
 			{
 			
