@@ -1,20 +1,23 @@
-//-----------------------------------------------------------------------
-// <copyright file="SessionOpts.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * AllJoyn session options
+ */
+
+/******************************************************************************
+ * Copyright 2012 Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -23,15 +26,20 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * SessionOpts contains a set of parameters that define a Session's characteristics.
+		 */
 		public class SessionOpts : IDisposable
 		{
+			/** Traffic type */
 			public enum TrafficType : byte
 			{
-				Messages = 0x01,
-				RawUnreliable = 0x02,
-				RawReliable = 0x04
+				Messages = 0x01,   /**< Session carries message traffic */
+				RawUnreliable = 0x02,   /**< Session carries an unreliable (lossy) byte stream */
+				RawReliable = 0x04   /**< Session carries a reliable byte stream */
 			}
 
+			/** Proximity type */
 			public enum ProximityType : byte
 			{
 				Any = 0xFF,
@@ -40,7 +48,7 @@ namespace AllJoynUnity
 			}
 
 			#region Properties
-			public TrafficType Traffic
+			public TrafficType Traffic /**< holds the Traffic type for this SessionOpt*/
 			{
 				get
 				{
@@ -48,6 +56,12 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			     * Multi-point session capable.
+			     * A session is multi-point if it can be joined multiple times to form a single
+			     * session with multi (greater than 2) endpoints. When false, each join attempt
+			     * creates a new point-to-point session.
+			     */
 			public bool IsMultipoint
 			{
 				get
@@ -56,6 +70,9 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Defines the proximity of the Session as Physical, Network, or Any.
+			 */
 			public ProximityType Proximity
 			{
 				get
@@ -64,6 +81,7 @@ namespace AllJoynUnity
 				}
 			}
 
+		    /** Allowed Transports  */
 			public TransportMask Transports
 			{
 				get
@@ -73,6 +91,15 @@ namespace AllJoynUnity
 			}
 			#endregion
 
+			/**
+			     * Construct a SessionOpts with specific parameters.
+			     *
+			     * @param trafficType       Type of traffic.
+			     * @param isMultipoint  true iff session supports multipoint (greater than two endpoints).
+			     * @param proximity     Proximity constraint bitmask.
+			     * @param transports    Allowed transport types bitmask.
+			     *
+			     */
 			public SessionOpts(TrafficType trafficType, bool isMultipoint, ProximityType proximity, TransportMask transports)
 			{
 			
@@ -86,12 +113,26 @@ namespace AllJoynUnity
 				_isDisposed = true;
 			}
 
+			/**
+			     * Determine whether this SessionOpts is compatible with the SessionOpts offered by other
+			     *
+			     * @param other  Options to be compared against this one.
+			     * @return true iff this SessionOpts can use the option set offered by other.
+			     */
 			public bool IsCompatible(SessionOpts other)
 			{
 			
 				return (alljoyn_sessionopts_iscompatible(_sessionOpts, other._sessionOpts) == 1 ? true : false);
 			}
 
+			/**
+			     * Compare SessionOpts
+			     *
+			     * @param one the SessionOpts being compared to
+			     * @param other the SessionOpts being compared against
+			     * @return true if all of the SessionOpts parameters are the same
+			     *
+			     */
 			public static int Compare(SessionOpts one, SessionOpts other)
 			{
 			
@@ -126,12 +167,19 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the SessionOpts
+			 */
 			public void Dispose()
 			{
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
+			/**
+			 * Dispose the SessionOpts
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

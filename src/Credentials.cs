@@ -1,20 +1,24 @@
-//-----------------------------------------------------------------------
-// <copyright file="Credentials.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ * This file defines the Credentials class that describes the
+ * authentication credentials.
+ */
+
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Runtime.InteropServices;
@@ -23,21 +27,31 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * Generic class for describing different authentication credentials.
+		 */
 		public class Credentials : IDisposable
 		{
 			[Flags]
+			/**
+			 * @name CredentialFlags indication Bitmasks
+			 *  Bitmasks used to indicated what type of credentials are being used.
+			 */
 			public enum CredentialFlags : ushort
 			{
-				Password = 0x0001,
-				UserName = 0x0002,
-				CertChain = 0x0004,
-				PrivateKey = 0x0008,
-				LogonEntry = 0x0010,
-				Expiration = 0x0020,
-				NewPassword = 0x1001,
-				OneTimePassword = 0x2001
+				Password = 0x0001, /**< Bit 0 indicates credentials include a password, pincode, or passphrase */
+				UserName = 0x0002, /**< Bit 1 indicates credentials include a user name */
+				CertChain = 0x0004, /**< Bit 2 indicates credentials include a chain of PEM-encoded X509 certificates */
+				PrivateKey = 0x0008, /**< Bit 3 indicates credentials include a PEM-encoded private key */
+				LogonEntry = 0x0010, /**< Bit 4 indicates credentials include a logon entry that can be used to logon a remote user */
+				Expiration = 0x0020, /**< Bit 5 indicates credentials include an expiration time */
+				NewPassword = 0x1001, /**< Indicates the credential request is for a newly created password */
+				OneTimePassword = 0x2001 /**< Indicates the credential request is for a one time use password */
 			}
 
+			/**
+			 * Constructor for a Crendtials object.
+			 */
 			public Credentials()
 			{
 			
@@ -51,12 +65,21 @@ namespace AllJoynUnity
 				_isDisposed = true;
 			}
 
+			/**
+			 * Tests if one or more credentials are set.
+			 *
+			 * @param credMask  A logical or of the credential bit values.
+			 * @return true if the credentials are set.
+			 */
 			public bool IsSet(CredentialFlags credMask)
 			{
 			
 				return (alljoyn_credentials_isset(_credentials, (ushort)credMask) == 1 ? true : false);
 			}
 
+			/**
+			 * Clear the credentials.
+			 */
 			public void Clear()
 			{
 			
@@ -138,6 +161,9 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the Credentials
+			 */
 			public void Dispose()
 			{
 			
@@ -145,6 +171,10 @@ namespace AllJoynUnity
 				GC.SuppressFinalize(this); 
 			}
 
+			/**
+			 * Dispose the Credentials
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			

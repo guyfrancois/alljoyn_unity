@@ -1,20 +1,26 @@
-//-----------------------------------------------------------------------
-// <copyright file="BusObject.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-// </copyright>
-//-----------------------------------------------------------------------
+/**
+ * @file
+ *
+ * This file defines the base class for message bus objects that
+ * are implemented and registered locally.
+ *
+ */
+
+/******************************************************************************
+ * Copyright 2012, Qualcomm Innovation Center, Inc.
+ *
+ *    Licensed under the Apache License, Version 2.0 (the "License");
+ *    you may not use this file except in compliance with the License.
+ *    You may obtain a copy of the License at
+ *
+ *        http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *    Unless required by applicable law or agreed to in writing, software
+ *    distributed under the License is distributed on an "AS IS" BASIS,
+ *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *    See the License for the specific language governing permissions and
+ *    limitations under the License.
+ ******************************************************************************/
 
 using System;
 using System.Threading;
@@ -25,8 +31,19 @@ namespace AllJoynUnity
 {
 	public partial class AllJoyn
 	{
+		/**
+		 * Message Bus Object base class
+		 */
 		public class BusObject : IDisposable
 		{
+			/**
+			     * %BusObject constructor.
+			     *
+			     * @param bus            Bus that this object exists on.
+			     * @param path           Object path for object.
+			     * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
+			     *                       as parent objects (in the object path sense) to other objects.
+			     */
 			public BusObject(BusAttachment bus, string path, bool isPlaceholder)
 			{
 			
@@ -48,17 +65,50 @@ namespace AllJoynUnity
 				_busObject = alljoyn_busobject_create(bus.UnmanagedPtr, path, isPlaceholder ? 1 : 0, main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
-            public IntPtr getAddr()
-            {
-                return _busObject;
-            }
+			/**
+			     * Request the raw pointer of the AllJoyn C BusObject
+			     *
+			     * @return the raw pointer of the AllJoyn C BusObject
+			     */ 
+			public IntPtr getAddr()
+			{
+				return _busObject;
+			}
 
+			/**
+			     * Add an interface to this object. If the interface has properties this will also add the
+			     * standard property access interface. An interface must be added before its method handlers can be
+			     * added. Note that the Peer interface (org.freedesktop.DBus.peer) is implicit on all objects and
+			     * cannot be explicitly added, and the Properties interface (org.freedesktop,DBus.Properties) is
+			     * automatically added when needed and cannot be explicitly added.
+			     *
+			     * Once an object is registered, it should not add any additional interfaces. Doing so would
+			     * confuse remote objects that may have already introspected this object.
+			     *
+			     * @param iface  The interface to add
+			     *
+			     * @return
+			     *      - #ER_OK if the interface was successfully added.
+			     *      - #ER_BUS_IFACE_ALREADY_EXISTS if the interface already exists.
+			     *      - An error status otherwise
+			     */
 			public QStatus AddInterface(InterfaceDescription iface)
 			{
 			
 				return alljoyn_busobject_addinterface(_busObject, iface.UnmanagedPtr);
 			}
 
+			/**
+			     * Add a method handler to this object. The interface for the method handler must have already
+			     * been added by calling AddInterface().
+			     *
+			     * @param member   Interface member implemented by handler.
+			     * @param handler  Method handler.
+			     *
+			     * @return
+			     *      - #ER_OK if the method handler was added.
+			     *      - An error status otherwise
+			     */
 			public QStatus AddMethodHandler(InterfaceDescription.Member member, MethodHandler handler)
 			{
 			
@@ -83,6 +133,15 @@ namespace AllJoynUnity
 				return ret;
 			}
 
+			/**
+			     * Reply to a method call.
+			     *
+			     * @param message      The method call message
+			     * @param args     The reply arguments (can be NULL)
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - An error status otherwise
+			     */
 			protected QStatus MethodReply(Message message, MsgArgs args)
 			{
 			
@@ -90,6 +149,16 @@ namespace AllJoynUnity
 					(UIntPtr)args.Length);
 			}
 
+			/**
+			     * Reply to a method call with an error message.
+			     *
+			     * @param message              The method call message
+			     * @param error            The name of the error
+			     * @param errorMessage     An error message string
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - An error status otherwise
+			     */
 			protected QStatus MethodReply(Message message, string error, string errorMessage)
 			{
 			
@@ -97,17 +166,56 @@ namespace AllJoynUnity
 					errorMessage);
 			}
 
+			/**
+			     * Reply to a method call with an error message.
+			     *
+			     * @param message        The method call message
+			     * @param status     The status code for the error
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - An error status otherwise
+			     */
 			protected QStatus MethodReply(Message message, QStatus status)
 			{
 			
 				return alljoyn_busobject_methodreply_status(_busObject, message.UnmanagedPtr, status.value);
 			}
 
+			/**
+			     * Send a signal.
+			     *
+			     * @param destination      The unique or well-known bus name or the signal recipient (NULL for broadcast signals)
+			     * @param sessionId        A unique SessionId for this AllJoyn session instance
+			     * @param signal           Interface member of signal being emitted.
+			     * @param args             The arguments for the signal (can be NULL)
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - An error status otherwise
+			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
             {
                 return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0);
             }
 
+			/**
+			     * Send a signal.
+			     *
+			     * @param destination      The unique or well-known bus name or the signal recipient (NULL for broadcast signals)
+			     * @param sessionId        A unique SessionId for this AllJoyn session instance
+			     * @param signal           Interface member of signal being emitted.
+			     * @param args             The arguments for the signal (can be NULL)
+			     * @param timeToLife       If non-zero this specifies in milliseconds the useful lifetime for this
+			     *                         signal. If delivery of the signal is delayed beyond the timeToLive due to
+			     *                         network congestion or other factors the signal may be discarded. There is
+			     *                         no guarantee that expired signals will not still be delivered.
+			     * @param flags            Logical OR of the message flags for this signals. The following flags apply to signals:
+			     *                         - If ::ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be forwarded across bus-to-bus connections.
+			     *                         - If ::ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+			     *                         - If ::ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			     * @return
+			     *      - #ER_OK if successful
+			     *      - An error status otherwise
+			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
                 MsgArgs args, ushort timeToLife, byte flags)
             {
@@ -115,6 +223,11 @@ namespace AllJoynUnity
             }
 
 			#region Properties
+			/**
+			 * Return the path for the object
+			 *
+			 * @return Object path
+			 */
 			public string Path
 			{
 				get
@@ -123,6 +236,12 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Get the name of this object.
+			 * The name is the last component of the path.
+			 *
+			 * @return Last component of object path.
+			 */
 			public string Name
 			{
 				get
@@ -141,6 +260,13 @@ namespace AllJoynUnity
 
 			#region Delegates
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			/**
+			 * MethodHandlers are %MessageReceiver methods which are called by AllJoyn library
+			 * to forward AllJoyn method_calls to AllJoyn library users.
+			 *
+			 * @param member    Method interface member entry.
+			 * @param message   The received method call message.
+			 */
 			public delegate void MethodHandler(InterfaceDescription.Member member, Message message);
             [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalMethodHandler(IntPtr bus, IntPtr member, IntPtr message);
@@ -165,11 +291,20 @@ namespace AllJoynUnity
 			
 			}
 
+			/**
+			 * Called by the message bus when the object has been successfully registered. The object can
+			 * perform any initialization such as adding match rules at this time.
+			 */
 			protected virtual void OnObjectRegistered()
 			{
 			
 			}
 
+			/**
+			 * Called by the message bus when the object has been successfully unregistered
+			 * @remark
+			 * This base class implementation @b must be called explicitly by any overriding derived class.
+			 */
 			protected virtual void OnObjectUnregistered()
 			{
 			
@@ -252,12 +387,19 @@ namespace AllJoynUnity
 			#endregion
 
 			#region IDisposable
+			/**
+			 * Dispose the BusObject
+			 */
 			public void Dispose()
 			{
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
+			/**
+			 * Dispose the BusObject
+			 * @param disposing	describes if its activly being disposed
+			 */
 			protected virtual void Dispose(bool disposing)
 			{
 			
