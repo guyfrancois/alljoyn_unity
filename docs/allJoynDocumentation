@@ -21,16 +21,6 @@
  * This file will be parsed by doxygen.  Only text within the doxygen tags will show up in 
  * the final documentation. 
  */
-
-/*
- * the namespace 'alljoyn' is used in so many locations that there is no single location that
- * it makes since to document that namespace so it has been documented here.
- */
-/**
- * @namespace ajn
- * namespace used for the AllJoyn API
- */
-
 /**
  *
  *@mainpage AllJoyn Documentation
