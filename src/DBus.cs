@@ -34,7 +34,7 @@ namespace AllJoynUnity
 		{
 			[Flags]
 			/**
-			 * @name DBus RequestName input params
+			 * DBus RequestName input params.
 			 * org.freedesktop.DBus.RequestName input params (see DBus spec)
 			 */
 			public enum NameFlags : uint

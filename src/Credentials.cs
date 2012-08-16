@@ -34,8 +34,8 @@ namespace AllJoynUnity
 		{
 			[Flags]
 			/**
-			 * @name CredentialFlags indication Bitmasks
-			 *  Bitmasks used to indicated what type of credentials are being used.
+			 * CredentialFlags indication Bitmasks.
+			 * Bitmasks used to indicated what type of credentials are being used.
 			 */
 			public enum CredentialFlags : ushort
 			{
@@ -132,6 +132,10 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Gets or Sets a requested private key. The private key must be PEM encoded and may be encrypted. If
+			 * the private key is encrypted the passphrase required to decrypt it must also be supplied.
+			 */
 			public string PrivateKey
 			{
 				get
@@ -143,7 +147,9 @@ namespace AllJoynUnity
 					alljoyn_credentials_setprivatekey(_credentials, (string)value);
 				}
 			}
-
+			/**
+			 * Gets or Sets a LogonEntry.
+			 */
 			public string LogonEntry
 			{
 				get

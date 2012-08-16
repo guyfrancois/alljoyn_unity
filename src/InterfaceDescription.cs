@@ -49,7 +49,7 @@ namespace AllJoynUnity
 		public class InterfaceDescription
 		{
 			[Flags]
-			/** @name Annotation flags */
+			/** Annotation flags */
 			public enum AnnotationFlags : byte
 			{
 				Default = 0, /**< Default annotate flag */
@@ -58,7 +58,7 @@ namespace AllJoynUnity
 			}
 
 			[Flags]
-			/** @name Access type */
+			/** Access type */
 			public enum AccessFlags : byte
 			{
 				Read = 1, /**< Read Access type */
