@@ -16,16 +16,17 @@
 import os
 Import('env')
 
+docenv = env.Clone()
+docenv['ENV']['UNITY_DISTDIR'] = str(env.Dir('$UNITY_DISTDIR'))
+
 # The return value is the collection of files installed in the build destination.
-returnValue = []
+installDocs = []
 
 # Build docs
 if env['DOCS'] == 'html':
-    doxy_bld = Builder(action = 'cd ${SOURCE.dir} && doxygen ${SOURCE.file}')
-    env.Append(BUILDERS = {'Doxygen': doxy_bld})
-    # the target directory 'docs/tmp' is never built this will cause doxygen 
-    # to run every time DOCS == 'html'
-    env.Doxygen(source=['Doxygen_html', '../src/Status.cs'], target=Dir('tmp'))
-    env.Clean('Doxygen_html', Dir('html'))
+    generateDocs = docenv.Doxygen(source=['Doxygen_html', '../src/Status.cs'], target=[Dir('tmp'),Dir('html')])
+    installDocs = docenv.Install('$UNITY_DISTDIR/docs', Dir('html'))
+    docenv.Clean('Doxygen_html', Dir('html'))
+    docenv.Depends(installDocs, generateDocs)
 
-Return('returnValue')
+Return('installDocs')

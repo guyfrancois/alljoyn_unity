@@ -59,7 +59,7 @@ if env['OS_GROUP'] == 'windows':
     returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
 
     #place alljoyn_c.dll into the samples
-    liballjoyn_c = '$DISTDIR/lib/alljoyn_c.dll'
+    liballjoyn_c = '$DISTDIR/c/lib/alljoyn_c.dll'
     returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
 
 if env['OS'] == 'android':
@@ -67,7 +67,7 @@ if env['OS'] == 'android':
     returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
 
     #place liballjoyn_c.so into the samples
-    liballjoyn_c = '$DISTDIR/lib/liballjoyn_c.so'
+    liballjoyn_c = '$DISTDIR/c/lib/liballjoyn_c.so'
     returnValue += env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
 
 #Build unit tests
