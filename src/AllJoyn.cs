@@ -76,7 +76,7 @@ namespace AllJoynUnity
         {
             if (callbackPumpThread == null)
             {
-                alljoin_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
+                alljoyn_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
                 callbackPumpThread = new Thread((object o) =>
                 {
                     int numprocessed = 0;
@@ -123,7 +123,7 @@ namespace AllJoynUnity
 	 */ 
         private static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
         {
-            alljoin_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
+            alljoyn_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
         }
 
 	[Flags]
@@ -150,7 +150,7 @@ namespace AllJoynUnity
 	private extern static int alljoyn_unity_deferred_callbacks_process();
 
 	[DllImport(DLL_IMPORT_TARGET)]
-	private extern static void alljoin_unity_set_deferred_callback_mainthread_only(int mainthread_only);
+	private extern static void alljoyn_unity_set_deferred_callback_mainthread_only(int mainthread_only);
 
 	#endregion
 	}

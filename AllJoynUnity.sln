@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "basic_client-server", "samp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "basic_server", "samples\csharp\basic_server\basic_server.csproj", "{253B2C11-05C3-4574-B302-7F8550E0524B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AllJoynUnityTest", "unit_test\AllJoynUnityTest.csproj", "{BD0E1D37-7B3D-4740-9DDD-C5015F2E277B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,10 @@ Global
 		{253B2C11-05C3-4574-B302-7F8550E0524B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{253B2C11-05C3-4574-B302-7F8550E0524B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{253B2C11-05C3-4574-B302-7F8550E0524B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD0E1D37-7B3D-4740-9DDD-C5015F2E277B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD0E1D37-7B3D-4740-9DDD-C5015F2E277B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD0E1D37-7B3D-4740-9DDD-C5015F2E277B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD0E1D37-7B3D-4740-9DDD-C5015F2E277B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
