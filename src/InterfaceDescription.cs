@@ -181,7 +181,7 @@ namespace AllJoynUnity
 			     * @param name        Name of member.
 			     * @param inputSignature    Signature of input parameters or NULL for none.
 			     * @param outputSignature      Signature of output parameters or NULL for none.
-			     * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			     * @param argNames    Comma separated list of input and then output arg names used in interface XML.
 			     *
 			     * @return
 			     *      - QStatus#OK if successful
@@ -202,7 +202,7 @@ namespace AllJoynUnity
 			     * @param name        Name of member.
 			     * @param inputSignature    Signature of input parameters or NULL for none.
 			     * @param outputSignature      Signature of output parameters or NULL for none.
-			     * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			     * @param argNames    Comma separated list of input and then output arg names used in interface XML.
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
@@ -222,7 +222,7 @@ namespace AllJoynUnity
 			     *
 			     * @param name        Name of method call member.
 			     * @param inputSignature         Signature of parameters or NULL for none.
-			     * @param argNames    Comma separated list of arg names used in annotation XML.
+			     * @param argNames    Comma separated list of arg names used in interface XML.
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
@@ -446,15 +446,6 @@ namespace AllJoynUnity
 					}
 				}
 
-				/** Exclusive OR of flags NoReply and Deprecated */
-				public AnnotationFlags Annotation
-				{
-					get
-					{
-						return (AnnotationFlags)_member.annotation;
-					}
-				}
-
 				internal Member(_Member member)
 				{
 					_member = member;
@@ -588,7 +579,6 @@ namespace AllJoynUnity
 				public IntPtr signature;
 				public IntPtr returnSignature;
 				public IntPtr argNames;
-				public byte annotation;
 #pragma warning disable 169 // Field is never used
 				public IntPtr internal_member;
 #pragma warning restore 169
