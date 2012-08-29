@@ -40,11 +40,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AllJoynTestCommon.cs" />
+    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="BusAttachmentTest.cs" />
     <Compile Include="BusListenerTest.cs" />
     <Compile Include="BusObjectTest.cs" />
     <Compile Include="InterfaceDescriptionTest.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionTest.cs" />
   </ItemGroup>
   <ItemGroup>

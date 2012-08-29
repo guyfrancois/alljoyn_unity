@@ -85,7 +85,8 @@ namespace AllJoynUnityTest
             Assert.Equal("s", pingMember.Signature);
             Assert.Equal("s", pingMember.ReturnSignature);
             Assert.Equal("in,out", pingMember.ArgNames);
-            Assert.Equal(AllJoyn.InterfaceDescription.AnnotationFlags.Default, pingMember.Annotation);
+            //TODO add in code to use new annotation methods
+            //Assert.Equal(AllJoyn.InterfaceDescription.AnnotationFlags.Default, pingMember.Annotation);
 
             // Verify the chirp member
             AllJoyn.InterfaceDescription.Member chirpMember = null;
@@ -98,7 +99,8 @@ namespace AllJoynUnityTest
             Assert.Equal("", chirpMember.Signature);
             Assert.Equal("s", chirpMember.ReturnSignature);
             Assert.Equal("chirp", chirpMember.ArgNames);
-            Assert.Equal(AllJoyn.InterfaceDescription.AnnotationFlags.Default, chirpMember.Annotation);
+            //TODO add in code to use new annotation methods
+            //Assert.Equal(AllJoyn.InterfaceDescription.AnnotationFlags.Default, chirpMember.Annotation);
 
             bus.Dispose();
         }
@@ -408,7 +410,7 @@ namespace AllJoynUnityTest
             Assert.Equal("s", signalMember.Signature);
             Assert.Equal("", signalMember.ReturnSignature);
             Assert.Equal("data", signalMember.ArgNames);
-            Assert.Equal(AllJoyn.InterfaceDescription.AnnotationFlags.Default, signalMember.Annotation);
+            //TODO add in code to use new annotation methods
 
             bus.Dispose();
         }
