@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Qualcomm Innovation Center, Inc.")]
 [assembly: AssemblyProduct("AllJoynUnityTest")]
-[assembly: AssemblyCopyright("Copyright © Qualcomm Innovation Center, Inc. 2012")]
+[assembly: AssemblyCopyright("Copyright © 2012, Qualcomm Innovation Center, Inc.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
