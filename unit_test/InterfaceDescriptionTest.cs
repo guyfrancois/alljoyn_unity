@@ -415,5 +415,67 @@ namespace AllJoynUnityTest
             bus.Dispose();
         }
 
+		[Fact]
+		public void TestInterfaceAnnotations()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			testIntf.AddAnnotation("org.alljoyn.test.annotation.one", "here");
+
+			// activate the interface
+			testIntf.Activate();
+
+			string value = "";
+			testIntf.GetAnnotation("org.alljoyn.test.annotation.one", ref value);
+			Assert.Equal("here", value);
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void TestMethodAnnotations()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			// Test adding a MethodCall
+			status = testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "ping", "s", "s", "in,out", AllJoyn.InterfaceDescription.AnnotationFlags.Default);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("ping", "one", "black_cat");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// Test adding a Signal
+			status = testIntf.AddMember(AllJoyn.Message.Type.Signal, "chirp", "", "s", "chirp", AllJoyn.InterfaceDescription.AnnotationFlags.Default);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// activate the interface
+			testIntf.Activate();
+
+			string value = "";
+			testIntf.GetMemberAnnotation("ping", "one", ref value);
+			Assert.Equal("black_cat", value);
+
+			bus.Dispose();
+		}
+
     }
 }
