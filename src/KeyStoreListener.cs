@@ -148,8 +148,8 @@ namespace AllJoynUnity
 							gch.AddrOfPinnedObject(), (UIntPtr)sinkSz);
 						gch.Free();
 					} while(status != QStatus.OK);
-
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink);
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)sinkSz - 1);
 				}
 
 				private IntPtr _keyStore;

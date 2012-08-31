@@ -252,8 +252,8 @@ namespace AllJoynUnity
 					GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
 					alljoyn_busobject_getname(_busObject, gch.AddrOfPinnedObject(), nameSz);
 					gch.Free();
-
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink);
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)nameSz - 1);
 				}
 			}
 			#endregion
