@@ -21,6 +21,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace AllJoynUnity
 {
@@ -175,6 +176,53 @@ namespace AllJoynUnity
 			}
 			#endregion
 			/**
+			 * Add an annotation to the interface.
+			 *
+			 * @param name       Name of annotation.
+			 * @param value      Value of the annotation
+			 * @return
+			 *      - #ER_OK if successful.
+			 *      - #ER_BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			 *                                        because it already exists.
+			 */
+			public QStatus AddAnnotation(string name, string value)
+			{
+				return alljoyn_interfacedescription_addannotation(_interfaceDescription, name, value);
+			}
+
+			/**
+			 * Get the value of an annotation
+			 *
+			 * @param name       Name of annotation.
+			 * @param value      Returned value of the annotation
+			 * @return
+			 *      - true if annotation found.
+			 *      - false if annotation not found
+			 */
+			public bool GetAnnotation(string name, ref string value)
+			{
+
+				UIntPtr value_size = new UIntPtr(); ;
+				alljoyn_interfacedescription_getannotation(_interfaceDescription, name, IntPtr.Zero, ref value_size);
+
+				byte[] buffer = new byte[(int)value_size];
+				GCHandle gch = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+				bool ret = alljoyn_interfacedescription_getannotation(_interfaceDescription, name, gch.AddrOfPinnedObject(), ref value_size);
+				gch.Free();
+				if (ret)
+				{
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					value = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, (Int32)value_size - 1);
+				}
+				else
+				{
+					value = "";
+				}
+
+				return ret;
+			}
+
+			/**
 			     * Add a member to the interface.
 			     *
 			     * @param type        Message type.
@@ -193,6 +241,56 @@ namespace AllJoynUnity
 			
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)AnnotationFlags.Default);
+			}
+
+			/**
+			 * Add an annotation to a member
+			 *
+			 * @param member      Name of member.
+			 * @param name        Name of annotation
+			 * @param value       Value for the annotation
+			 *
+			 * @return
+			 *      - QStatus#ER_OK if successful
+			 *      - QStatus#ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddMemberAnnotation(string member, string name, string value)
+			{
+				return alljoyn_interfacedescription_addmemberannotation(_interfaceDescription, member, name, value);
+			}
+
+			/**
+			 * Get annotation to an existing member (signal or method).
+			 *
+			 * @param member     Name of member
+			 * @param name       Name of annotation
+			 * @param value      Output value for the annotation
+			 *
+			 * @return
+			 *      - true if found
+			 *      - false if property not found
+			 */
+			public bool GetMemberAnnotation(string member, string name, ref string value)
+			{
+
+				UIntPtr value_size = new UIntPtr(); ;
+				alljoyn_interfacedescription_getmemberannotation(_interfaceDescription, member, name, IntPtr.Zero, ref value_size);
+
+				byte[] buffer = new byte[(int)value_size];
+				GCHandle gch = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+				bool ret = alljoyn_interfacedescription_getmemberannotation(_interfaceDescription, member, name, gch.AddrOfPinnedObject(), ref value_size);
+				gch.Free();
+				if (ret)
+				{
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					value = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, (Int32)value_size - 1);
+				}
+				else
+				{
+					value = "";
+				}
+
+				return ret;
 			}
 
 			/**
@@ -236,9 +334,9 @@ namespace AllJoynUnity
 		    }
 
 			/**
-			     * Activate this interface. An interface must be activated before it can be used. Activating an
-			     * interface locks the interface so that is can no longer be modified.
-			     */
+			 * Activate this interface. An interface must be activated before it can be used. Activating an
+			 * interface locks the interface so that is can no longer be modified.
+			 */
 			public void Activate()
 			{
 			
@@ -246,13 +344,13 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Lookup a member description by name
-			     *
-			     * @param name  Name of the member to lookup
-			     * @return
-			     *      - Pointer to member.
-			     *      - NULL if does not exist.
-			     */
+			 * Lookup a member description by name
+			 *
+			 * @param name  Name of the member to lookup
+			 * @return
+			 *      - Pointer to member.
+			 *      - NULL if does not exist.
+			 */
 			public Member GetMember(string name)
 			{
 			
@@ -268,10 +366,10 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Get all the members.
-			     *
-			     * @return  The members array to receive the members.
-			     */
+			 * Get all the members.
+			 *
+			 * @return  The members array to receive the members.
+			 */
 			public Member[] GetMembers()
 			{
 			
@@ -295,17 +393,17 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Check for existence of a member. Optionally check the signature also.
-			     * @remark
-			     * if the a signature is not provided this method will only check to see if
-			     * a member with the given @c name exists.  If a signature is provided a
-			     * member with the given @c name and @c signature must exist for this to return true.
-			     *
-			     * @param name       Name of the member to lookup
-			     * @param inSig      Input parameter signature of the member to lookup
-			     * @param outSig     Output parameter signature of the member to lookup (leave NULL for signals)
-			     * @return true if the member name exists.
-			     */
+			 * Check for existence of a member. Optionally check the signature also.
+			 * @remark
+			 * if the a signature is not provided this method will only check to see if
+			 * a member with the given @c name exists.  If a signature is provided a
+			 * member with the given @c name and @c signature must exist for this to return true.
+			 *
+			 * @param name       Name of the member to lookup
+			 * @param inSig      Input parameter signature of the member to lookup
+			 * @param outSig     Output parameter signature of the member to lookup (leave NULL for signals)
+			 * @return true if the member name exists.
+			 */
 			public bool HasMember(string name, string inSig, string outSig)
 			{
 			
@@ -446,6 +544,8 @@ namespace AllJoynUnity
 					}
 				}
 
+
+
 				internal Member(_Member member)
 				{
 					_member = member;
@@ -508,7 +608,30 @@ namespace AllJoynUnity
 				#endregion
 			}
 
+			
 			#region DLL Imports
+			//DLL imports for interface annotations
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_interfacedescription_addannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				[MarshalAs(UnmanagedType.LPStr)] string value);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static bool alljoyn_interfacedescription_getannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				IntPtr value,
+				ref UIntPtr value_size);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_interfacedescription_getannotationscount(IntPtr iface);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static void alljoyn_interfacedescription_getannotationatindex(IntPtr iface,
+				UIntPtr index, IntPtr name, ref UIntPtr name_size,
+				IntPtr value, ref UIntPtr value_size);
+
+			//add member
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_addmember(
 				IntPtr iface,
@@ -519,12 +642,39 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string argNames,
 				byte annotation);
 
+			//DLL imports for member annotations
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_interfacedescription_addmemberannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string member,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				[MarshalAs(UnmanagedType.LPStr)] string value
+				);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static bool alljoyn_interfacedescription_getmemberannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string member,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				IntPtr value,
+				ref UIntPtr value_size);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_interfacedescription_member_getannotationscount(IntPtr member);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static void alljoyn_interfacedescription_member_getannotationatindex(IntPtr member,
+				UIntPtr index, IntPtr name, ref UIntPtr name_size, 
+				IntPtr value, ref UIntPtr value_size);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static bool alljoyn_interfacedescription_member_getannotation(IntPtr member,
+				[MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value, ref UIntPtr value_size);
+
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_interfacedescription_activate(IntPtr iface);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_getmember(IntPtr iface,
-				[MarshalAs(UnmanagedType.LPStr)] string name,
+				[MarshalAs(UnmanagedType.LPStr)] string name, 
 				ref _Member member);
 
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -537,6 +687,7 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string inSig,
 				[MarshalAs(UnmanagedType.LPStr)] string outSig);
 
+			//add property
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_getproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
@@ -555,6 +706,33 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_hasproperty(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name);
+
+			//DLL imports for property annotations
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_interfacedescription_addpropertyannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string property,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				[MarshalAs(UnmanagedType.LPStr)] string value
+				);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static bool alljoyn_interfacedescription_getpropertyannotation(
+				IntPtr iface,
+				[MarshalAs(UnmanagedType.LPStr)] string property,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
+				IntPtr value,
+				ref UIntPtr value_size);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_interfacedescription_property_getannotationscount(IntPtr property);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static void alljoyn_interfacedescription_property_getannotationatindex(IntPtr property,
+				UIntPtr index, IntPtr name, ref UIntPtr name_size,
+				IntPtr value, ref UIntPtr value_size);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static bool alljoyn_interfacedescription_property_getannotation(IntPtr property,
+				[MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value, ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_eql(IntPtr one, IntPtr other);
