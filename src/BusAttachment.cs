@@ -988,8 +988,8 @@ namespace AllJoynUnity
 						guid = "";
 					}
 					else
-					{
-						guid = System.Text.ASCIIEncoding.ASCII.GetString(guidBuffer);
+					{	// The returned buffer will contain a nul character an so we must remove the last character.
+						guid = System.Text.ASCIIEncoding.ASCII.GetString(guidBuffer, 0, (Int32)guidSz - 1);
 					}
 				}
 				return ret;
