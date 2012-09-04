@@ -244,7 +244,7 @@ namespace AllJoynUnity
 			     *            - If the element type is a basic type a pointer to an array of values of that type.
 			     *            - If the element type is string a pointer to array of const char*, if array length is
 			     *              non-zero, and the char* pointer is NULL, the NULL must be followed by a pointer to
-			     *              an array of const qcc::String.
+			     *              an array of const qcc.String.
 			     *            - If the element type is an ALLJOYN_ARRAY "ARRAY", ALLJOYN_STRUCT "STRUCT",
 			     *              ALLJOYN_DICT_ENTRY "DICT_ENTRY" or ALLJOYN_VARIANT "VARIANT" a pointer to an
 			     *              array of MsgArgs where each MsgArg has the signature specified by the element type.
@@ -254,7 +254,7 @@ namespace AllJoynUnity
 			     *  - @c 'b'  A bool value
 			     *  - @c 'd'  A double (64 bits)
 			     *  - @c 'g'  A pointer to a NUL terminated string (pointer must remain valid for lifetime of the MsgArg)
-			     *  - @c 'h'  A qcc::SocketFd
+			     *  - @c 'h'  A qcc.SocketFd
 			     *  - @c 'i'  An int (32 bits)
 			     *  - @c 'n'  An int (16 bits)
 			     *  - @c 'o'  A pointer to a NUL terminated string (pointer must remain valid for lifetime of the MsgArg)
@@ -284,7 +284,7 @@ namespace AllJoynUnity
 			     * @param value   The value for MsgArg value
 			     *
 			     * @return
-			     *      - QStatus#OK if the MsgArg was successfully set
+			     *      - QStatus.OK if the MsgArg was successfully set
 			     *      - An error status otherwise
 			     */
 			public void Set(object value)

@@ -88,8 +88,8 @@ namespace AllJoynUnity
 			     * @param iface  The interface to add
 			     *
 			     * @return
-			     *      - QStatus#OK if the interface was successfully added.
-			     *      - QStatus#BUS_IFACE_ALREADY_EXISTS if the interface already exists.
+			     *      - QStatus.OK if the interface was successfully added.
+			     *      - QStatus.BUS_IFACE_ALREADY_EXISTS if the interface already exists.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddInterface(InterfaceDescription iface)
@@ -106,7 +106,7 @@ namespace AllJoynUnity
 			     * @param handler  Method handler.
 			     *
 			     * @return
-			     *      - QStatus#OK if the method handler was added.
+			     *      - QStatus.OK if the method handler was added.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddMethodHandler(InterfaceDescription.Member member, MethodHandler handler)
@@ -139,7 +139,7 @@ namespace AllJoynUnity
 			     * @param message      The method call message
 			     * @param args     The reply arguments (can be NULL)
 			     * @return
-			     *      - QStatus#OK if successful
+			     *      - QStatus.OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, MsgArgs args)
@@ -156,7 +156,7 @@ namespace AllJoynUnity
 			     * @param error            The name of the error
 			     * @param errorMessage     An error message string
 			     * @return
-			     *      - QStatus#OK if successful
+			     *      - QStatus.OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, string error, string errorMessage)
@@ -172,7 +172,7 @@ namespace AllJoynUnity
 			     * @param message        The method call message
 			     * @param status     The status code for the error
 			     * @return
-			     *      - QStatus#OK if successful
+			     *      - QStatus.OK if successful
 			     *      - An error status otherwise
 			     */
 			protected QStatus MethodReply(Message message, QStatus status)
@@ -189,7 +189,7 @@ namespace AllJoynUnity
 			     * @param signal           Interface member of signal being emitted.
 			     * @param args             The arguments for the signal (can be NULL)
 			     * @return
-			     *      - QStatus#OK if successful
+			     *      - QStatus.OK if successful
 			     *      - An error status otherwise
 			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
@@ -213,7 +213,7 @@ namespace AllJoynUnity
 			     *                         - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
 			     *                         - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
 			     * @return
-			     *      - QStatus#OK if successful
+			     *      - QStatus.OK if successful
 			     *      - An error status otherwise
 			     */
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,

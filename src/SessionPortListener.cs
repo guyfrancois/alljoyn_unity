@@ -54,7 +54,7 @@ namespace AllJoynUnity
 			     * after this function returns.
 			     *
 			     * This callback is only used by session creators. Therefore it is only called on listeners
-			     * passed to BusAttachment::BindSessionPort.
+			     * passed to BusAttachment.BindSessionPort.
 			     *
 			     * @param sessionPort    Session port that was joined.
 			     * @param joiner         Unique name of potential joiner.
@@ -71,7 +71,7 @@ namespace AllJoynUnity
 			     * Called by the bus when a session has been successfully joined. The session is now fully up.
 			     *
 			     * This callback is only used by session creators. Therefore it is only called on listeners
-			     * passed to BusAttachment::BindSessionPort.
+			     * passed to BusAttachment.BindSessionPort.
 			     *
 			     * @param sessionPort    Session port that was joined.
 			     * @param sessionId             Id of session.

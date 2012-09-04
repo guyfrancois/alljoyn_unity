@@ -74,11 +74,11 @@ namespace AllJoynUnity
 			     * Bus manually and the interface will have to be added to the %ProxyBusObject using this method.
 			     * @remark
 			     * The interface added via this call must have been previously registered with the
-			     * Bus. (i.e. it must have come from a call to Bus::GetInterface()).
+			     * Bus. (i.e. it must have come from a call to Bus.GetInterface()).
 			     *
-			     * @param iface    The interface to add to this object. Must come from Bus::GetInterface().
+			     * @param iface    The interface to add to this object. Must come from Bus.GetInterface().
 			     * @return
-			     *      - QStatus#OK if successful.
+			     *      - QStatus.OK if successful.
 			     *      - An error status otherwise
 			     */
 			public QStatus AddInterface(InterfaceDescription iface)
@@ -102,8 +102,8 @@ namespace AllJoynUnity
 			     *
 			     *
 			     * @return
-			     *      - QStatus#OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
-			     *      - QStatus#BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
+			     *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
+			     *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
 			     */
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)

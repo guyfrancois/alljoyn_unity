@@ -16,6 +16,7 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using AllJoynUnity;
 using Xunit;
 
@@ -430,14 +431,39 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
-			testIntf.AddAnnotation("org.alljoyn.test.annotation.one", "here");
+			status = testIntf.AddAnnotation("org.alljoyn.test.annotation.one", "here");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddAnnotation("org.alljoyn.test.annotation.two", "lies");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddAnnotation("org.alljoyn.test.annotation.three", "some");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddAnnotation("org.alljoyn.test.annotation.four", "amazing");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddAnnotation("org.alljoyn.test.annotation.five", "treasure");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
 			// activate the interface
 			testIntf.Activate();
 
 			string value = "";
-			testIntf.GetAnnotation("org.alljoyn.test.annotation.one", ref value);
+			Assert.True(testIntf.GetAnnotation("org.alljoyn.test.annotation.one", ref value));
 			Assert.Equal("here", value);
+
+
+			Dictionary<string, string> annotations = testIntf.GetAnnotations();
+			Assert.Equal(5, annotations.Count);
+
+
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.one", out value));
+			Assert.Equal("here", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.two", out value));
+			Assert.Equal("lies", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.three", out value));
+			Assert.Equal("some", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.four", out value));
+			Assert.Equal("amazing", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.five", out value));
+			Assert.Equal("treasure", value);
 
 			bus.Dispose();
 		}
@@ -463,6 +489,17 @@ namespace AllJoynUnityTest
 			status = testIntf.AddMemberAnnotation("ping", "one", "black_cat");
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 
+			status = testIntf.AddMemberAnnotation("ping", "org.alljoyn.test.annotation.one", "here");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("ping", "org.alljoyn.test.annotation.two", "lies");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("ping", "org.alljoyn.test.annotation.three", "some");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("ping", "org.alljoyn.test.annotation.four", "amazing");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("ping", "org.alljoyn.test.annotation.five", "treasure");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
 			// Test adding a Signal
 			status = testIntf.AddMember(AllJoyn.Message.Type.Signal, "chirp", "", "s", "chirp", AllJoyn.InterfaceDescription.AnnotationFlags.Default);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
@@ -473,6 +510,146 @@ namespace AllJoynUnityTest
 			string value = "";
 			testIntf.GetMemberAnnotation("ping", "one", ref value);
 			Assert.Equal("black_cat", value);
+
+			AllJoyn.InterfaceDescription.Member member = testIntf.GetMember("ping");
+
+			Assert.True(member.GetAnnotation("org.alljoyn.test.annotation.two", ref value));
+			Assert.Equal("lies", value);
+
+			Dictionary<string, string> annotations = member.GetAnnotations();
+			Assert.Equal(6, annotations.Count);
+
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.one", out value));
+			Assert.Equal("here", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.two", out value));
+			Assert.Equal("lies", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.three", out value));
+			Assert.Equal("some", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.four", out value));
+			Assert.Equal("amazing", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.five", out value));
+			Assert.Equal("treasure", value);
+			Assert.True(annotations.TryGetValue("one", out value));
+			Assert.Equal("black_cat", value);
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void TestSignalAnnotations()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+			// Test adding a Signal
+			status = testIntf.AddMember(AllJoyn.Message.Type.Signal, "chirp", "", "s", "chirp", AllJoyn.InterfaceDescription.AnnotationFlags.Default);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			status = testIntf.AddMemberAnnotation("chirp", "org.alljoyn.test.annotation.one", "here");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("chirp", "org.alljoyn.test.annotation.two", "lies");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("chirp", "org.alljoyn.test.annotation.three", "some");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("chirp", "org.alljoyn.test.annotation.four", "amazing");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddMemberAnnotation("chirp", "org.alljoyn.test.annotation.five", "treasure");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// activate the interface
+			testIntf.Activate();
+
+			string value = "";
+			testIntf.GetMemberAnnotation("chirp", "org.alljoyn.test.annotation.one", ref value);
+			Assert.Equal("here", value);
+
+			AllJoyn.InterfaceDescription.Member signal = testIntf.GetMember("chirp");
+
+			Assert.True(signal.GetAnnotation("org.alljoyn.test.annotation.two", ref value));
+			Assert.Equal("lies", value);
+
+			Dictionary<string, string> annotations = signal.GetAnnotations();
+			Assert.Equal(5, annotations.Count);
+
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.one", out value));
+			Assert.Equal("here", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.two", out value));
+			Assert.Equal("lies", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.three", out value));
+			Assert.Equal("some", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.four", out value));
+			Assert.Equal("amazing", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.five", out value));
+			Assert.Equal("treasure", value);
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void TestPropertyAnnotations()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			status = testIntf.AddProperty("prop", "s", AllJoyn.InterfaceDescription.AccessFlags.Read);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			status = testIntf.AddPropertyAnnotation("prop", "org.alljoyn.test.annotation.one", "here");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddPropertyAnnotation("prop", "org.alljoyn.test.annotation.two", "lies");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddPropertyAnnotation("prop", "org.alljoyn.test.annotation.three", "some");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddPropertyAnnotation("prop", "org.alljoyn.test.annotation.four", "amazing");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = testIntf.AddPropertyAnnotation("prop", "org.alljoyn.test.annotation.five", "treasure");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// activate the interface
+			testIntf.Activate();
+
+			AllJoyn.InterfaceDescription.Property property = testIntf.GetProperty("prop");
+			Assert.Equal("prop", property.Name);
+			Assert.Equal("s", property.Signature);
+			Assert.Equal(AllJoyn.InterfaceDescription.AccessFlags.Read, property.Access);
+
+			string value = "";
+			Assert.True(testIntf.GetPropertyAnnotation("prop", "org.alljoyn.test.annotation.one", ref value));
+			Assert.Equal("here", value);
+
+			Assert.True(property.GetAnnotation("org.alljoyn.test.annotation.two", ref value));
+			Assert.Equal("lies", value);
+
+			Dictionary<string, string> annotations = property.GetAnnotations();
+			Assert.Equal(5, annotations.Count);
+
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.one", out value));
+			Assert.Equal("here", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.two", out value));
+			Assert.Equal("lies", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.three", out value));
+			Assert.Equal("some", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.four", out value));
+			Assert.Equal("amazing", value);
+			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.five", out value));
+			Assert.Equal("treasure", value);
 
 			bus.Dispose();
 		}

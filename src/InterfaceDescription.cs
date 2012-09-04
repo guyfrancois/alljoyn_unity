@@ -20,6 +20,7 @@
  ******************************************************************************/
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 
@@ -32,18 +33,18 @@ namespace AllJoynUnity
 		 * Class for describing message bus interfaces. %InterfaceDescription objects describe the methods,
 		 * signals and properties of a BusObject or ProxyBusObject.
 		 *
-		 * Calling ProxyBusObject::AddInterface(const char*) adds the AllJoyn interface described by an
+		 * Calling ProxyBusObject.AddInterface(const char*) adds the AllJoyn interface described by an
 		 * %InterfaceDescription to a ProxyBusObject instance. After an  %InterfaceDescription has been
 		 * added, the methods described in the interface can be called. Similarly calling
-		 * BusObject::AddInterface adds the interface and its methods, properties, and signal to a
+		 * BusObject.AddInterface adds the interface and its methods, properties, and signal to a
 		 * BusObject. After an interface has been added method handlers for the methods described in the
-		 * interface can be added by calling BusObject::AddMethodHandler or BusObject::AddMethodHandlers.
+		 * interface can be added by calling BusObject.AddMethodHandler or BusObject.AddMethodHandlers.
 		 *
-		 * An %InterfaceDescription can be constructed piecemeal by calling InterfaceDescription::AddMethod,
-		 * InterfaceDescription::AddMember(), and InterfaceDescription::AddProperty(). Alternatively,
-		 * calling ProxyBusObject::ParseXml will create the %InterfaceDescription instances for that proxy
-		 * object directly from an XML string. Calling ProxyBusObject::IntrospectRemoteObject or
-		 * ProxyBusObject::IntrospectRemoteObjectAsync also creates the %InterfaceDescription
+		 * An %InterfaceDescription can be constructed piecemeal by calling InterfaceDescription.AddMethod,
+		 * InterfaceDescription.AddMember(), and InterfaceDescription.AddProperty(). Alternatively,
+		 * calling ProxyBusObject.ParseXml will create the %InterfaceDescription instances for that proxy
+		 * object directly from an XML string. Calling ProxyBusObject.IntrospectRemoteObject or
+		 * ProxyBusObject.IntrospectRemoteObjectAsync also creates the %InterfaceDescription
 		 * instances from XML but in this case the XML is obtained by making a remote Introspect method
 		 * call on a bus object.
 		 */
@@ -181,8 +182,8 @@ namespace AllJoynUnity
 			 * @param name       Name of annotation.
 			 * @param value      Value of the annotation
 			 * @return
-			 *      - #ER_OK if successful.
-			 *      - #ER_BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			 *      - QStatus.OK if successful.
+			 *      - QStatus.BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
 			 *                                        because it already exists.
 			 */
 			public QStatus AddAnnotation(string name, string value)
@@ -223,6 +224,42 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Get a Dictionary containing the names and values of all annotations
+			 * associated with this interface
+			 * 
+			 * @return Dictionary containing the names and values of all annotations associated with this interface
+			 */
+			public Dictionary<string, string> GetAnnotations()
+			{
+				Dictionary<string, string> ret = new Dictionary<string, string>();
+				UIntPtr annotation_size = alljoyn_interfacedescription_getannotationscount(_interfaceDescription);
+				for (uint i = 0; i < (uint)annotation_size; ++i)
+				{
+					UIntPtr name_size = new UIntPtr();
+					UIntPtr value_size = new UIntPtr();
+
+					alljoyn_interfacedescription_getannotationatindex(_interfaceDescription, (UIntPtr)i, 
+						IntPtr.Zero, ref name_size, 
+						IntPtr.Zero, ref value_size);
+
+					byte[] name_buffer = new byte[(int)name_size];
+					byte[] value_buffer = new byte[(int)value_size];
+
+					GCHandle name_gch = GCHandle.Alloc(name_buffer, GCHandleType.Pinned);
+					GCHandle value_gch = GCHandle.Alloc(value_buffer, GCHandleType.Pinned);
+
+					alljoyn_interfacedescription_getannotationatindex(_interfaceDescription, (UIntPtr)i,
+						name_gch.AddrOfPinnedObject(), ref name_size,
+						value_gch.AddrOfPinnedObject(), ref value_size);
+					name_gch.Free();
+					value_gch.Free();
+					ret.Add(System.Text.ASCIIEncoding.ASCII.GetString(name_buffer, 0, (Int32)name_size - 1),
+						System.Text.ASCIIEncoding.ASCII.GetString(value_buffer, 0, (Int32)value_size - 1));
+				}
+				return ret;
+			}
+
+			/**
 			     * Add a member to the interface.
 			     *
 			     * @param type        Message type.
@@ -232,8 +269,8 @@ namespace AllJoynUnity
 			     * @param argNames    Comma separated list of input and then output arg names used in interface XML.
 			     *
 			     * @return
-			     *      - QStatus#OK if successful
-			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus.OK if successful
+			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames)
@@ -251,8 +288,8 @@ namespace AllJoynUnity
 			 * @param value       Value for the annotation
 			 *
 			 * @return
-			 *      - QStatus#ER_OK if successful
-			 *      - QStatus#ER_BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
 			 */
 			public QStatus AddMemberAnnotation(string member, string name, string value)
 			{
@@ -304,8 +341,8 @@ namespace AllJoynUnity
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
-			     *      - QStatus#OK if successful
-			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus.OK if successful
+			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames, AnnotationFlags annotation)
@@ -324,8 +361,8 @@ namespace AllJoynUnity
 			     * @param annotation  Annotation flags.
 			     *
 			     * @return
-			     *      - QStatus#OK if successful
-			     *      - QStatus#BUS_MEMBER_ALREADY_EXISTS if member already exists
+			     *      - QStatus.OK if successful
+			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
 			     */
 		    public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
 		    {
@@ -465,8 +502,8 @@ namespace AllJoynUnity
 			     * @param signature  Property type.
 			     * @param access     Read, Write or ReadWrite
 			     * @return
-			     *      - QStatus#OK if successful.
-			     *      - QStatus#BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			     *      - QStatus.OK if successful.
+			     *      - QStatus.BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
 			     *                                        because it already exists.
 			     */
 			public QStatus AddProperty(string name, string signature, AccessFlags access)
@@ -486,6 +523,57 @@ namespace AllJoynUnity
 			{
 			
 				return (alljoyn_interfacedescription_hasproperty(_interfaceDescription, name) == 1 ? true : false);
+			}
+
+
+			/**
+			 * Add an annotation to a member
+			 *
+			 * @param property      Name of property
+			 * @param name        Name of annotation
+			 * @param value       Value for the annotation
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_PROPERTY_ALREADY_EXISTS if the annotation can not be added to the property because it already exists
+			 */
+			public QStatus AddPropertyAnnotation(string property, string name, string value)
+			{
+				return alljoyn_interfacedescription_addpropertyannotation(_interfaceDescription, property, name, value);
+			}
+
+			/**
+			 * Get annotation to an existing property.
+			 *
+			 * @param property     Name of property
+			 * @param name       Name of annotation
+			 * @param value      Output value for the annotation
+			 *
+			 * @return
+			 *      - true if found
+			 *      - false if property not found
+			 */
+			public bool GetPropertyAnnotation(string property, string name, ref string value)
+			{
+
+				UIntPtr value_size = new UIntPtr(); ;
+				alljoyn_interfacedescription_getpropertyannotation(_interfaceDescription, property, name, IntPtr.Zero, ref value_size);
+
+				byte[] buffer = new byte[(int)value_size];
+				GCHandle gch = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+				bool ret = alljoyn_interfacedescription_getpropertyannotation(_interfaceDescription, property, name, gch.AddrOfPinnedObject(), ref value_size);
+				gch.Free();
+				if (ret)
+				{
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					value = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, (Int32)value_size - 1);
+				}
+				else
+				{
+					value = "";
+				}
+
+				return ret;
 			}
 
 			public class Member
@@ -544,7 +632,73 @@ namespace AllJoynUnity
 					}
 				}
 
+			/**
+			 * Get the value of an annotation
+			 *
+			 * @param name       Name of annotation.
+			 * @param value      Returned value of the annotation
+			 * @return
+			 *      - true if annotation found.
+			 *      - false if annotation not found
+			 */
+				public bool GetAnnotation(string name, ref string value)
+				{
 
+					UIntPtr value_size = new UIntPtr(); ;
+					alljoyn_interfacedescription_member_getannotation(_member, name, IntPtr.Zero, ref value_size);
+
+					byte[] buffer = new byte[(int)value_size];
+					GCHandle gch = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+					bool ret = alljoyn_interfacedescription_member_getannotation(_member, name, gch.AddrOfPinnedObject(), ref value_size);
+					gch.Free();
+					if (ret)
+					{
+						// The returned buffer will contain a nul character an so we must remove the last character.
+						value = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, (Int32)value_size - 1);
+					}
+					else
+					{
+						value = "";
+					}
+
+					return ret;
+				}
+
+				/**
+				 * Get a Dictionary containing the names and values of all annotations
+				 * associated with this member
+				 * 
+				 * @return Dictionary containing the names and values of all annotations associated with this member
+				 */
+				public Dictionary<string, string> GetAnnotations()
+				{
+					Dictionary<string, string> ret = new Dictionary<string, string>();
+					UIntPtr annotation_size = alljoyn_interfacedescription_member_getannotationscount(_member);
+					for (uint i = 0; i < (uint)annotation_size; ++i)
+					{
+						UIntPtr name_size = new UIntPtr();
+						UIntPtr value_size = new UIntPtr();
+
+						alljoyn_interfacedescription_member_getannotationatindex(_member, (UIntPtr)i,
+							IntPtr.Zero, ref name_size,
+							IntPtr.Zero, ref value_size);
+
+						byte[] name_buffer = new byte[(int)name_size];
+						byte[] value_buffer = new byte[(int)value_size];
+
+						GCHandle name_gch = GCHandle.Alloc(name_buffer, GCHandleType.Pinned);
+						GCHandle value_gch = GCHandle.Alloc(value_buffer, GCHandleType.Pinned);
+
+						alljoyn_interfacedescription_member_getannotationatindex(_member, (UIntPtr)i,
+							name_gch.AddrOfPinnedObject(), ref name_size,
+							value_gch.AddrOfPinnedObject(), ref value_size);
+						name_gch.Free();
+						value_gch.Free();
+						ret.Add(System.Text.ASCIIEncoding.ASCII.GetString(name_buffer, 0, (Int32)name_size - 1),
+							System.Text.ASCIIEncoding.ASCII.GetString(value_buffer, 0, (Int32)value_size - 1));
+					}
+					return ret;
+				}
 
 				internal Member(_Member member)
 				{
@@ -598,6 +752,74 @@ namespace AllJoynUnity
 					_property = property;
 				}
 
+				/**
+				 * Get the value of an annotation
+				 *
+				 * @param name       Name of annotation.
+				 * @param value      Returned value of the annotation
+				 * @return
+				 *      - true if annotation found.
+				 *      - false if annotation not found
+				 */
+				public bool GetAnnotation(string name, ref string value)
+				{
+
+					UIntPtr value_size = new UIntPtr(); ;
+					alljoyn_interfacedescription_property_getannotation(_property, name, IntPtr.Zero, ref value_size);
+
+					byte[] buffer = new byte[(int)value_size];
+					GCHandle gch = GCHandle.Alloc(buffer, GCHandleType.Pinned);
+					bool ret = alljoyn_interfacedescription_property_getannotation(_property, name, gch.AddrOfPinnedObject(), ref value_size);
+					gch.Free();
+					if (ret)
+					{
+						// The returned buffer will contain a nul character an so we must remove the last character.
+						value = System.Text.ASCIIEncoding.ASCII.GetString(buffer, 0, (Int32)value_size - 1);
+					}
+					else
+					{
+						value = "";
+					}
+
+					return ret;
+				}
+
+				/**
+				 * Get a Dictionary containing the names and values of all annotations
+				 * associated with this property
+				 * 
+				 * @return Dictionary containing the names and values of all annotations associated with this property
+				 */
+				public Dictionary<string, string> GetAnnotations()
+				{
+					Dictionary<string, string> ret = new Dictionary<string, string>();
+					UIntPtr annotation_size = alljoyn_interfacedescription_property_getannotationscount(_property);
+					for (uint i = 0; i < (uint)annotation_size; ++i)
+					{
+						UIntPtr name_size = new UIntPtr();
+						UIntPtr value_size = new UIntPtr();
+
+						alljoyn_interfacedescription_property_getannotationatindex(_property, (UIntPtr)i,
+							IntPtr.Zero, ref name_size,
+							IntPtr.Zero, ref value_size);
+
+						byte[] name_buffer = new byte[(int)name_size];
+						byte[] value_buffer = new byte[(int)value_size];
+
+						GCHandle name_gch = GCHandle.Alloc(name_buffer, GCHandleType.Pinned);
+						GCHandle value_gch = GCHandle.Alloc(value_buffer, GCHandleType.Pinned);
+
+						alljoyn_interfacedescription_property_getannotationatindex(_property, (UIntPtr)i,
+							name_gch.AddrOfPinnedObject(), ref name_size,
+							value_gch.AddrOfPinnedObject(), ref value_size);
+						name_gch.Free();
+						value_gch.Free();
+						ret.Add(System.Text.ASCIIEncoding.ASCII.GetString(name_buffer, 0, (Int32)name_size - 1),
+							System.Text.ASCIIEncoding.ASCII.GetString(value_buffer, 0, (Int32)value_size - 1));
+					}
+					return ret;
+				}
+
 				internal Property(IntPtr propertyPointer)
 				{
 					_property = (_Property)Marshal.PtrToStructure(propertyPointer, typeof(_Property));
@@ -648,8 +870,7 @@ namespace AllJoynUnity
 				IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string member,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
-				[MarshalAs(UnmanagedType.LPStr)] string value
-				);
+				[MarshalAs(UnmanagedType.LPStr)] string value);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static bool alljoyn_interfacedescription_getmemberannotation(
@@ -660,13 +881,13 @@ namespace AllJoynUnity
 				ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static UIntPtr alljoyn_interfacedescription_member_getannotationscount(IntPtr member);
+			private extern static UIntPtr alljoyn_interfacedescription_member_getannotationscount(_Member member);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static void alljoyn_interfacedescription_member_getannotationatindex(IntPtr member,
+			private extern static void alljoyn_interfacedescription_member_getannotationatindex(_Member member,
 				UIntPtr index, IntPtr name, ref UIntPtr name_size, 
 				IntPtr value, ref UIntPtr value_size);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static bool alljoyn_interfacedescription_member_getannotation(IntPtr member,
+			private extern static bool alljoyn_interfacedescription_member_getannotation(_Member member,
 				[MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value, ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -725,13 +946,13 @@ namespace AllJoynUnity
 				ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static UIntPtr alljoyn_interfacedescription_property_getannotationscount(IntPtr property);
+			private extern static UIntPtr alljoyn_interfacedescription_property_getannotationscount(_Property property);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static void alljoyn_interfacedescription_property_getannotationatindex(IntPtr property,
+			private extern static void alljoyn_interfacedescription_property_getannotationatindex(_Property property,
 				UIntPtr index, IntPtr name, ref UIntPtr name_size,
 				IntPtr value, ref UIntPtr value_size);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static bool alljoyn_interfacedescription_property_getannotation(IntPtr property,
+			private extern static bool alljoyn_interfacedescription_property_getannotation(_Property property,
 				[MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value, ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
