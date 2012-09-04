@@ -63,17 +63,17 @@ namespace AllJoynUnity
 			 *
 			 * Typically, interfaces that are implemented by BusObjects are created here.
 			 * Interfaces that are implemented by remote objects are added automatically by
-			 * the bus if they are not already present via ProxyBusObject::IntrospectRemoteObject().
+			 * the bus if they are not already present via ProxyBusObject.IntrospectRemoteObject().
 			 *
 			 * Because interfaces are added both explicitly (via this method) and implicitly
-			 * (via @c ProxyBusObject::IntrospectRemoteObject), there is the possibility that creating
+			 * (via @c ProxyBusObject.IntrospectRemoteObject), there is the possibility that creating
 			 * an interface here will fail because the interface already exists. If this happens, the
 			 * ER_BUS_IFACE_ALREADY_EXISTS will be returned and NULL will be returned in the iface [OUT]
 			 * parameter.
 			 *
-			 * Interfaces created with this method need to be activated using InterfaceDescription::Activate()
+			 * Interfaces created with this method need to be activated using InterfaceDescription.Activate()
 			 * once all of the methods, signals, etc have been added to the interface. The interface will
-			 * be unaccessible (via BusAttachment::GetInterfaces() or BusAttachment::GetInterface()) until
+			 * be unaccessible (via BusAttachment.GetInterfaces() or BusAttachment.GetInterface()) until
 			 * it is activated.
 			 *
 			 * @param interfaceName   The requested interface name.
@@ -83,9 +83,9 @@ namespace AllJoynUnity
 			 *      - NULL if cannot be created.
 			 *
 			 * @return
-			 *      - QStatus#OK if creation was successful.
-			 *      - QStatus#BUS_IFACE_ALREADY_EXISTS if requested interface already exists
-			 * @see ProxyBusObject::IntrospectRemoteObject, InterfaceDescription::Activate, BusAttachment::GetInterface
+			 *      - QStatus.OK if creation was successful.
+			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if requested interface already exists
+			 * @see ProxyBusObject.IntrospectRemoteObject, InterfaceDescription.Activate, BusAttachment.GetInterface
 			 */
 			public QStatus CreateInterface(string interfaceName, bool secure, out InterfaceDescription iface)
 			{
@@ -188,8 +188,8 @@ namespace AllJoynUnity
 			     * @see Join()
 			     *
 			     * @return
-			     *      - QStatus#OK if successful.
-			     *      - QStatus#BUS_BUS_ALREADY_STARTED if already started
+			     *      - QStatus.OK if successful.
+			     *      - QStatus.BUS_BUS_ALREADY_STARTED if already started
 			     *      - Other error status codes indicating a failure
 			     */
 			public QStatus Start()
@@ -218,7 +218,7 @@ namespace AllJoynUnity
 			     * @see Join()
 			     *
 			     * @return
-			     *     - QStatus#OK if successful.
+			     *     - QStatus.OK if successful.
 			     *     - An error QStatus if unable to begin the process of stopping the
 			     *       message bus threads.
 			     */
@@ -234,7 +234,7 @@ namespace AllJoynUnity
 			     * @param connectSpec  A transport connection spec string of the form:
 			     *                     @c "<transport>:<param1>=<value1>,<param2>=<value2>...[;]"
 			     * @return
-			     *      - QStatus#OK if successful.
+			     *      - QStatus.OK if successful.
 			     *      - An error status otherwise
 			     */
 
@@ -273,11 +273,11 @@ namespace AllJoynUnity
 			     * and interprets the response.
 			     *
 			     * @param[in]  namePrefix    Well-known name prefix that application is interested in receiving
-			     *                           BusListener::FoundAdvertisedName notifications about.
+			     *                           BusListener.FoundAdvertisedName notifications about.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and discovery was successfully started.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and discovery was successfully started.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 
@@ -294,11 +294,11 @@ namespace AllJoynUnity
 			 * call to the local daemon and interprets the response.
 			 *
 			 * @param[in]  namePrefix    Well-known name prefix that application is no longer interested in receiving
-			 *                           BusListener::FoundAdvertisedName notifications about.
+			 *                           BusListener.FoundAdvertisedName notifications about.
 			 *
 			 * @return
-			 *      - QStatus#OK iff daemon response was received and cancel was successfully completed.
-			 *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			 *      - QStatus.OK iff daemon response was received and cancel was successfully completed.
+			 *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			 *      - Other error status codes indicating a failure.
 			 */
 			public QStatus CancelFindAdvertisedName(string namePrefix)
@@ -319,8 +319,8 @@ namespace AllJoynUnity
 			     * @param[in] opts          Session options.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and the session was successfully joined.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and the session was successfully joined.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus JoinSession(string sessionHost, ushort sessionPort, SessionListener listener,
@@ -355,8 +355,8 @@ namespace AllJoynUnity
 			     * @param[in]  transports    Set of transports to use for sending advertisement.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and advertise was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and advertise was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus AdvertiseName(string name, TransportMask transports)
@@ -375,8 +375,8 @@ namespace AllJoynUnity
 			     * @param[in]  transports    Set of transports whose name advertisement will be canceled.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and advertisements were successfully stopped.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and advertisements were successfully stopped.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus CancelAdvertisedName(string name, TransportMask transports)
@@ -408,8 +408,8 @@ namespace AllJoynUnity
 			     * @param obj      BusObject to register.
 			     *
 			     * @return
-			     *      - QStatus#OK if successful.
-			     *      - QStatus#BUS_BAD_OBJ_PATH for a bad object path
+			     *      - QStatus.OK if successful.
+			     *      - QStatus.BUS_BAD_OBJ_PATH for a bad object path
 			     */
 			public QStatus RegisterBusObject(BusObject obj)
 			{
@@ -437,7 +437,7 @@ namespace AllJoynUnity
 			 * @param handler  The signal handler method.
 			 * @param member         The interface/member of the signal.
 			 * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
-			 * @return QStatus#OK
+			 * @return QStatus.OK
 			 */
             public QStatus RegisterSignalHandler(SignalHandler handler,
                 InterfaceDescription.Member member, string srcPath)
@@ -464,7 +464,7 @@ namespace AllJoynUnity
 		     * @param handler		The signal handler method.
 		     * @param member         The interface/member of the signal.
 		     * @param srcPath        The object path of the emitter of the signal or NULL for all paths.
-		     * @return QStatus#OK
+		     * @return QStatus.OK
 		     */
             public QStatus UnregisterSignalHandler(SignalHandler handler,
                 InterfaceDescription.Member member, string srcPath)
@@ -501,8 +501,8 @@ namespace AllJoynUnity
 			     * @param[in]  flags          Bitmask of DBUS_NAME_FLAG_* defines (see DBusStd.h)
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and request was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and request was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus RequestName(string requestedName, DBus.NameFlags flags)
@@ -519,8 +519,8 @@ namespace AllJoynUnity
 			     * @param[in]  requestedName          Well-known name being released.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received amd the name was successfully released.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received amd the name was successfully released.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus ReleaseName(string requestedName)
@@ -557,8 +557,8 @@ namespace AllJoynUnity
 			     * @param[in]     listener  Called by the bus when session related events occur.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and the bind operation was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and the bind operation was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus BindSessionPort(ref ushort sessionPort, SessionOpts opts, SessionPortListener listener)
@@ -586,8 +586,8 @@ namespace AllJoynUnity
 			     * @param[in]   sessionPort    Existing session port to be un-bound.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and the bind operation was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and the bind operation was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus UnbindSessionPort(ushort sessionPort)
@@ -609,7 +609,7 @@ namespace AllJoynUnity
 			/**
 			     * Enable peer-to-peer security. This function must be called by applications that want to use
 			     * authentication and encryption . The bus must have been started by calling
-			     * BusAttachment::Start() before this function is called. If the application is providing its
+			     * BusAttachment.Start() before this function is called. If the application is providing its
 			     * own key store implementation it must have already called RegisterKeyStoreListener() before
 			     * calling this function.
 			     *
@@ -629,8 +629,8 @@ namespace AllJoynUnity
 			     *                         listener to load and store the key store in this case.
 			     *
 			     * @return
-			     *      - QStatus#OK if peer security was enabled.
-			     *      - QStatus#BUS_BUS_NOT_STARTED BusAttachment::Start has not be called
+			     *      - QStatus.OK if peer security was enabled.
+			     *      - QStatus.BUS_BUS_NOT_STARTED BusAttachment.Start has not be called
 			     */
 			public QStatus EnablePeerSecurity(string authMechanisms, AuthListener listener, string keyStoreFileName, bool isShared)
 			{
@@ -652,7 +652,7 @@ namespace AllJoynUnity
 			     * @param xml     An XML string in DBus introspection format.
 			     *
 			     * @return
-			     *      - QStatus#OK if parsing is completely successful.
+			     *      - QStatus.OK if parsing is completely successful.
 			     *      - An error status otherwise.
 			     */
 			public QStatus CreateInterfacesFromXml(string xml)
@@ -695,8 +695,8 @@ namespace AllJoynUnity
 			     * @param iface  The un-activated interface to be deleted.
 			     *
 			     * @return
-			     *      - QStatus#OK if deletion was successful
-			     *      - QStatus#BUS_NO_SUCH_INTERFACE if interface was not found
+			     *      - QStatus.OK if deletion was successful
+			     *      - QStatus.BUS_NO_SUCH_INTERFACE if interface was not found
 			     */
 			public QStatus DeleteInterface(InterfaceDescription iface)
 			{
@@ -710,9 +710,9 @@ namespace AllJoynUnity
 			     * @param connectSpec  The transport connection spec used to connect.
 			     *
 			     * @return
-			     *          - QStatus#OK if successful
-			     *          - QStatus#BUS_BUS_NOT_STARTED if the bus is not started
-			     *          - QStatus#BUS_NOT_CONNECTED if the %BusAttachment is not connected to the bus
+			     *          - QStatus.OK if successful
+			     *          - QStatus.BUS_BUS_NOT_STARTED if the bus is not started
+			     *          - QStatus.BUS_NOT_CONNECTED if the %BusAttachment is not connected to the bus
 			     *          - Other error status codes indicating a failure
 			     */
 			public QStatus Disconnect(string connectSpec)
@@ -728,8 +728,8 @@ namespace AllJoynUnity
 			     * @param listener  The key store listener to set.
 			     *
 			     * @return
-			     *      - QStatus#OK if the key store listener was set
-			     *      - QStatus#BUS_LISTENER_ALREADY_SET if a listener has been set by this function or because
+			     *      - QStatus.OK if the key store listener was set
+			     *      - QStatus.BUS_LISTENER_ALREADY_SET if a listener has been set by this function or because
 			     *         EnablePeerSecurity has been called.
 			     */
 			public QStatus RegisterKeyStoreListener(KeyStoreListener listener)
@@ -831,11 +831,11 @@ namespace AllJoynUnity
 			     *                      NULL the logon entry is deleted from the key store.
 			     *
 			     * @return
-			     *      - QStatus#OK if the logon entry was generated.
-			     *      - QStatus#BUS_INVALID_AUTH_MECHANISM if the authentication mechanism does not support
+			     *      - QStatus.OK if the logon entry was generated.
+			     *      - QStatus.BUS_INVALID_AUTH_MECHANISM if the authentication mechanism does not support
 			     *                                       logon functionality.
-			     *      - QStatus#BAD_ARG_2 indicates a null string was used as the user name.
-			     *      - QStatus#BAD_ARG_3 indicates a null string was used as the password.
+			     *      - QStatus.BAD_ARG_2 indicates a null string was used as the user name.
+			     *      - QStatus.BAD_ARG_3 indicates a null string was used as the password.
 			     *      - Other error status codes indicating a failure
 			     */
 			public QStatus AddLogonEntry(string authMechanism, string userName, string password)
@@ -851,8 +851,8 @@ namespace AllJoynUnity
 			     * @param[in]  rule  Match rule to be added (see DBus specification for format of this string).
 			     *
 			     * @return
-			     *      - QStatus#OK if the AddMatch request was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK if the AddMatch request was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus AddMatch(string rule)
@@ -868,8 +868,8 @@ namespace AllJoynUnity
 			     * @param[in]  rule  Match rule to be removed (see DBus specification for format of this string).
 			     *
 			     * @return
-			     *      - QStatus#OK if the RemoveMatch request was successful.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK if the RemoveMatch request was successful.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus RemoveMatch(string rule)
@@ -911,8 +911,8 @@ namespace AllJoynUnity
 			     * @param[in]  sessionId     Session id.
 			     *
 			     * @return
-			     *      - QStatus#OK iff daemon response was received and the leave operation was successfully completed.
-			     *      - QStatus#BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			     *      - QStatus.OK iff daemon response was received and the leave operation was successfully completed.
+			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
 			     *      - Other error status codes indicating a failure.
 			     */
 			public QStatus LeaveSession(uint sessionId)
@@ -938,12 +938,12 @@ namespace AllJoynUnity
 			     *                      value that acceptable to the underlying transport.
 			     *
 			     * @return
-			     *      - QStatus#OK if successful
-			     *      - QStatus#ALLJOYN_SETLINKTIMEOUT_REPLY_NOT_SUPPORTED if local daemon does not support SetLinkTimeout
-			     *      - QStatus#ALLJOYN_SETLINKTIMEOUT_REPLY_NO_DEST_SUPPORT if SetLinkTimeout not supported by destination
-			     *      - QStatus#BUS_NO_SESSION if the Session id is not valid
-			     *      - QStatus#ALLJOYN_SETLINKTIMEOUT_REPLY_FAILED if SetLinkTimeout failed
-			     *      - QStatus#BUS_NOT_CONNECTED if the BusAttachment is not connected to the daemon
+			     *      - QStatus.OK if successful
+			     *      - QStatus.ALLJOYN_SETLINKTIMEOUT_REPLY_NOT_SUPPORTED if local daemon does not support SetLinkTimeout
+			     *      - QStatus.ALLJOYN_SETLINKTIMEOUT_REPLY_NO_DEST_SUPPORT if SetLinkTimeout not supported by destination
+			     *      - QStatus.BUS_NO_SESSION if the Session id is not valid
+			     *      - QStatus.ALLJOYN_SETLINKTIMEOUT_REPLY_FAILED if SetLinkTimeout failed
+			     *      - QStatus.BUS_NOT_CONNECTED if the BusAttachment is not connected to the daemon
 			     */
 			public QStatus SetLinkTimeout(uint sessionId, ref uint linkTimeout)
 			{
@@ -963,7 +963,7 @@ namespace AllJoynUnity
 			     * @param guid  Returns the guid for the local or remote peer depending on the value of name.
 			     *
 			     * @return
-			     *      - QStatus#OK if the requested GUID was obtained.
+			     *      - QStatus.OK if the requested GUID was obtained.
 			     *      - An error status otherwise.
 			     */
 			public QStatus GetPeerGuid(string name, out string guid)
@@ -1004,7 +1004,7 @@ namespace AllJoynUnity
 			     * @param[out] hasOwner   If return is ER_OK, indicates whether name exists on the bus.
 			     *                        If return is not ER_OK, hasOwner parameter is not modified.
 			     * @return
-			     *      - QStatus#OK if name ownership was able to be determined.
+			     *      - QStatus.OK if name ownership was able to be determined.
 			     *      - An error status otherwise
 			     */
 			public QStatus NameHasOwner(string name, out bool hasOwner)
@@ -1050,9 +1050,9 @@ namespace AllJoynUnity
 			     * @param level     debug level to set for the module
 			     *
 			     * @return
-			     *     - QStatus#OK if debug request was successfully sent to the AllJoyn
+			     *     - QStatus.OK if debug request was successfully sent to the AllJoyn
 			     *       daemon.
-			     *     - QStatus#BUS_NO_SUCH_OBJECT if daemon was not built in debug mode.
+			     *     - QStatus.BUS_NO_SUCH_OBJECT if daemon was not built in debug mode.
 			     */
 			public QStatus SetDaemonDebug(string module, uint level)
 			{

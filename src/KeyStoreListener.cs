@@ -60,7 +60,7 @@ namespace AllJoynUnity
 			     * @param store   Reference to the KeyStore to be loaded.
 			     *
 			     * @return
-			     *      - QStatus#OK if the load request was satisfied
+			     *      - QStatus.OK if the load request was satisfied
 			     *      - An error status otherwise
 			     *
 			     */
@@ -73,7 +73,7 @@ namespace AllJoynUnity
 			     * @param store   Reference to the KeyStore to be stored.
 			     *
 			     * @return
-			     *      - QStatus#OK if the store request was satisfied
+			     *      - QStatus.OK if the store request was satisfied
 			     *      - An error status otherwise
 			     */
 			public abstract QStatus StoreRequest(KeyStore store);
@@ -119,7 +119,7 @@ namespace AllJoynUnity
 				 * @param password  The password required to decrypt the key data
 				 *
 				 * @return
-				 *      - QStatus#OK if successful
+				 *      - QStatus.OK if successful
 				 *      - An error status otherwise
 				 *
 				 */
