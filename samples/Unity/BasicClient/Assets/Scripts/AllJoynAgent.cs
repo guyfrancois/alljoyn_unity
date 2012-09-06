@@ -45,6 +45,5 @@ public class AllJoynAgent : MonoBehaviour
 	void OnApplicationQuit()
 	{
 		AllJoyn.StopAllJoynProcessing();
-		Debug.Log("Should close things down");
 	}
 }
