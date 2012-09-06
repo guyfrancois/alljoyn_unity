@@ -49,20 +49,3 @@ if env['OS'] == 'android':
     env.Install('Unity/BasicServer/Assets/Plugins/Android', liballjoyn_c)
     env.Install('Unity/Chat/Assets/Plugins/Android', liballjoyn_c)
 
-    #place alljoyn.jar into the samples
-    alljoyn_jar = '$DISTDIR/java/jar/alljoyn.jar'
-    env.Install('Unity/BasicClient/Assets/Plugins/Android', alljoyn_jar)
-    env.Install('Unity/BasicServer/Assets/Plugins/Android', alljoyn_jar)
-    env.Install('Unity/Chat/Assets/Plugins/Android', alljoyn_jar)
-
-    #place liballjoyn_java.so into the samples
-    liballjoyn_java = '$DISTDIR/java/lib/liballjoyn_java.so'
-    env.Install('Unity/BasicClient/Assets/Plugins/Android', liballjoyn_java)
-    env.Install('Unity/BasicServer/Assets/Plugins/Android', liballjoyn_java)
-    env.Install('Unity/Chat/Assets/Plugins/Android', liballjoyn_java)
-
-    #TODO figure out how to obtain bundle_jar
-    bundle_jar = ''
-    #TODO figure out how to obtain libdaemon-jni.so
-    libdaemon_jni = ''
-    
