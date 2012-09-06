@@ -39,20 +39,10 @@ public class AllJoynAgent : MonoBehaviour
 		// Output AllJoyn version information to log
 		Debug.Log("AllJoyn Library version: " + AllJoyn.GetVersion());
 		Debug.Log("AllJoyn Library buildInfo: " + AllJoyn.GetBuildInfo());
-
-		// Enable callbacks on main thread only
-		//AllJoyn.SetMainThreadOnlyCallbacks(true);
 	}
 	
 	void OnApplicationQuit()
 	{
 		AllJoyn.StopAllJoynProcessing();
-	}
-
-	// Update is called once per frame
-	void Update()
-	{
-		// Pump messages from AllJoyn
-		AllJoyn.TriggerCallbacks();
 	}
 }

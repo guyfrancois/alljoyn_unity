@@ -38,6 +38,7 @@ namespace AllJoynUnity
 
         private static readonly int DEFERED_CALLBACK_WAIT_TIMER = 50;
 
+        private static Boolean autoProcessCallback = true;
         private static Thread callbackPumpThread = null;
         private static Boolean isProcessing = false;
 
@@ -72,10 +73,28 @@ namespace AllJoynUnity
 	}
 
 	/**
+	 * Turn off auto processing of callback data from a seperate thread. 
+	 * Used if developer manually calls Trigger callbacks on their schedule.
+	 * @param autoProcess	Turn on/off the ability for AllJoyn to process the callbacks in a new thread
+	 */
+	public static void SetAutoAllJoynCallbackProcessing(Boolean autoProcess)
+	{
+		autoProcessCallback = autoProcess;
+		if(autoProcessCallback)
+		{
+			StartAllJoynCallbackProcessing();
+		}
+	}
+
+	/**
 	 * Starts a thread to process AllJoyn callback data.
 	 */
         public static void StartAllJoynCallbackProcessing()
         {
+            if(!autoProcessCallback)
+            {
+                return;
+            }
             if (callbackPumpThread == null)
             {
                 alljoyn_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
@@ -113,17 +132,20 @@ namespace AllJoynUnity
 
 	
 	/**
-	 * Call to trigger callbacks on main thread.
+	 * Call to trigger callbacks on main thread. Allows to manually process the callbacks.
 	 */
-        private static int TriggerCallbacks()
+        public static int TriggerCallbacks()
         {
             return alljoyn_unity_deferred_callbacks_process();
         }
 
+	
+
 	/**
 	 * Enable/disable main-thread-only callbacks.
+	 * NOTE: For Android this should be called with a value of true
 	 */ 
-        private static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
+        public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
         {
             alljoyn_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
         }
