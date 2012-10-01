@@ -61,6 +61,106 @@ namespace AllJoynUnity
 			}
 
 			/** 
+			 * Gets a new MsgArg containing the byte arg value
+			 *
+			 * @param y byte to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(byte y)
+			{
+				return new MsgArg(y);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the short arg value
+			 *
+			 * @param n short to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(short n)
+			{
+				return new MsgArg(n);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the ushort arg value
+			 *
+			 * @param q ushort to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(ushort q)
+			{
+				return new MsgArg(q);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the double arg value
+			 *
+			 * @param d double to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(double d)
+			{
+				return new MsgArg(d);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the int arg value
+			 *
+			 * @param i int to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(int i)
+			{
+				return new MsgArg(i);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the uint arg value
+			 *
+			 * @param u uint to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(uint u)
+			{
+				return new MsgArg(u);
+			}
+
+
+			/** 
+			 * Gets a new MsgArg containing the bool arg value
+			 *
+			 * @param b bool to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(bool b)
+			{
+				return new MsgArg(b);
+			}
+
+
+			/** 
+			 * Gets a new MsgArg containing the long arg value
+			 *
+			 * @param x long to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(long x)
+			{
+				return new MsgArg(x);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the ulong arg value
+			 *
+			 * @param t ulong to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(ulong t)
+			{
+				return new MsgArg(t);
+			}
+			/** 
 			 * Gets a new MsgArg containing the string arg value
 			 *
 			 * @param arg string to assign to the MsgArg object
@@ -80,8 +180,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator byte(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_uint8(arg._msgArgs, (UIntPtr)arg._index);
+				byte y;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "y", __arglist(out y));
+				return y;
 			}
 
 			/** 
@@ -92,8 +193,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator bool(MsgArg arg)
 			{
-			
-				return (alljoyn_msgarg_as_bool(arg._msgArgs, (UIntPtr)arg._index) == 1 ? true : false);
+				bool b;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "b", __arglist(out b));
+				return b;
 			}
 
 			/** 
@@ -104,8 +206,10 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator short(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_int16(arg._msgArgs, (UIntPtr)arg._index);
+
+				short n;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "n", __arglist(out n));
+				return n;
 			}
 
 			/** 
@@ -116,8 +220,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator ushort(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_uint16(arg._msgArgs, (UIntPtr)arg._index);
+				ushort q;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "q", __arglist(out q));
+				return q;
 			}
 
 			/** 
@@ -128,8 +233,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator int(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_int32(arg._msgArgs, (UIntPtr)arg._index);
+				int i;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "i", __arglist(out i));
+				return i;
 			}
 
 			/** 
@@ -140,8 +246,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator uint(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_uint32(arg._msgArgs, (UIntPtr)arg._index);
+				uint u;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "u", __arglist(out u));
+				return u;
 			}
 
 			/** 
@@ -152,8 +259,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator long(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_int64(arg._msgArgs, (UIntPtr)arg._index);
+				long x;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "x", __arglist(out x));
+				return x;
 			}
 
 			/** 
@@ -164,8 +272,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator ulong(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_uint64(arg._msgArgs, (UIntPtr)arg._index);
+				ulong t;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "t", __arglist(out t));
+				return t;
 			}
 
 			/** 
@@ -176,8 +285,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator double(MsgArg arg)
 			{
-			
-				return alljoyn_msgarg_as_double(arg._msgArgs, (UIntPtr)arg._index);
+				double d;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "d", __arglist(out d));
+				return d;
 			}
 
 			/** 
@@ -188,8 +298,9 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator string(MsgArg arg)
 			{
-			
-				return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_string(arg._msgArgs, (UIntPtr)arg._index));
+				IntPtr s;
+				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "s", __arglist(out s));
+				return Marshal.PtrToStringAnsi(s);
 			}
 
 			/** 
@@ -210,7 +321,9 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return Marshal.PtrToStringAnsi(alljoyn_msgarg_as_objpath(_msgArgs, (UIntPtr)_index));
+					IntPtr o;
+					alljoyn_msgarg_get(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), "o", __arglist(out o));
+					return Marshal.PtrToStringAnsi(o);
 				}
 				set
 				{
@@ -221,7 +334,7 @@ namespace AllJoynUnity
 					}
 					UIntPtr numArgs = (UIntPtr)1;
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, "o", _bytePtr);
+					alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), "o", __arglist(_bytePtr));
 				}
 			}
 
@@ -287,7 +400,7 @@ namespace AllJoynUnity
 			     *      - QStatus.OK if the MsgArg was successfully set
 			     *      - An error status otherwise
 			     */
-			public void Set(object value)
+			public QStatus Set(object value)
 			{
 			
 				UIntPtr numArgs = (UIntPtr)1;
@@ -312,127 +425,72 @@ namespace AllJoynUnity
 				{
 					signature = "s";
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, _bytePtr);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist(_bytePtr));
 				}
 				else if(value.GetType() == typeof(bool))
 				{
 					signature = "b";
 					int newValue = ((bool)value ? 1 : 0);
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, newValue);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((bool)value));
 				}
 				else if(value.GetType() == typeof(double) || value.GetType() == typeof(float))
 				{
 					signature = "d";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((double)value));
 				}
 				else if(value.GetType() == typeof(int))
 				{
 					signature = "i";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (int)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((int)value));
 				}
 				else if(value.GetType() == typeof(uint))
 				{
 					signature = "u";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (uint)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((uint)value));
 				}
 				else if(value.GetType() == typeof(short))
 				{
 					signature = "n";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (short)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((short)value));
 				}
 				else if(value.GetType() == typeof(ushort))
 				{
 					signature = "q";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (ushort)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((ushort)value));
 				}
 				else if(value.GetType() == typeof(long))
 				{
 					signature = "x";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (long)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((long)value));
 				}
 				else if(value.GetType() == typeof(ulong))
 				{
 					signature = "t";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (ulong)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((ulong)value));
 				}
 				else if(value.GetType() == typeof(byte))
 				{
 					signature = "y";
-					alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (byte)value);
+					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, __arglist((byte)value));
 				}
+				return QStatus.WRITE_ERROR;
 			}
 
 			#region DLL Imports
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern byte alljoyn_msgarg_as_uint8(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_as_bool(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern short alljoyn_msgarg_as_int16(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern ushort alljoyn_msgarg_as_uint16(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_as_int32(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern uint alljoyn_msgarg_as_uint32(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern long alljoyn_msgarg_as_int64(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern ulong alljoyn_msgarg_as_uint64(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern double alljoyn_msgarg_as_double(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgarg_as_string(IntPtr args, UIntPtr idx);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgarg_as_objpath(IntPtr args, UIntPtr idx);
-
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_as_variant(IntPtr args, UIntPtr idx);
 
             [DllImport(DLL_IMPORT_TARGET)]
             private static extern byte[] alljoyn_msgarg_as_array(IntPtr args, UIntPtr idx);
 
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, byte arg);
+			[DllImport (DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set(IntPtr args, [MarshalAs(UnmanagedType.LPStr)] string signature, __arglist);
+
+			[DllImport (DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get(IntPtr args, [MarshalAs(UnmanagedType.LPStr)] string signature, __arglist);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, short arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, int arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, uint arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, long arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, ulong arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, double arg);
-
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_array_set_offset(IntPtr args, UIntPtr argOffset, ref UIntPtr numArgs, 
-				[MarshalAs(UnmanagedType.LPStr)] string signature, IntPtr arg);
+			private static extern IntPtr alljoyn_msgarg_array_element(IntPtr args, UIntPtr index);
 			#endregion
 
 			#region IDisposable
