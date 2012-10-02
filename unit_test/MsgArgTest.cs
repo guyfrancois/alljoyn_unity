@@ -34,14 +34,14 @@ namespace AllJoynUnityTest
 			arg[0] = true;
 			Assert.True((bool)arg[0]);
 
+			arg[0] = false;
+			Assert.False((bool)arg[0]);
+
 			arg[0] = (short)42;
 			Assert.Equal((short)42, (short)arg[0]);
 
 			arg[0] = (ushort)0xBEBE;
 			Assert.Equal((ushort)0xBEBE, (ushort)arg[0]);
-
-			arg[0] = (double)3.14159265;
-			Assert.Equal((double)3.14159265, (double)arg[0]);
 
 			arg[0] = (int)-9999;
 			Assert.Equal((int)-9999, (int)arg[0]);
@@ -54,6 +54,12 @@ namespace AllJoynUnityTest
 
 			arg[0] = (ulong)0x6464646464646464;
 			Assert.Equal((ulong)0x6464646464646464, (ulong)arg[0]);
+
+			arg[0] = (float)1.61803f;
+			Assert.Equal((float)1.61803f, (float)arg[0]);
+
+			arg[0] = (double)3.14159265D;
+			Assert.Equal((double)3.14159265D, (double)arg[0]);
 
 			arg[0] = (string)"this is a string";
 			Assert.Equal("this is a string", (string)arg[0]);
@@ -89,9 +95,6 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((ushort)0xBEBE));
 			Assert.Equal((ushort)0xBEBE, (ushort)arg[0]);
 
-			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((double)3.14159265));
-			Assert.Equal((double)3.14159265, (double)arg[0]);
-
 			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((int)-9999));
 			Assert.Equal((int)-9999, (int)arg[0]);
 
@@ -103,6 +106,12 @@ namespace AllJoynUnityTest
 
 			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((ulong)0x6464646464646464));
 			Assert.Equal((ulong)0x6464646464646464, (ulong)arg[0]);
+
+			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((float)1.61803f));
+			Assert.Equal((float)1.61803f, (float)arg[0]);
+
+			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((double)3.14159265D));
+			Assert.Equal((double)3.14159265D, (double)arg[0]);
 
 			Assert.Equal(AllJoyn.QStatus.OK, arg[0].Set((string)"this is a string"));
 			Assert.Equal("this is a string", (string)arg[0]);
