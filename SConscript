@@ -30,8 +30,6 @@ sys.path.append('../build_core/tools/scons')
 if not env.has_key('_ALLJOYNCORE_'):
     #alljoyn_c is required for the unity_bindings
     env.SConscript('../alljoyn_c/SConscript')
-    #alljoyn_java is required for the bundled daemon
-    env.SConscript('../alljoyn_java/SConscript')
 
 # Make alljoyn_unity dist a sub-directory of the alljoyn dist.  This avoids any conflicts with alljoyn dist targets.
 env['UNITY_DISTDIR'] = env['DISTDIR'] + '/unity'
