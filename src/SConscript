@@ -19,9 +19,6 @@ sys.path.append('../../build_core/tools/scons')
 from unitystatus import UnityStatus
 Import('env')
 
-# AllJoyn Sources
-srcs = env.Glob('*.cs')
-
 if env['OS_GROUP'] == 'windows':
     env['CSC'] = 'csc.exe'
     if env['VARIANT'] == 'debug':
@@ -43,6 +40,9 @@ env.Append(BUILDERS = {'unity_status_bld': unity_status_builder})
 # the Status.xml file.  If the Status.xml file found in common or alljoyn_core is 
 # changed Status.cs must manually be deleted to cause the Status to be rebuilt
 cs_status = env.unity_status_bld(source = 'Status', target = 'Status')
+
+# AllJoyn Sources
+srcs = env.Glob('*.cs'
 liballjoyn_unity = env.CSharpLib(source = srcs , target='$UNITY_DISTDIR/lib/alljoyn_unity.dll')
 env.Depends(liballjoyn_unity, cs_status);
 
