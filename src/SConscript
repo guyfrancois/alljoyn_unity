@@ -29,8 +29,6 @@ if env['OS_GROUP'] == 'windows':
 elif env['OS_GROUP'] == 'posix':
     env['CSC'] = 'gmcs'
     env['CSC_FLAGS']=['debug']
-    
-print env.subst('$_CSC_FLAGS')
 
 # AllJoyn Unity status codes
 def unity_status_build_function(target, source, env):
