@@ -42,7 +42,7 @@ env.Append(BUILDERS = {'unity_status_bld': unity_status_builder})
 cs_status = env.unity_status_bld(source = 'Status', target = 'Status')
 
 # AllJoyn Sources
-srcs = env.Glob('*.cs'
+srcs = env.Glob('*.cs')
 liballjoyn_unity = env.CSharpLib(source = srcs , target='$UNITY_DISTDIR/lib/alljoyn_unity.dll')
 env.Depends(liballjoyn_unity, cs_status);
 
