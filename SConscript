@@ -67,6 +67,8 @@ if env['OS'] == 'android':
     liballjoyn_c = '$DISTDIR/lib/liballjoyn_c.so'
     env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
 
+#Build unit tests
+env.SConscript('unit_test/SConscript')
 # Build docs
 env.SConscript('docs/SConscript')
     
