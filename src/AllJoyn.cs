@@ -38,6 +38,7 @@ namespace AllJoynUnity
 		private const string DLL_IMPORT_TARGET = "__Internal";
 #else
 		private const string DLL_IMPORT_TARGET = "alljoyn_c";
+#endif
 
         private const string UNITY_VERSION = ".3";
 
