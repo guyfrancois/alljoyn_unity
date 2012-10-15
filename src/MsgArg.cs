@@ -182,7 +182,7 @@ namespace AllJoynUnity
 			public static implicit operator byte(MsgArg arg)
 			{
 				byte y;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "y", out y);
+				alljoyn_msgarg_get_uint8(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out y);
 				return y;
 			}
 
@@ -195,7 +195,7 @@ namespace AllJoynUnity
 			public static implicit operator bool(MsgArg arg)
 			{
 				bool b;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "b", out b);
+				alljoyn_msgarg_get_bool(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out b);
 				return b;
 			}
 
@@ -209,7 +209,7 @@ namespace AllJoynUnity
 			{
 
 				short n;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "n", out n);
+				alljoyn_msgarg_get_int16(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out n);
 				return n;
 			}
 
@@ -222,7 +222,7 @@ namespace AllJoynUnity
 			public static implicit operator ushort(MsgArg arg)
 			{
 				ushort q;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "q", out q);
+				alljoyn_msgarg_get_uint16(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out q);
 				return q;
 			}
 
@@ -235,7 +235,7 @@ namespace AllJoynUnity
 			public static implicit operator int(MsgArg arg)
 			{
 				int i;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "i", out i);
+				alljoyn_msgarg_get_int32(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out i);
 				return i;
 			}
 
@@ -248,7 +248,7 @@ namespace AllJoynUnity
 			public static implicit operator uint(MsgArg arg)
 			{
 				uint u;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "u", out u);
+				alljoyn_msgarg_get_uint32(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out u);
 				return u;
 			}
 
@@ -261,7 +261,7 @@ namespace AllJoynUnity
 			public static implicit operator long(MsgArg arg)
 			{
 				long x;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "x", out x);
+				alljoyn_msgarg_get_int64(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out x);
 				return x;
 			}
 
@@ -274,7 +274,7 @@ namespace AllJoynUnity
 			public static implicit operator ulong(MsgArg arg)
 			{
 				ulong t;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "t", out t);
+				alljoyn_msgarg_get_uint64(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out t);
 				return t;
 			}
 
@@ -291,7 +291,7 @@ namespace AllJoynUnity
 			public static implicit operator float(MsgArg arg)
 			{
 				double d;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "d", out d);
+				alljoyn_msgarg_get_double(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out d);
 				// convert double to a float.
 				float f = (float)d;
 				return f;
@@ -306,7 +306,7 @@ namespace AllJoynUnity
 			public static implicit operator double(MsgArg arg)
 			{
 				double d;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "d", out d);
+				alljoyn_msgarg_get_double(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out d);
 				return d;
 			}
 
@@ -319,7 +319,7 @@ namespace AllJoynUnity
 			public static implicit operator string(MsgArg arg)
 			{
 				IntPtr s;
-				alljoyn_msgarg_get(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), "s", out s);
+				alljoyn_msgarg_get_string(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out s);
 				return Marshal.PtrToStringAnsi(s);
 			}
 
@@ -342,7 +342,7 @@ namespace AllJoynUnity
 				get
 				{
 					IntPtr o;
-					alljoyn_msgarg_get(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), "o", out o);
+					alljoyn_msgarg_get_objectpath(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), out o);
 					return Marshal.PtrToStringAnsi(o);
 				}
 				set
@@ -354,7 +354,7 @@ namespace AllJoynUnity
 					}
 					UIntPtr numArgs = (UIntPtr)1;
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
-					alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), "o", _bytePtr);
+					alljoyn_msgarg_set_objectpath(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), _bytePtr);
 				}
 			}
 
@@ -445,13 +445,13 @@ namespace AllJoynUnity
 				{
 					signature = "s";
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, _bytePtr);
+					return alljoyn_msgarg_set_string(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),_bytePtr);
 				}
 				else if(value.GetType() == typeof(bool))
 				{
 					signature = "b";
 					//int newValue = ((bool)value ? 1 : 0);
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (bool)value);
+					return alljoyn_msgarg_set_bool(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (bool)value);
 				}
 				else if (value.GetType() == typeof(float))
 				{
@@ -459,50 +459,50 @@ namespace AllJoynUnity
 					//explicitly cast float to a double.
 					double d = Convert.ToDouble((float)value);
 					//TODO figure out why call to alljoy_msgarg_set does not work for doubles
-					//return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (double)d);
-					return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)d);
+					return alljoyn_msgarg_set_double(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (double)d);
+					//return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)d);
 				}
 				else if(value.GetType() == typeof(double))
 				{
 					signature = "d";
 					//TODO figure out why call to alljoy_msgarg_set does not work for doubles
-					//return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (double)value);
-					return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)value);
+					return alljoyn_msgarg_set_double(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (double)value);
+					//return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)value);
 				}
 				else if(value.GetType() == typeof(int))
 				{
 					signature = "i";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (int)value);
+					return alljoyn_msgarg_set_int32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),(int)value);
 				}
 				else if(value.GetType() == typeof(uint))
 				{
 					signature = "u";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (uint)value);
+					return alljoyn_msgarg_set_uint32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (uint)value);
 				}
 				else if(value.GetType() == typeof(short))
 				{
 					signature = "n";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (short)value);
+					return alljoyn_msgarg_set_int16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (short)value);
 				}
 				else if(value.GetType() == typeof(ushort))
 				{
 					signature = "q";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (ushort)value);
+					return alljoyn_msgarg_set_uint16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ushort)value);
 				}
 				else if(value.GetType() == typeof(long))
 				{
 					signature = "x";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (long)value);
+					return alljoyn_msgarg_set_int64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (long)value);
 				}
 				else if(value.GetType() == typeof(ulong))
 				{
 					signature = "t";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (ulong)value);
+					return alljoyn_msgarg_set_uint64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ulong)value);
 				}
 				else if(value.GetType() == typeof(byte))
 				{
 					signature = "y";
-					return alljoyn_msgarg_set(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), signature, (byte)value);
+					return alljoyn_msgarg_set_uint8(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (byte)value);
 				}
 				return QStatus.WRITE_ERROR;
 			}
@@ -531,26 +531,30 @@ namespace AllJoynUnity
 			  
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, byte y);
+			private static extern int alljoyn_msgarg_set_uint8(IntPtr arg, byte y);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, bool b);
+			private static extern int alljoyn_msgarg_set_bool(IntPtr arg, bool b);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, short n);
+			private static extern int alljoyn_msgarg_set_int16(IntPtr arg, short n);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, ushort q);
+			private static extern int alljoyn_msgarg_set_uint16(IntPtr arg, ushort q);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, int i);
+			private static extern int alljoyn_msgarg_set_int32(IntPtr arg, int i);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, uint u);
+			private static extern int alljoyn_msgarg_set_uint32(IntPtr arg, uint u);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, long x);
+			private static extern int alljoyn_msgarg_set_int64(IntPtr arg, long x);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, ulong t);
+			private static extern int alljoyn_msgarg_set_uint64(IntPtr arg, ulong t);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, double d);
+			private static extern int alljoyn_msgarg_set_double(IntPtr arg, double d);
 			/* char* string arrays are passed as an IntPtr */
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, IntPtr s);
+			private static extern int alljoyn_msgarg_set_string(IntPtr arg, IntPtr s);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_objectpath(IntPtr arg, IntPtr o);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_signature(IntPtr arg, IntPtr g);
 			/* 
 			 * allthough __arglist works really well when using microsoft C# 
 			 * problems have been encountered when using it with mono for this
@@ -564,26 +568,30 @@ namespace AllJoynUnity
 			 
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out byte y);
+			private static extern int alljoyn_msgarg_get_uint8(IntPtr arg, out byte y);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out bool b);
+			private static extern int alljoyn_msgarg_get_bool(IntPtr arg, out bool b);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out short n);
+			private static extern int alljoyn_msgarg_get_int16(IntPtr arg, out short n);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out ushort q);
+			private static extern int alljoyn_msgarg_get_uint16(IntPtr arg, out ushort q);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out int i);
+			private static extern int alljoyn_msgarg_get_int32(IntPtr arg, out int i);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out uint i);
+			private static extern int alljoyn_msgarg_get_uint32(IntPtr arg, out uint i);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out long x);
+			private static extern int alljoyn_msgarg_get_int64(IntPtr arg, out long x);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out ulong t);
+			private static extern int alljoyn_msgarg_get_uint64(IntPtr arg, out ulong t);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out double d);
+			private static extern int alljoyn_msgarg_get_double(IntPtr arg, out double d);
 			/* char* string arrays are passed as an IntPtr */
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get(IntPtr arg, [MarshalAs(UnmanagedType.LPStr)] string signature, out IntPtr s);
+			private static extern int alljoyn_msgarg_get_string(IntPtr arg, out IntPtr s);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_objectpath(IntPtr arg, out IntPtr o);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_signature(IntPtr arg, out IntPtr g);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_array_element(IntPtr args, UIntPtr index);
