@@ -286,7 +286,7 @@ namespace AllJoynUnityTest
             private AllJoyn.InterfaceDescription.Member testSignalMember;
 
             public TestBusObject(AllJoyn.BusAttachment bus, string path)
-                : base(bus, path, false)
+                : base(path, false)
             {
                 AllJoyn.InterfaceDescription testIntf = bus.GetInterface("org.alljoyn.test.BusAttachment");
                 AllJoyn.QStatus status = AddInterface(testIntf);

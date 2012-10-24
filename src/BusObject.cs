@@ -44,7 +44,7 @@ namespace AllJoynUnity
 			     * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
 			     *                       as parent objects (in the object path sense) to other objects.
 			     */
-			public BusObject(BusAttachment bus, string path, bool isPlaceholder)
+			public BusObject(string path, bool isPlaceholder)
 			{
 			
 				// Can't let the GC free these delegates so they must be members
@@ -62,7 +62,7 @@ namespace AllJoynUnity
 				callbacks.object_unregistered = Marshal.GetFunctionPointerForDelegate(_objectUnregistered);
 
 				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
-				_busObject = alljoyn_busobject_create(bus.UnmanagedPtr, path, isPlaceholder ? 1 : 0, main.AddrOfPinnedObject(), IntPtr.Zero);
+				_busObject = alljoyn_busobject_create(path, isPlaceholder ? 1 : 0, main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
 			/**
@@ -362,7 +362,6 @@ namespace AllJoynUnity
 			#region DLL Imports
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_busobject_create(
-				IntPtr busAttachment,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
 				int isPlaceholder,
 				IntPtr callbacks_in,

@@ -195,7 +195,7 @@ namespace AllJoynUnityTest
             BusObjectTest _busObjectTest;
 
             public TestBusObject(AllJoyn.BusAttachment bus, string path, BusObjectTest busObjectTest)
-                : base(bus, path, false)
+                : base(path, false)
             {
                 _busObjectTest = busObjectTest;
             }
@@ -221,7 +221,7 @@ namespace AllJoynUnityTest
         class MethodTestBusObject : AllJoyn.BusObject
         {
             public MethodTestBusObject(AllJoyn.BusAttachment bus, string path)
-                : base(bus, path, false)
+                : base(path, false)
             {
 
                 // add the interface to the bus object
