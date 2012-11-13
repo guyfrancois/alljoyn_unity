@@ -37,13 +37,12 @@ namespace AllJoynUnity
 		public class BusObject : IDisposable
 		{
 			/**
-			     * %BusObject constructor.
-			     *
-			     * @param bus            Bus that this object exists on.
-			     * @param path           Object path for object.
-			     * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
-			     *                       as parent objects (in the object path sense) to other objects.
-			     */
+			 * %BusObject constructor.
+			 *
+			 * @param path           Object path for object.
+			 * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
+			 *                       as parent objects (in the object path sense) to other objects.
+			 */
 			public BusObject(string path, bool isPlaceholder)
 			{
 			
@@ -64,6 +63,20 @@ namespace AllJoynUnity
 				main = GCHandle.Alloc(callbacks, GCHandleType.Pinned);
 				_busObject = alljoyn_busobject_create(path, isPlaceholder ? 1 : 0, main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
+
+			/**
+			 * %BusObject constructor.
+			 * 
+			 * Use of this BusObject constructor is depricated and will be 
+			 * removed Please use other BusObject Constructor BusObject(string, bool)
+			 *
+			 * @param bus            Bus that this object exists on.
+			 * @param path           Object path for object.
+			 * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
+			 *                       as parent objects (in the object path sense) to other objects.
+			 */
+			[Obsolete("Creation of a BusObject no longer requires a BusAttachment.")]
+			public BusObject(BusAttachment bus, string path, bool isPlaceholder) : this(path, isPlaceholder){}
 
 			/**
 			     * Request the raw pointer of the AllJoyn C BusObject
