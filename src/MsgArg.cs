@@ -197,7 +197,7 @@ namespace AllJoynUnity
 			/** 
 			 * Gets a new MsgArg containing the short[] arg value
 			 *
-			 * @param n short array to assign to the MsgArg object
+			 * @param an short array to assign to the MsgArg object
 			 * @return a new MsgArg object
 			 */
 			public static implicit operator MsgArg(short[] an)
@@ -274,7 +274,7 @@ namespace AllJoynUnity
 			/** 
 			 * Gets a new MsgArg containing the string[] arg value
 			 *
-			 * @param arg string array to assign to the MsgArg object
+			 * @param sa string array to assign to the MsgArg object
 			 * @return a new MsgArg object
 			 */
 			public static implicit operator MsgArg(string[] sa)
@@ -443,6 +443,12 @@ namespace AllJoynUnity
 			//return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
 		    //}
 
+			/** 
+			 * Gets byte array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return byte array value from the MsgArg Object
+			 */
 			public static implicit operator byte[](MsgArg arg)
 			{
 				int length;
@@ -452,6 +458,13 @@ namespace AllJoynUnity
 				Marshal.Copy(ay, result, 0, length);
 				return result;
 			}
+
+			/** 
+			 * Gets bool array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return bool array value from the MsgArg Object
+			 */
 			public static implicit operator bool[](MsgArg arg)
 			{
 				int length;
@@ -473,6 +486,13 @@ namespace AllJoynUnity
 				}
 				return retValue;
 			}
+
+			/** 
+			 * Gets short array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return short array value from the MsgArg Object
+			 */
 			public static implicit operator short[](MsgArg arg)
 			{
 				int length;
@@ -482,6 +502,13 @@ namespace AllJoynUnity
 				Marshal.Copy(an, result, 0, length);
 				return result;
 			}
+
+			/** 
+			 * Gets ushort array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return ushort array value from the MsgArg Object
+			 */
 			public static implicit operator ushort[](MsgArg arg)
 			{
 				int length;
@@ -495,6 +522,12 @@ namespace AllJoynUnity
 				return converter.UShorts;
 			}
 
+			/** 
+			 * Gets int array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return int array value from the MsgArg Object
+			 */
 			public static implicit operator int[](MsgArg arg)
 			{
 				int length;
@@ -504,7 +537,13 @@ namespace AllJoynUnity
 				Marshal.Copy(ai, result, 0, length);
 				return result;
 			}
-			
+
+			/** 
+			 * Gets uint array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return uint array value from the MsgArg Object
+			 */
 			public static implicit operator uint[](MsgArg arg)
 			{
 				int length;
@@ -517,7 +556,13 @@ namespace AllJoynUnity
 				converter.Ints = result;
 				return converter.UInts;
 			}
-			 
+
+			/** 
+			 * Gets a long array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return long array value from the MsgArg Object
+			 */
 			public static implicit operator long[](MsgArg arg)
 			{
 				int length;
@@ -527,7 +572,13 @@ namespace AllJoynUnity
 				Marshal.Copy(ax, result, 0, length);
 				return result;
 			}
-			
+
+			/** 
+			 * Gets a ulong array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return ulong array value from the MsgArg Object
+			 */
 			public static implicit operator ulong[](MsgArg arg)
 			{
 				int length;
@@ -540,7 +591,13 @@ namespace AllJoynUnity
 				converter.Longs = result;
 				return converter.ULongs;
 			}
-			
+
+			/** 
+			 * Gets a double array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return double array value from the MsgArg Object
+			 */
 			public static implicit operator double[](MsgArg arg)
 			{
 				int length;
@@ -551,6 +608,12 @@ namespace AllJoynUnity
 				return result;
 			}
 
+			/** 
+			 * Gets string array value from a MsgArg Object
+			 *
+			 * @param arg	MsgArg used to access value from
+			 * @return string array value from the MsgArg Object
+			 */
 			public static implicit operator string[](MsgArg arg)
 			{
 				int length;
@@ -566,6 +629,7 @@ namespace AllJoynUnity
 				}
 				return result;
 			}
+
 			/**
 			 * Gets or Sets the value of the ObjectPath
 			 */

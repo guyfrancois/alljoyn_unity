@@ -139,6 +139,7 @@ namespace AllJoynUnity
 	
 	/**
 	 * Call to trigger callbacks on main thread. Allows to manually process the callbacks.
+	 * @return the number of callbacks processed
 	 */
         public static int TriggerCallbacks()
         {
@@ -150,6 +151,7 @@ namespace AllJoynUnity
 	/**
 	 * Enable/disable main-thread-only callbacks.
 	 * NOTE: For Android this should be called with a value of true
+	 * @param mainThreadOnly set to true to limit callbacks to the main thread
 	 */ 
         public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
         {
