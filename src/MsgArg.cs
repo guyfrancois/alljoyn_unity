@@ -169,8 +169,117 @@ namespace AllJoynUnity
 			 */
 			public static implicit operator MsgArg(string arg)
 			{
-			
 				return new MsgArg(arg);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the byte[] arg value
+			 *
+			 * @param ay byte array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(byte[] ay)
+			{
+				return new MsgArg(ay);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the bool[] arg value
+			 *
+			 * @param ab bool array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(bool[] ab)
+			{
+				return new MsgArg(ab);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the short[] arg value
+			 *
+			 * @param n short array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(short[] an)
+			{
+				return new MsgArg(an);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the ushort[] arg value
+			 *
+			 * @param aq ushort to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(ushort[] aq)
+			{
+				return new MsgArg(aq);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the int[] arg value
+			 *
+			 * @param ai int to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(int[] ai)
+			{
+				return new MsgArg(ai);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the uint[] arg value
+			 *
+			 * @param au uint array  to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(uint[] au)
+			{
+				return new MsgArg(au);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the long[] arg value
+			 *
+			 * @param ax long array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(long[] ax)
+			{
+				return new MsgArg(ax);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the ulong[] arg value
+			 *
+			 * @param at ulong array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(ulong[] at)
+			{
+				return new MsgArg(at);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the double[] arg value
+			 *
+			 * @param ad double array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(double[] ad)
+			{
+				return new MsgArg(ad);
+			}
+
+			/** 
+			 * Gets a new MsgArg containing the string[] arg value
+			 *
+			 * @param arg string array to assign to the MsgArg object
+			 * @return a new MsgArg object
+			 */
+			public static implicit operator MsgArg(string[] sa)
+			{
+				return new MsgArg(sa);
 			}
 
 			/** 
@@ -329,11 +438,134 @@ namespace AllJoynUnity
 			 * @param arg	MsgArg used to access value from
 			 * @return byte array of a MsgArg Object
 			 */
-		    public static implicit operator byte[](MsgArg arg)
-		    {
-			return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
-		    }
+		    //public static implicit operator byte[](MsgArg arg)
+		    //{
+			//return alljoyn_msgarg_as_array(arg._msgArgs, (UIntPtr)arg._index);
+		    //}
 
+			public static implicit operator byte[](MsgArg arg)
+			{
+				int length;
+				IntPtr ay;
+				alljoyn_msgarg_get_uint8_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out ay);
+				byte[] result = new byte[length];
+				Marshal.Copy(ay, result, 0, length);
+				return result;
+			}
+			public static implicit operator bool[](MsgArg arg)
+			{
+				int length;
+				IntPtr ab;
+				alljoyn_msgarg_get_bool_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out ab);
+				Int32[] result = new Int32[length];
+				Marshal.Copy(ab, result, 0, length);
+				bool[] retValue = new bool[length];
+				for (int i = 0; i < length; i++)
+				{
+					if (result[i] == 0)
+					{
+						retValue[i] = false;
+					}
+					else
+					{
+						retValue[i] = true;
+					}
+				}
+				return retValue;
+			}
+			public static implicit operator short[](MsgArg arg)
+			{
+				int length;
+				IntPtr an;
+				alljoyn_msgarg_get_int16_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out an);
+				short[] result = new short[length];
+				Marshal.Copy(an, result, 0, length);
+				return result;
+			}
+			public static implicit operator ushort[](MsgArg arg)
+			{
+				int length;
+				IntPtr aq;
+				alljoyn_msgarg_get_uint16_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out aq);
+				short[] tmp = new short[length];
+				Marshal.Copy(aq, tmp, 0, length);
+
+				ShortConverter converter = new ShortConverter();
+				converter.Shorts = tmp;
+				return converter.UShorts;
+			}
+
+			public static implicit operator int[](MsgArg arg)
+			{
+				int length;
+				IntPtr ai;
+				alljoyn_msgarg_get_int32_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out ai);
+				int[] result = new int[length];
+				Marshal.Copy(ai, result, 0, length);
+				return result;
+			}
+			
+			public static implicit operator uint[](MsgArg arg)
+			{
+				int length;
+				IntPtr au;
+				alljoyn_msgarg_get_uint32_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out au);
+				int[] result = new int[length];
+				Marshal.Copy(au, result, 0, length);
+
+				IntConverter converter = new IntConverter();
+				converter.Ints = result;
+				return converter.UInts;
+			}
+			 
+			public static implicit operator long[](MsgArg arg)
+			{
+				int length;
+				IntPtr ax;
+				alljoyn_msgarg_get_int64_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out ax);
+				long[] result = new long[length];
+				Marshal.Copy(ax, result, 0, length);
+				return result;
+			}
+			
+			public static implicit operator ulong[](MsgArg arg)
+			{
+				int length;
+				IntPtr at;
+				alljoyn_msgarg_get_uint64_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out at);
+				long[] result = new long[length];
+				Marshal.Copy(at, result, 0, length);
+
+				LongConverter converter = new LongConverter();
+				converter.Longs = result;
+				return converter.ULongs;
+			}
+			
+			public static implicit operator double[](MsgArg arg)
+			{
+				int length;
+				IntPtr ad;
+				alljoyn_msgarg_get_double_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out ad);
+				double[] result = new double[length];
+				Marshal.Copy(ad, result, 0, length);
+				return result;
+			}
+
+			public static implicit operator string[](MsgArg arg)
+			{
+				int length;
+				IntPtr sa;
+				alljoyn_msgarg_get_string_array(alljoyn_msgarg_array_element(arg._msgArgs, (UIntPtr)arg._index), out length, out sa);
+
+				string[] result = new string[length];
+				for (int i = 0; i < length; ++i)
+				{
+					IntPtr s;
+					alljoyn_msgarg_get_string(alljoyn_msgarg_array_element(sa, (UIntPtr)i), out s);
+					result[i] = Marshal.PtrToStringAnsi(s);
+				}
+				return result;
+			}
 			/**
 			 * Gets or Sets the value of the ObjectPath
 			 */
@@ -424,7 +656,6 @@ namespace AllJoynUnity
 			{
 			
 				UIntPtr numArgs = (UIntPtr)1;
-				string signature = "";
 				_setValue = value;
 
 				if(_bytePtr != IntPtr.Zero)
@@ -443,19 +674,19 @@ namespace AllJoynUnity
 
 				if(value.GetType() == typeof(string))
 				{
-					signature = "s";
+					//signature = "s";
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
 					return alljoyn_msgarg_set_string(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),_bytePtr);
 				}
 				else if(value.GetType() == typeof(bool))
 				{
-					signature = "b";
+					//signature = "b";
 					//int newValue = ((bool)value ? 1 : 0);
 					return alljoyn_msgarg_set_bool(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (bool)value);
 				}
 				else if (value.GetType() == typeof(float))
 				{
-					signature = "d";
+					//signature = "d";
 					//explicitly cast float to a double.
 					double d = Convert.ToDouble((float)value);
 					//TODO figure out why call to alljoy_msgarg_set does not work for doubles
@@ -464,47 +695,158 @@ namespace AllJoynUnity
 				}
 				else if(value.GetType() == typeof(double))
 				{
-					signature = "d";
+					//signature = "d";
 					//TODO figure out why call to alljoy_msgarg_set does not work for doubles
 					return alljoyn_msgarg_set_double(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (double)value);
 					//return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)value);
 				}
 				else if(value.GetType() == typeof(int))
 				{
-					signature = "i";
+					//signature = "i";
 					return alljoyn_msgarg_set_int32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),(int)value);
 				}
 				else if(value.GetType() == typeof(uint))
 				{
-					signature = "u";
+					//signature = "u";
 					return alljoyn_msgarg_set_uint32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (uint)value);
 				}
 				else if(value.GetType() == typeof(short))
 				{
-					signature = "n";
+					//signature = "n";
 					return alljoyn_msgarg_set_int16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (short)value);
 				}
 				else if(value.GetType() == typeof(ushort))
 				{
-					signature = "q";
+					//signature = "q";
 					return alljoyn_msgarg_set_uint16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ushort)value);
 				}
 				else if(value.GetType() == typeof(long))
 				{
-					signature = "x";
+					//signature = "x";
 					return alljoyn_msgarg_set_int64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (long)value);
 				}
 				else if(value.GetType() == typeof(ulong))
 				{
-					signature = "t";
+					//signature = "t";
 					return alljoyn_msgarg_set_uint64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ulong)value);
 				}
 				else if(value.GetType() == typeof(byte))
 				{
-					signature = "y";
+					//signature = "y";
 					return alljoyn_msgarg_set_uint8(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (byte)value);
 				}
+				else if (value.GetType() == typeof(byte[]))
+				{
+					//signature = "ay";
+					return alljoyn_msgarg_set_uint8_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((byte[])value).Length, (byte[])value);
+				}
+				else if (value.GetType() == typeof(bool[]))
+				{
+					//signature = "ab";
+					Int32[] ab = new Int32[((bool[])value).Length];
+					for (int i = 0; i < ab.Length; i++)
+					{
+						if (((bool[])value)[i])
+						{
+							ab[i] = 1;
+						}
+						else
+						{
+							ab[i] = 0;
+						}
+					}
+					return alljoyn_msgarg_set_bool_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ab.Length, ab);
+				}
+				else if (value.GetType() == typeof(short[]))
+				{
+					//signature = "an";
+					return alljoyn_msgarg_set_int16_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((short[])value).Length, (short[])value);
+				}
+				else if (value.GetType() == typeof(ushort[]))
+				{
+					//signature = "aq";
+					return alljoyn_msgarg_set_uint16_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((ushort[])value).Length, (ushort[])value);
+				}
+				else if (value.GetType() == typeof(int[]))
+				{
+					//signature = "ai";
+					return alljoyn_msgarg_set_int32_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((int[])value).Length, (int[])value);
+				}
+				else if(value.GetType() == typeof(uint[]))
+				{
+					//signature = "au";
+					return alljoyn_msgarg_set_uint32_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((uint[])value).Length, (uint[])value);
+				}
+				else if (value.GetType() == typeof(long[]))
+				{
+					//signature = "ax";
+					return alljoyn_msgarg_set_int64_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((long[])value).Length, (long[])value);
+				}
+				else if (value.GetType() == typeof(ulong[]))
+				{
+					//signature = "ai";
+					return alljoyn_msgarg_set_uint64_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((ulong[])value).Length, (ulong[])value);
+				}
+				else if (value.GetType() == typeof(double[]))
+				{
+					//signature = "ad";
+					return alljoyn_msgarg_set_double_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((double[])value).Length, (double[])value);
+				}
+				else if (value.GetType() == typeof(string[]))
+				{
+				    //signature = "as";
+					//IntPtr a_size = new IntPtr(((string[])value).Length);
+					return alljoyn_msgarg_set_string_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((string[])value).Length, (string[])value);
+				}
 				return QStatus.WRITE_ERROR;
+			}
+
+			/*
+			 * trick used to map two fields to the same memory location
+			 * This allows us to convert a short[] to an ushort[]. This 
+			 * allows us to over come the limitation that Marshal.Copy does 
+			 * not work for ushort[] data types.
+			 */
+			[StructLayout(LayoutKind.Explicit)]
+			private struct ShortConverter
+			{
+				[FieldOffset(0)]
+				public short[] Shorts;
+
+				[FieldOffset(0)]
+				public ushort[] UShorts;
+			}
+
+			/*
+			 * trick used to map two fields to the same memory location
+			 * This allows us to convert a int[] to an uint[]. This 
+			 * allows us to over come the limitation that Marshal.Copy does 
+			 * not work for uint[] data types.
+			 */
+			[StructLayout(LayoutKind.Explicit)]
+			private struct IntConverter
+			{
+				[FieldOffset(0)]
+				public int[] Ints;
+
+				[FieldOffset(0)]
+				public uint[] UInts;
+			}
+
+			/*
+			 * trick used to map two fields to the same memory location
+			 * This allows us to convert a a long[] to an ulong[]. This 
+			 * allows us to over come the limitation that Marshal.Copy does 
+			 * not work for ulong[] data types.
+			 */
+			[StructLayout(LayoutKind.Explicit)]
+			private struct LongConverter
+			{
+				[FieldOffset(0)]
+				public long[] Longs;
+
+				[FieldOffset(0)]
+				public ulong[] ULongs;
 			}
 
 			#region DLL Imports
@@ -592,6 +934,60 @@ namespace AllJoynUnity
 			private static extern int alljoyn_msgarg_get_objectpath(IntPtr arg, out IntPtr o);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_signature(IntPtr arg, out IntPtr g);
+
+			/* set functions for arrays of basic types. */
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_uint8_array(IntPtr arg, int length, byte[] ay);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_bool_array(IntPtr arg, int length, Int32[] ab);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_int16_array(IntPtr arg, int length, short[] an);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_uint16_array(IntPtr arg, int length, ushort[] aq);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_int32_array(IntPtr arg, int length, int[] ai);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_uint32_array(IntPtr arg, int length, uint[] au);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_int64_array(IntPtr arg, int length, long[] ax);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_uint64_array(IntPtr arg, int length, ulong[] at);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_set_double_array(IntPtr arg, int length, double[] ad);
+			/* char* string arrays are passed as an IntPtr */
+			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
+			private static extern int alljoyn_msgarg_set_string_array(IntPtr arg, int length, [In]string[] sa);
+			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
+			private static extern int alljoyn_msgarg_set_objectpath_array(IntPtr arg, int length, [In][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] ao);
+			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
+			private static extern int alljoyn_msgarg_set_signature_array(IntPtr arg, int length, [In][MarshalAs(UnmanagedType.LPArray, ArraySubType = UnmanagedType.LPStr)] string[] ag);
+
+			/* get functions for arrays of basic types. */
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_uint8_array(IntPtr arg, out int length, out IntPtr ay);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_bool_array(IntPtr arg, out int length, out IntPtr ab);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_int16_array(IntPtr arg, out int length, out IntPtr an);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_uint16_array(IntPtr arg, out int length, out IntPtr aq);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_int32_array(IntPtr arg, out int length, out IntPtr ai);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_uint32_array(IntPtr arg, out int length, out IntPtr ai);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_int64_array(IntPtr arg, out int length, out IntPtr ax);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_uint64_array(IntPtr arg, out int length, out IntPtr at);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_double_array(IntPtr arg, out int length, out IntPtr ad);
+			/* char* string arrays are passed as an IntPtr */
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_string_array(IntPtr arg, out int length, out IntPtr sa);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_objectpath_array(IntPtr arg, out int length, out IntPtr ao);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_get_signature_array(IntPtr arg, out int length, out IntPtr ag);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_array_element(IntPtr args, UIntPtr index);

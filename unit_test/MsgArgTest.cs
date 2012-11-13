@@ -30,7 +30,6 @@ namespace AllJoynUnityTest
 			AllJoyn.MsgArgs arg = new AllJoyn.MsgArgs(1);
 			arg[0] = (byte)42;
 			Assert.Equal((byte)42, (byte)arg[0]);
-			//Assert.Equal(typeof(byte), arg[0].GetType());
 			arg[0] = true;
 			Assert.True((bool)arg[0]);
 
@@ -120,6 +119,218 @@ namespace AllJoynUnityTest
 			Assert.Equal("/org/foo/bar", arg[0].ObjectPath);
 
 			// todo  no support for signature type
+		}
+
+		[Fact]
+		public void BasicArrayAssignment()
+		{
+			AllJoyn.MsgArgs arg = new AllJoyn.MsgArgs(1);
+
+			//byte
+			byte[] in_byte_array = { 9, 19, 29, 39, 49 };
+			arg[0] = in_byte_array;
+			byte[] out_byte_array = (byte[])arg[0];
+			Assert.Equal(in_byte_array.Length, out_byte_array.Length);
+			for (int i = 0; i < out_byte_array.Length; i++)
+			{
+				Assert.Equal(in_byte_array[i], out_byte_array[i]);
+			}
+
+			//bool
+			bool[] in_bool_array = { false, false, true, true, false };
+			arg[0] = in_bool_array;
+			bool[] out_bool_array = (bool[])arg[0];
+			Assert.Equal(in_bool_array.Length, out_bool_array.Length);
+			for (int i = 0; i < out_bool_array.Length; i++)
+			{
+				Assert.Equal(in_bool_array[i], out_bool_array[i]);
+			}
+
+			//short
+			short[] in_short_array = { -9, -99, 999, 9999 };
+			arg[0] = in_short_array;
+			short[] out_short_array = (short[])arg[0];
+			Assert.Equal(in_short_array.Length, out_short_array.Length);
+			for (int i = 0; i < out_short_array.Length; i++)
+			{
+				Assert.Equal(in_short_array[i], out_short_array[i]);
+			}
+
+			//ushort
+			ushort[] in_ushort_array = { 9, 99, 999, 9999 };
+			arg[0] = in_ushort_array;
+			ushort[] out_ushort_array = (ushort[])arg[0];
+			Assert.Equal(in_ushort_array.Length, out_ushort_array.Length);
+			for (int i = 0; i < out_short_array.Length; i++)
+			{
+				Assert.Equal(in_ushort_array[i], out_ushort_array[i]);
+			}
+
+			//int
+			int[] in_int_array = { -8, -88, 888, 8888 };
+			arg[0] = in_int_array;
+			int[] out_int_array = (int[])arg[0];
+			Assert.Equal(in_int_array.Length, out_int_array.Length);
+			for (int i = 0; i < out_int_array.Length; i++)
+			{
+				Assert.Equal(in_int_array[i], out_int_array[i]);
+			}
+
+			//uint
+			uint[] in_uint_array = { 8, 88, 888, 8888 };
+			arg[0] = in_uint_array;
+			uint[] out_uint_array = (uint[])arg[0];
+			Assert.Equal(in_uint_array.Length, out_uint_array.Length);
+			for (int i = 0; i < out_int_array.Length; i++)
+			{
+				Assert.Equal(in_uint_array[i], out_uint_array[i]);
+			}
+
+			//long
+			long[] in_long_array = { -7, -77, 777, 7777 };
+			arg[0] = in_long_array;
+			long[] out_long_array = (long[])arg[0];
+			Assert.Equal(in_long_array.Length, out_long_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_long_array[i], out_long_array[i]);
+			}
+
+			//ulong
+			ulong[] in_ulong_array = { 7, 77, 777, 7777 };
+			arg[0] = in_ulong_array;
+			ulong[] out_ulong_array = (ulong[])arg[0];
+			Assert.Equal(in_ulong_array.Length, out_ulong_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_ulong_array[i], out_ulong_array[i]);
+			}
+
+			//double
+			double[] in_double_array = { 0.001, 0.01, 0.1, 1.0, 10.0, 100.0 };
+			arg[0] = in_double_array;
+			double[] out_double_array = (double[])arg[0];
+			Assert.Equal(in_double_array.Length, out_double_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_double_array[i], out_double_array[i]);
+			}
+
+			//string
+			string[] in_string_array = { "one", "two", "three", "four" };
+			arg[0] = in_string_array;
+			string[] out_string_array = (string[])arg[0];
+			Assert.Equal(in_string_array.Length, out_string_array.Length);
+			for (int i = 0; i < out_string_array.Length; i++)
+			{
+				Assert.Equal(in_string_array[i], out_string_array[i]);
+			}
+		}
+
+		[Fact]
+		public void BasicArraySet()
+		{
+			AllJoyn.MsgArgs arg = new AllJoyn.MsgArgs(1);
+
+			//byte
+			byte[] in_byte_array = { 9, 19, 29, 39, 49 };
+			arg[0].Set(in_byte_array);
+			byte[] out_byte_array = (byte[])arg[0];
+			Assert.Equal(in_byte_array.Length, out_byte_array.Length);
+			for (int i = 0; i < out_byte_array.Length; i++)
+			{
+				Assert.Equal(in_byte_array[i], out_byte_array[i]);
+			}
+
+			//bool
+			bool[] in_bool_array = { false, false, true, true, false };
+			arg[0].Set(in_bool_array);
+			bool[] out_bool_array = (bool[])arg[0];
+			Assert.Equal(in_bool_array.Length, out_bool_array.Length);
+			for (int i = 0; i < out_bool_array.Length; i++)
+			{
+				Assert.Equal(in_bool_array[i], out_bool_array[i]);
+			}
+
+			//short
+			short[] in_short_array = { -9, -99, 999, 9999 };
+			arg[0].Set(in_short_array);
+			short[] out_short_array = (short[])arg[0];
+			Assert.Equal(in_short_array.Length, out_short_array.Length);
+			for (int i = 0; i < out_short_array.Length; i++)
+			{
+				Assert.Equal(in_short_array[i], out_short_array[i]);
+			}
+
+			//ushort
+			ushort[] in_ushort_array = { 9, 99, 999, 9999 };
+			arg[0].Set(in_ushort_array);
+			ushort[] out_ushort_array = (ushort[])arg[0];
+			Assert.Equal(in_ushort_array.Length, out_ushort_array.Length);
+			for (int i = 0; i < out_short_array.Length; i++)
+			{
+				Assert.Equal(in_ushort_array[i], out_ushort_array[i]);
+			}
+
+			//int
+			int[] in_int_array = { -8, -88, 888, 8888 };
+			arg[0].Set(in_int_array);
+			int[] out_int_array = (int[])arg[0];
+			Assert.Equal(in_int_array.Length, out_int_array.Length);
+			for (int i = 0; i < out_int_array.Length; i++)
+			{
+				Assert.Equal(in_int_array[i], out_int_array[i]);
+			}
+
+			//uint
+			uint[] in_uint_array = { 8, 88, 888, 8888 };
+			arg[0].Set(in_uint_array);
+			uint[] out_uint_array = (uint[])arg[0];
+			Assert.Equal(in_uint_array.Length, out_uint_array.Length);
+			for (int i = 0; i < out_int_array.Length; i++)
+			{
+				Assert.Equal(in_uint_array[i], out_uint_array[i]);
+			}
+
+			//long
+			long[] in_long_array = { -7, -77, 777, 7777 };
+			arg[0].Set(in_long_array);
+			long[] out_long_array = (long[])arg[0];
+			Assert.Equal(in_long_array.Length, out_long_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_long_array[i], out_long_array[i]);
+			}
+
+			//ulong
+			ulong[] in_ulong_array = { 7, 77, 777, 7777 };
+			arg[0].Set(in_ulong_array);
+			ulong[] out_ulong_array = (ulong[])arg[0];
+			Assert.Equal(in_ulong_array.Length, out_ulong_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_ulong_array[i], out_ulong_array[i]);
+			}
+
+			//double
+			double[] in_double_array = { 0.001, 0.01, 0.1, 1.0, 10.0, 100.0 };
+			arg[0].Set(in_double_array);
+			double[] out_double_array = (double[])arg[0];
+			Assert.Equal(in_double_array.Length, out_double_array.Length);
+			for (int i = 0; i < out_long_array.Length; i++)
+			{
+				Assert.Equal(in_double_array[i], out_double_array[i]);
+			}
+
+			//string
+			string[] in_string_array = { "one", "two", "three", "four" };
+			arg[0].Set(in_string_array);
+			string[] out_string_array = (string[])arg[0];
+			Assert.Equal(in_string_array.Length, out_string_array.Length);
+			for (int i = 0; i < out_string_array.Length; i++)
+			{
+				Assert.Equal(in_string_array[i], out_string_array[i]);
+			}
 		}
 	}
 }
