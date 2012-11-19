@@ -717,7 +717,6 @@ namespace AllJoynUnity
 			     */
 			public QStatus Disconnect(string connectSpec)
 			{
-			
 				return alljoyn_busattachment_disconnect(_busAttachment, connectSpec);
 			}
 
@@ -1246,9 +1245,9 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
+					AllJoyn.StopAllJoynProcessing();
 					Thread destroyThread = new Thread((object o) => {
                         if (_signalHandlerDelegateRefHolder.Count > 0)
                         {
@@ -1270,7 +1269,6 @@ namespace AllJoynUnity
 
 			~BusAttachment()
 			{
-			
 				Dispose(false);
 			}
 			#endregion
