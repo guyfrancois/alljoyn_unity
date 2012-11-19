@@ -23,14 +23,12 @@ namespace basic_clientserver
 {
 	class BasicClient
 	{
-		private const string INTERFACE_NAME = "org.alljoyn.Bus.method_sample.tw";
-		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample.tw";
-		private const string SERVICE_PATH = "/method_sample";
+		private const string INTERFACE_NAME = "org.alljoyn.Bus.sample.tw";
+		private const string SERVICE_NAME = "org.alljoyn.Bus.sample.tw";
+		private const string SERVICE_PATH = "/sample";
 		private const ushort SERVICE_PORT = 25;
 
-		private static readonly string[] connectArgs = {"unix:abstract=alljoyn", //Posix
-														"tcp:addr=127.0.0.1,port=9955", //Windows
-														"launchd:"}; //Mac OSx
+		private static readonly string[] connectArgs = {"null:"};
 
 		private static bool sJoinComplete = false;
 		private static AllJoyn.BusAttachment sMsgBus;

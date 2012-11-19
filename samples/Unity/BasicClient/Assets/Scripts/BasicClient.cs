@@ -23,15 +23,13 @@ namespace basic_client
 {
 	class BasicClient
 	{
-		private const string INTERFACE_NAME = "org.alljoyn.Bus.method_sample";
-		private const string SERVICE_NAME = "org.alljoyn.Bus.method_sample";
-		private const string SERVICE_PATH = "/method_sample";
+		private const string INTERFACE_NAME = "org.alljoyn.Bus.sample";
+		private const string SERVICE_NAME = "org.alljoyn.Bus.sample";
+		private const string SERVICE_PATH = "/sample";
 		private const ushort SERVICE_PORT = 25;
 		
-		private static readonly string[] connectArgs = {"unix:abstract=alljoyn",
-														"tcp:addr=127.0.0.1,port=9955",
-														"launchd:"};
-
+		private static readonly string[] connectArgs = {"null:"};
+		
 		private static bool sJoinComplete = false;
 		private bool sJoinCalled = false;
 		private static AllJoyn.BusAttachment sMsgBus;
@@ -41,7 +39,7 @@ namespace basic_client
         private AllJoyn.SessionOpts opts;
 		
 		private static string sFoundName = null;
-
+		
 		class MyBusListener : AllJoyn.BusListener
 		{
 			protected override void FoundAdvertisedName(string name, AllJoyn.TransportMask transport, string namePrefix)
@@ -70,6 +68,8 @@ namespace basic_client
 		public BasicClient()
 		{
 			clientText = "";
+			clientText += "AllJoyn Library version: " + AllJoyn.GetVersion() +"\n";
+			clientText += "AllJoyn Library buildInfo: " + AllJoyn.GetBuildInfo() + "\n";
 			// Create message bus
 			sMsgBus = new AllJoyn.BusAttachment("myApp", true);
 

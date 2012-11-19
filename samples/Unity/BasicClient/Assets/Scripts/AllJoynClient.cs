@@ -48,6 +48,7 @@ public class AllJoynClient : MonoBehaviour
 		    Debug.Log("BasicClient.CallRemoteMethod returned '" + basicClient.CallRemoteMethod() + "'");
 		}
         if (Input.GetKeyDown(KeyCode.Escape)) { Application.Quit(); }
+		if (BasicClient.clientText.Length > 2048){ BasicClient.clientText = "";}
 	}
 
 	BasicClient basicClient;

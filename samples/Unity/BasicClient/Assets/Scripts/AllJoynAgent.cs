@@ -18,6 +18,7 @@
 
 using UnityEngine;
 using AllJoynUnity;
+using basic_client;
 
 // The AllJoynAgent prefab must exist once, and only once, in your scene.
 // This prefab/behavior will take care of the background loading and
