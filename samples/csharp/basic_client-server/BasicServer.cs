@@ -63,8 +63,8 @@ namespace basic_clientserver
 			protected void Cat(AllJoyn.InterfaceDescription.Member member, AllJoyn.Message message)
 			{
 				string outStr = (string)message[0] + (string)message[1];
-				AllJoyn.MsgArgs outArgs = new AllJoyn.MsgArgs(1);
-				outArgs[0] = outStr;
+				AllJoyn.MsgArg outArgs = new AllJoyn.MsgArg();
+				outArgs = outStr;
 
 				AllJoyn.QStatus status = MethodReply(message, outArgs);
 				if(!status)

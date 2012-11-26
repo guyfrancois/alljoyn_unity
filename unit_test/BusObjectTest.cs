@@ -147,14 +147,24 @@ namespace AllJoynUnityTest
             status = proxyBusObject.AddInterface(iFace);
             Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            AllJoyn.MsgArgs input = new AllJoyn.MsgArgs(1);
-            input[0].Set("AllJoyn");
+            AllJoyn.MsgArg input = new AllJoyn.MsgArg();
+            input.Set("AllJoyn");
             AllJoyn.Message replyMsg = new AllJoyn.Message(bus);
             status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
             Assert.Equal(AllJoyn.QStatus.OK, status);
             Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
-            methodTestBusObject.Dispose();
+//continue testing obsolete method calls till they are removed.
+#pragma warning disable 618
+			AllJoyn.MsgArgs input2 = new AllJoyn.MsgArgs(1);
+			input2[0].Set("AllJoyn");
+			AllJoyn.Message replyMsg2 = new AllJoyn.Message(bus);
+			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input2, replyMsg2, 5000, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal("AllJoyn", (string)replyMsg2[0]);
+#pragma warning restore 618
+
+			methodTestBusObject.Dispose();
             servicebus.Dispose();
 
             // TODO: need to call dispose on proxyBusObject first otherwise you get an AccessViolation???
@@ -238,11 +248,22 @@ namespace AllJoynUnityTest
             protected void Ping(AllJoyn.InterfaceDescription.Member member, AllJoyn.Message message)
             {
                 string outStr = (string)message[0];
-                AllJoyn.MsgArgs outArgs = new AllJoyn.MsgArgs(1);
-                outArgs[0] = outStr;
+                AllJoyn.MsgArg outArgs = new AllJoyn.MsgArg();
+                outArgs = outStr;
 
                 AllJoyn.QStatus status = MethodReply(message, outArgs);
-                Assert.Equal(AllJoyn.QStatus.OK, status);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+
+//Continue testing obsolete method calls till they are removed.
+#pragma warning disable 618
+				AllJoyn.MsgArgs outArgs2 = new AllJoyn.MsgArgs(1);
+				outArgs2[0] = outStr;
+
+				status = MethodReply(message, outArgs2);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+#pragma warning restore 618
+
+                
             }
         }
     }

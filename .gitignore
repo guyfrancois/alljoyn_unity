@@ -1,11 +1,13 @@
 AllJoynUnity.suo
 .sconsign.dblite
 build/
+docs/html
 src/bin
 src/obj
 src/Status.cs
 alljoyn.jar
 alljoyn_unity.dll
+xunit.dll
 liballjoyn_c.so
 liballjoyn_java.so
 

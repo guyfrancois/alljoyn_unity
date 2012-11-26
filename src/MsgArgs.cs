@@ -36,6 +36,7 @@ namespace AllJoynUnity
 		 * If a MsgArg is assigned the destination receives a copy of the contents of the source. The
 		 * Stabilize() methods can also be called to explicitly force contents of the MsgArg to be copied.
 		 */
+		[Obsolete("Usage of this class has been depricated.  Please use a MsgArg.")]
 		public class MsgArgs : IDisposable
 		{
 			/**
@@ -43,13 +44,7 @@ namespace AllJoynUnity
 			 */
 			public MsgArgs(uint numArgs)
 			{
-			
-				_msgArgs = alljoyn_msgarg_array_create((UIntPtr)numArgs);
-				_argArray = new MsgArg[numArgs];
-				for(uint i = 0; i < numArgs; i++)
-				{
-					_argArray[i] = new MsgArg(this, i);
-				}
+				_msgArg = new MsgArg(numArgs);
 			}
 
 			/**
@@ -59,7 +54,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return _argArray.Length;
+					return _msgArg.Length;
 				}
 			}
 
@@ -70,18 +65,11 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return _argArray[i];
+					return _msgArg[i];
 				}
 				set
 				{
-					MsgArg arg = value as MsgArg;
-					if(arg != null)
-					{
-						if(arg._setValue != null)
-						{
-							_argArray[i].Set(arg._setValue);
-						}
-					}
+					alljoyn_msgarg_clone(alljoyn_msgarg_array_element(_msgArg.UnmanagedPtr, (UIntPtr)i), value.UnmanagedPtr);
 				}
 			}
 
@@ -102,13 +90,7 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
-				if(!_isDisposed)
-				{
-					alljoyn_msgarg_destroy(_msgArgs);
-					_msgArgs = IntPtr.Zero;
-				}
-				_isDisposed = true;
+				_msgArg.Dispose();
 			}
 
 			~MsgArgs()
@@ -120,10 +102,9 @@ namespace AllJoynUnity
 
 			#region DLL Imports
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgarg_array_create(UIntPtr numArgs); // UIntPtr must map to the same size as size_t, not a typo
-
+			private static extern IntPtr alljoyn_msgarg_array_element(IntPtr args, UIntPtr index);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern void alljoyn_msgarg_destroy(IntPtr arg);
+			private static extern void alljoyn_msgarg_clone(IntPtr destination, IntPtr source);
 			#endregion
 
 			#region Internal Properties
@@ -131,15 +112,13 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return _msgArgs;
+					return _msgArg.UnmanagedPtr;
 				}
 			}
 			#endregion
 
 			#region Data
-			IntPtr _msgArgs;
-			MsgArg[] _argArray;
-			bool _isDisposed = false;
+			MsgArg _msgArg;
 			#endregion
 		}
 	}

@@ -4,7 +4,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -146,6 +146,11 @@ namespace AllJoynUnity
 			}
 
 			#region Properties
+			/**
+			 * Determine if message is a broadcast signal.
+			 *
+			 * @return  Return true if this is a broadcast signal.
+			 */
 			public bool IsBroadcastSignal
 			{
 				get
@@ -154,6 +159,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Messages broadcast to all devices are global broadcast messages.
+			 * 
+			 * @return  Return true if this is a global broadcast message.
+			 */
 			public bool IsGlobalBroadcast
 			{
 				get
@@ -162,6 +172,11 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Messages sent without sessions are sessionless.
+			 *
+			 * @return  Return true if this is a sessionless message.
+			 */
 			public bool IsSessionless
 			{
 				get

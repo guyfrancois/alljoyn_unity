@@ -164,7 +164,7 @@ namespace basic_client
 					remoteObj.AddInterface(alljoynTestIntf);
 
 					AllJoyn.Message reply = new AllJoyn.Message(sMsgBus);
-					AllJoyn.MsgArgs inputs = new AllJoyn.MsgArgs(2);
+					AllJoyn.MsgArg inputs = new AllJoyn.MsgArg(2);
 					inputs[0] = "Hello ";
 					inputs[1] = "World!";
 

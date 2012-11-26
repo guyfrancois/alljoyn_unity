@@ -44,8 +44,9 @@
     <Compile Include="BusAttachmentTest.cs" />
     <Compile Include="BusListenerTest.cs" />
     <Compile Include="BusObjectTest.cs" />
-    <Compile Include="InterfaceDescriptionTest.cs" />
     <Compile Include="MsgArgTest.cs" />
+    <Compile Include="InterfaceDescriptionTest.cs" />
+    <Compile Include="MsgArgsTest.cs" />
     <Compile Include="SessionTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -88,27 +88,53 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Make a synchronous method call from this object
-			     *
-				 * @param ifaceName		Name of the interface being used.
-			     * @param methodName       Method being invoked.
-			     * @param args         The arguments for the method call (can be NULL)
-			     * @param replyMsg     The reply message received for the method call
-			     * @param timeout      Timeout specified in milliseconds to wait for a reply
-			     * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
-			     *                     - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
-			     *                     - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
-			     *                     - If ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
-			     *
-			     *
-			     * @return
-			     *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
-			     *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
-			     */
+			 * Make a synchronous method call from this object
+			 *
+			 * @param ifaceName		Name of the interface being used.
+			 * @param methodName       Method being invoked.
+			 * @param args         The arguments for the method call (can be NULL)
+			 * @param replyMsg     The reply message received for the method call
+			 * @param timeout      Timeout specified in milliseconds to wait for a reply
+			 * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
+			 *                     - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			 *                     - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+			 *                     - If ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+			 *
+			 *
+			 * @return
+			 *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
+			 *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
+			 */
+			[Obsolete("Usage of MethodCallSynch that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
 			{
 			
+				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
+					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
+			}
+
+			/**
+			 * Make a synchronous method call from this object
+			 *
+			 * @param ifaceName		Name of the interface being used.
+			 * @param methodName       Method being invoked.
+			 * @param args         The arguments for the method call (can be NULL)
+			 * @param replyMsg     The reply message received for the method call
+			 * @param timeout      Timeout specified in milliseconds to wait for a reply
+			 * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
+			 *                     - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			 *                     - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+			 *                     - If ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+			 *
+			 *
+			 * @return
+			 *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
+			 *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
+			 */
+			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArg args, Message replyMsg,
+				uint timeout, byte flags)
+			{
 				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}

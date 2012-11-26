@@ -49,6 +49,11 @@ if(env.has_key('XUNIT_DIR')):
     envtest.Install('$UNITY_TESTDIR', envtest['ALLJOYN_UNITY_LIB'])
     #place alljoyn_c.dll into the test dir
     envtest.Install('$UNITY_TESTDIR', envtest['ALLJOYN_C_LIB_SHARED'])
+    #place alljoyn_c.dll into the unit_test/bin/$VARIANT directory to facilitate development
+    if envtest['VARIANT'] == 'debug':
+        envtest.Install('bin/Debug', envtest['ALLJOYN_C_LIB_SHARED'])
+    elif envtest['VARIANT'] == 'release':
+        envtest.Install('bin/Release', envtest['ALLJOYN_C_LIB_SHARED'])
     #place alljoyn_c.dll into the test dir
     envtest.Install('$UNITY_TESTDIR', envtest['XUNIT_DIR'] + os.sep + 'xunit.dll')
     
