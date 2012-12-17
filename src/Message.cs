@@ -48,6 +48,8 @@ namespace AllJoynUnity
 		public const byte ALLJOYN_FLAG_AUTO_START = 0x02;
 		/** Allow messages from remote hosts (valid only in Hello message) */
 		public const byte ALLJOYN_FLAG_ALLOW_REMOTE_MSG = 0x04;
+		/** Sessionless message  */
+		public const byte ALLJOYN_FLAG_SESSIONLESS = 0x10;
 		/** Global (bus-to-bus) broadcast */
 		public const byte ALLJOYN_FLAG_GLOBAL_BROADCAST = 0x20;
 		/** Header is compressed */
@@ -143,6 +145,32 @@ namespace AllJoynUnity
 				}
 			}
 
+			#region Properties
+			public bool IsBroadcastSignal
+			{
+				get
+				{
+					return (alljoyn_message_isbroadcastsignal(_message) == 1 ? true : false);
+				}
+			}
+
+			public bool IsGlobalBroadcast
+			{
+				get
+				{
+					return (alljoyn_message_isglobalbroadcast(_message) == 1 ? true : false);
+				}
+			}
+
+			public bool IsSessionless
+			{
+				get
+				{
+					return (alljoyn_message_issessionless(_message) == 1 ? true : false);
+				}
+			}
+			#endregion
+
 			#region IDisposable
 			/**
 			 * Dispose the Message
@@ -187,6 +215,16 @@ namespace AllJoynUnity
 
             [DllImport(DLL_IMPORT_TARGET)]
             private static extern IntPtr alljoyn_message_getsender(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_message_isbroadcastsignal(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_message_isglobalbroadcast(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_message_issessionless(IntPtr msg);
+
 			#endregion
 
 			#region Internal Properties
