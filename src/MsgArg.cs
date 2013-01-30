@@ -736,19 +736,19 @@ namespace AllJoynUnity
 				ALLJOYN_STRUCT           = 'r',    ///< AllJoyn struct container type
 				*/
 
-				if(value.GetType() == typeof(string))
+				if(value.GetType().Equals(typeof(string)))
 				{
 					//signature = "s";
 					_bytePtr = Marshal.StringToCoTaskMemAnsi((string)value);
 					return alljoyn_msgarg_set_string(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),_bytePtr);
 				}
-				else if(value.GetType() == typeof(bool))
+				else if(value.GetType().Equals(typeof(bool)))
 				{
 					//signature = "b";
 					//int newValue = ((bool)value ? 1 : 0);
 					return alljoyn_msgarg_set_bool(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (bool)value);
 				}
-				else if (value.GetType() == typeof(float))
+				else if (value.GetType().Equals(typeof(float)))
 				{
 					//signature = "d";
 					//explicitly cast float to a double.
@@ -757,54 +757,54 @@ namespace AllJoynUnity
 					return alljoyn_msgarg_set_double(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (double)d);
 					//return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)d);
 				}
-				else if(value.GetType() == typeof(double))
+				else if(value.GetType().Equals(typeof(double)))
 				{
 					//signature = "d";
 					//TODO figure out why call to alljoy_msgarg_set does not work for doubles
 					return alljoyn_msgarg_set_double(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (double)value);
 					//return alljoyn_msgarg_array_set_offset(_msgArgs, (UIntPtr)_index, ref numArgs, signature, (double)value);
 				}
-				else if(value.GetType() == typeof(int))
+				else if(value.GetType().Equals(typeof(int)))
 				{
 					//signature = "i";
 					return alljoyn_msgarg_set_int32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index),(int)value);
 				}
-				else if(value.GetType() == typeof(uint))
+				else if(value.GetType().Equals(typeof(uint)))
 				{
 					//signature = "u";
 					return alljoyn_msgarg_set_uint32(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (uint)value);
 				}
-				else if(value.GetType() == typeof(short))
+				else if(value.GetType().Equals(typeof(short)))
 				{
 					//signature = "n";
 					return alljoyn_msgarg_set_int16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (short)value);
 				}
-				else if(value.GetType() == typeof(ushort))
+				else if(value.GetType().Equals(typeof(ushort)))
 				{
 					//signature = "q";
 					return alljoyn_msgarg_set_uint16(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ushort)value);
 				}
-				else if(value.GetType() == typeof(long))
+				else if(value.GetType().Equals(typeof(long)))
 				{
 					//signature = "x";
 					return alljoyn_msgarg_set_int64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (long)value);
 				}
-				else if(value.GetType() == typeof(ulong))
+				else if(value.GetType().Equals(typeof(ulong)))
 				{
 					//signature = "t";
 					return alljoyn_msgarg_set_uint64(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (ulong)value);
 				}
-				else if(value.GetType() == typeof(byte))
+				else if(value.GetType().Equals(typeof(byte)))
 				{
 					//signature = "y";
 					return alljoyn_msgarg_set_uint8(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), (byte)value);
 				}
-				else if (value.GetType() == typeof(byte[]))
+				else if (value.GetType().Equals(typeof(byte[])))
 				{
 					//signature = "ay";
 					return alljoyn_msgarg_set_uint8_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((byte[])value).Length, (byte[])value);
 				}
-				else if (value.GetType() == typeof(bool[]))
+				else if (value.GetType().Equals(typeof(bool[])))
 				{
 					//signature = "ab";
 					Int32[] ab = new Int32[((bool[])value).Length];
@@ -821,42 +821,42 @@ namespace AllJoynUnity
 					}
 					return alljoyn_msgarg_set_bool_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ab.Length, ab);
 				}
-				else if (value.GetType() == typeof(short[]))
+				else if (value.GetType().Equals(typeof(short[])))
 				{
 					//signature = "an";
 					return alljoyn_msgarg_set_int16_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((short[])value).Length, (short[])value);
 				}
-				else if (value.GetType() == typeof(ushort[]))
+				else if (value.GetType().Equals(typeof(ushort[])))
 				{
 					//signature = "aq";
 					return alljoyn_msgarg_set_uint16_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((ushort[])value).Length, (ushort[])value);
 				}
-				else if (value.GetType() == typeof(int[]))
+				else if (value.GetType().Equals(typeof(int[])))
 				{
 					//signature = "ai";
 					return alljoyn_msgarg_set_int32_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((int[])value).Length, (int[])value);
 				}
-				else if(value.GetType() == typeof(uint[]))
+				else if(value.GetType().Equals(typeof(uint[])))
 				{
 					//signature = "au";
 					return alljoyn_msgarg_set_uint32_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((uint[])value).Length, (uint[])value);
 				}
-				else if (value.GetType() == typeof(long[]))
+				else if (value.GetType().Equals(typeof(long[])))
 				{
 					//signature = "ax";
 					return alljoyn_msgarg_set_int64_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((long[])value).Length, (long[])value);
 				}
-				else if (value.GetType() == typeof(ulong[]))
+				else if (value.GetType().Equals(typeof(ulong[])))
 				{
 					//signature = "ai";
 					return alljoyn_msgarg_set_uint64_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((ulong[])value).Length, (ulong[])value);
 				}
-				else if (value.GetType() == typeof(double[]))
+				else if (value.GetType().Equals(typeof(double[])))
 				{
 					//signature = "ad";
 					return alljoyn_msgarg_set_double_array(alljoyn_msgarg_array_element(_msgArgs, (UIntPtr)_index), ((double[])value).Length, (double[])value);
 				}
-				else if (value.GetType() == typeof(string[]))
+				else if (value.GetType().Equals(typeof(string[])))
 				{
 				    //signature = "as";
 					//IntPtr a_size = new IntPtr(((string[])value).Length);
