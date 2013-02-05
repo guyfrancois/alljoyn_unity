@@ -35,7 +35,7 @@ namespace AllJoynUnityTest
 			Assert.True((bool)arg);
 
 			arg = false;
-			assert.false((bool)arg);
+			Assert.False((bool)arg);
 
 			arg = (short)42;
 			Assert.Equal((short)42, (short)arg);

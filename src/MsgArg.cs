@@ -1620,8 +1620,11 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_set_uint8(IntPtr arg, byte y);
+			// bool in C# is 4 bytes  to marshal between C and C# we must specify that a 
+			// C boolean is a 1-byte signed integer
+			// http://msdn.microsoft.com/en-us/library/system.runtime.interopservices.unmanagedtype.aspx
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_bool(IntPtr arg, bool b);
+			private static extern int alljoyn_msgarg_set_bool(IntPtr arg, [MarshalAs(UnmanagedType.I1)]bool b);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_set_int16(IntPtr arg, short n);
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -1651,8 +1654,12 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_uint8(IntPtr arg, out byte y);
+
+			// bool in C# is 4 bytes  to marshal between C and C# we must specify that a 
+			// C boolean is a 1-byte signed integer
+			// http://msdn.microsoft.com/en-us/library/system.runtime.interopservices.unmanagedtype.aspx
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get_bool(IntPtr arg, out bool b);
+			private static extern int alljoyn_msgarg_get_bool(IntPtr arg, [MarshalAs(UnmanagedType.I1)] out bool b);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_int16(IntPtr arg, out short n);
 			[DllImport(DLL_IMPORT_TARGET)]
