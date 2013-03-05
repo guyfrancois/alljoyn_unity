@@ -4,7 +4,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012 Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013 Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -52,7 +52,11 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (TrafficType)alljoyn_sessionopts_traffic(_sessionOpts);
+					return (TrafficType)alljoyn_sessionopts_get_traffic(_sessionOpts);
+				}
+				set
+				{
+					alljoyn_sessionopts_set_traffic(_sessionOpts, (byte)value);
 				}
 			}
 
@@ -66,7 +70,11 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_sessionopts_multipoint(_sessionOpts) == 1 ? true : false);
+					return (alljoyn_sessionopts_get_multipoint(_sessionOpts) == 1 ? true : false);
+				}
+				set
+				{
+					alljoyn_sessionopts_set_multipoint(_sessionOpts, (value) ? (int)1 : (int)0);
 				}
 			}
 
@@ -77,7 +85,11 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (ProximityType)alljoyn_sessionopts_proximity(_sessionOpts);
+					return (ProximityType)alljoyn_sessionopts_get_proximity(_sessionOpts);
+				}
+				set
+				{
+					alljoyn_sessionopts_set_proximity(_sessionOpts, (byte)value);
 				}
 			}
 
@@ -86,8 +98,13 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (TransportMask)alljoyn_sessionopts_transports(_sessionOpts);
+					return (TransportMask)alljoyn_sessionopts_get_transports(_sessionOpts);
 				}
+				set
+				{
+					alljoyn_sessionopts_set_transports(_sessionOpts, (ushort)value);
+				}
+
 			}
 			#endregion
 
@@ -148,16 +165,28 @@ namespace AllJoynUnity
 			private static extern void alljoyn_sessionopts_destroy(IntPtr opts);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern byte alljoyn_sessionopts_traffic(IntPtr opts);
+			private static extern byte alljoyn_sessionopts_get_traffic(IntPtr opts);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_sessionopts_multipoint(IntPtr opts);
+			private static extern void alljoyn_sessionopts_set_traffic(IntPtr opts, byte traffic);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern byte alljoyn_sessionopts_proximity(IntPtr opts);
+			private static extern int alljoyn_sessionopts_get_multipoint(IntPtr opts);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern ushort alljoyn_sessionopts_transports(IntPtr opts);
+			private static extern void alljoyn_sessionopts_set_multipoint(IntPtr opts, int isMultipoint);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern byte alljoyn_sessionopts_get_proximity(IntPtr opts);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern void alljoyn_sessionopts_set_proximity(IntPtr opts, byte proximity);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern ushort alljoyn_sessionopts_get_transports(IntPtr opts);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern void alljoyn_sessionopts_set_transports(IntPtr opts, ushort transports);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_sessionopts_iscompatible(IntPtr one, IntPtr other);
