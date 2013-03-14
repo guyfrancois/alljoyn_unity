@@ -1,4 +1,4 @@
-# Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+# Copyright 2010 - 2011, 2013, Qualcomm Innovation Center, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -39,36 +39,40 @@ env['UNITY_TESTDIR'] = env['TESTDIR'] + '/unity'
 env.VariantDir('$OBJDIR', 'src', duplicate = 0)
 env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
 
+# The return value is the collection of files installed in the build destination.
+returnValue = []
+
 #alljoyn_unity.dll
 env['ALLJOYN_UNITY_LIB'] = env.SConscript('src/SConscript')
 
 # Sample programs
 progs = env.SConscript('samples/SConscript')
-#env.Install('$UNITY_DISTDIR/bin/samples', progs)
+returnValue += progs
 
 #install Package support files
 package_support_dir = env.Dir('package_support/UnityPackage')
-env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
+returnValue += env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
 
 #install libraries into the package support directory
 if env['OS_GROUP'] == 'windows':
     #place alljoyn_unity.dll into the samples
-    env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
 
     #place alljoyn_c.dll into the samples
     liballjoyn_c = '$DISTDIR/lib/alljoyn_c.dll'
-    env.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
+    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
 
 if env['OS'] == 'android':
     #place alljoyn_unity.dll into the samples
-    env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
 
     #place liballjoyn_c.so into the samples
     liballjoyn_c = '$DISTDIR/lib/liballjoyn_c.so'
-    env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
+    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
 
 #Build unit tests
 env.SConscript('unit_test/SConscript')
 # Build docs
-env.SConscript('docs/SConscript')
-    
+returnValue += env.SConscript('docs/SConscript')
+
+Return('returnValue')
