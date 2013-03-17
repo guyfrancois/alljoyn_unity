@@ -251,10 +251,12 @@ namespace AllJoynUnity
 			 * @param sessionId        A unique SessionId for this AllJoyn session instance
 			 * @param signal           Interface member of signal being emitted.
 			 * @param args             The arguments for the signal (can be NULL)
-			 * @param timeToLife       If non-zero this specifies in milliseconds the useful lifetime for this
-			 *                         signal. If delivery of the signal is delayed beyond the timeToLive due to
-			 *                         network congestion or other factors the signal may be discarded. There is
-			 *                         no guarantee that expired signals will not still be delivered.
+			 * @param timeToLife       If non-zero this specifies the useful lifetime for this signal.
+			 *                         The units are milliseconds for non-sessionless signals and seconds for 
+			 *                         sessionless signals. If delivery of the signal is delayed beyond the 
+			 *                         timeToLive due to network congestion or other factors the signal may 
+			 *                         be discarded. There is no guarantee that expired signals will not still 
+			 *                         be delivered.
 			 * @param flags            Logical OR of the message flags for this signals. The following flags apply to signals:
 			 *                         - If ALLJOYN_FLAG_SESSIONLESS is set the signal will be sent out to any listener without requireing a connected session.
 			 *                         - If ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be forwarded across bus-to-bus connections.
