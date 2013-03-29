@@ -225,7 +225,7 @@ namespace AllJoynUnity
 			[Obsolete("Usage of Signal that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
             {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0);
+                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0, IntPtr.Zero);
             }
 
 			/**
@@ -241,7 +241,7 @@ namespace AllJoynUnity
 			 */
 			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArg args)
 			{
-				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0);
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0, IntPtr.Zero);
 			}
 
 			/**
@@ -270,7 +270,7 @@ namespace AllJoynUnity
             protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
                 MsgArgs args, ushort timeToLife, byte flags)
             {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags);
+                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
             }
 
 			/**
@@ -296,7 +296,7 @@ namespace AllJoynUnity
 			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
                 MsgArg args, ushort timeToLife, byte flags)
             {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags);
+                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
             }
 			#region Properties
 			/**
@@ -477,7 +477,7 @@ namespace AllJoynUnity
                 uint sessionId,
                 InterfaceDescription._Member signal,
                 IntPtr msgArgs, UIntPtr numArgs,
-                ushort timeToLive, byte flags);
+                ushort timeToLive, byte flags, IntPtr msg);
 
 			#endregion
 
