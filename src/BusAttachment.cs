@@ -4,7 +4,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -268,28 +268,46 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Register interest in a well-known name prefix for the purpose of discovery.
-			     * This method is a shortcut/helper that issues an org.alljoyn.Bus.FindAdvertisedName method call to the local daemon
-			     * and interprets the response.
-			     *
-			     * @param[in]  namePrefix    Well-known name prefix that application is interested in receiving
-			     *                           BusListener.FoundAdvertisedName notifications about.
-			     *
-			     * @return
-			     *      - QStatus.OK iff daemon response was received and discovery was successfully started.
-			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
-			     *      - Other error status codes indicating a failure.
-			     */
+			 * Register interest in a well-known name prefix for the purpose of discovery over transports included in TRANSPORT_ANY.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.FindAdvertisedName method call to the local daemon
+			 * and interprets the response.
+			 *
+			 * @param[in]  namePrefix    Well-known name prefix that application is interested in receiving
+			 *                           BusListener.FoundAdvertisedName notifications about.
+			 *
+			 * @return
+			 *      - QStatus.OK iff daemon response was received and discovery was successfully started.
+			 *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			 *      - Other error status codes indicating a failure.
+			 */
 
 			public QStatus FindAdvertisedName(string namePrefix)
 			{
-			
 				return alljoyn_busattachment_findadvertisedname(_busAttachment, namePrefix);
 			}
-
+            /**
+			 * Register interest in a well-known name prefix for the purpose of discovery over specified transports.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.FindAdvertisedNameByTransport
+             * method call to the local daemon and interprets the response.
+			 *
+			 * @param[in]  namePrefix    Well-known name prefix that application is interested in receiving
+			 *                           BusListener.FoundAdvertisedName notifications about.
+			 * @param[in]  transports    Set of transports to use for discovery.
+			 *
+			 * @return
+			 *      - QStatus.OK iff daemon response was received and discovery was successfully started.
+			 *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			 *      - Other error status codes indicating a failure.
+			 */
+			public QStatus FindAdvertisedNameByTransport(string namePrefix, TransportMask transports)
+			{
+			
+				return alljoyn_busattachment_findadvertisednamebytransport(_busAttachment, namePrefix,  (ushort)transports);
+			}
 			/**
 			 * Cancel interest in a well-known name prefix that was previously
-			 * registered with FindAdvertisedName.  This method is a shortcut/helper
+			 * registered with FindAdvertisedName over transports included in TRANSPORT_ANY.
+                         * This method is a shortcut/helper
 			 * that issues an org.alljoyn.Bus.CancelFindAdvertisedName method
 			 * call to the local daemon and interprets the response.
 			 *
@@ -308,21 +326,43 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Join a session.
-			     * This method is a shortcut/helper that issues an org.alljoyn.Bus.JoinSession method call to the local daemon
-			     * and interprets the response.
-			     *
-			     * @param[in]  sessionHost      Bus name of attachment that is hosting the session to be joined.
-			     * @param[in]  sessionPort      SessionPort of sessionHost to be joined.
-			     * @param[in]  listener         Optional listener called when session related events occur. May be NULL.
-			     * @param[out] sessionId        Unique identifier for session.
-			     * @param[in] opts          Session options.
-			     *
-			     * @return
-			     *      - QStatus.OK iff daemon response was received and the session was successfully joined.
-			     *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
-			     *      - Other error status codes indicating a failure.
-			     */
+			 * Cancel interest in a well-known name prefix that was previously
+			 * registered with FindAdvertisedName. This cancels well-known name discovery over
+			 * the specified transports. This method is a shortcut/helper
+			 * that issues an org.alljoyn.Bus.CancelFindAdvertisedName method
+			 * call to the local daemon and interprets the response.
+			 *
+			 * @param[in]  namePrefix    Well-known name prefix that application is no longer interested in receiving
+			 *                           BusListener.FoundAdvertisedName notifications about.
+			 * @param[in]  transports    Transports over which to cancel well-known name discovery
+			 *
+			 * @return
+			 *      - QStatus.OK iff daemon response was received and cancel was successfully completed.
+			 *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			 *      - Other error status codes indicating a failure.
+			 */
+			public QStatus CancelFindAdvertisedNameByTransport(string namePrefix, TransportMask transports)
+			{
+			
+				return alljoyn_busattachment_cancelfindadvertisednamebytransport(_busAttachment, namePrefix, (ushort)transports);
+			}
+
+			/**
+			 * Join a session.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.JoinSession method call to the local daemon
+			 * and interprets the response.
+			 *
+			 * @param[in]  sessionHost      Bus name of attachment that is hosting the session to be joined.
+			 * @param[in]  sessionPort      SessionPort of sessionHost to be joined.
+			 * @param[in]  listener         Optional listener called when session related events occur. May be NULL.
+			 * @param[out] sessionId        Unique identifier for session.
+			 * @param[in] opts          Session options.
+			 *
+			 * @return
+			 *      - QStatus.OK iff daemon response was received and the session was successfully joined.
+			 *      - QStatus.BUS_NOT_CONNECTED if a connection has not been made with a local bus.
+			 *      - Other error status codes indicating a failure.
+			 */
 			public QStatus JoinSession(string sessionHost, ushort sessionPort, SessionListener listener,
 				out uint sessionId, SessionOpts opts)
 			{
@@ -1310,9 +1350,15 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string namePrefix);
 
 			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_findadvertisednamebytransport(IntPtr bus,
+				[MarshalAs(UnmanagedType.LPStr)]string namePrefix, ushort transports);
+
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_cancelfindadvertisedname(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string namePrefix);
-
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_cancelfindadvertisednamebytransport(IntPtr bus,
+				[MarshalAs(UnmanagedType.LPStr)] string namePrefix, ushort transports);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_advertisename(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name, ushort transports);
