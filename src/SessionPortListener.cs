@@ -37,7 +37,6 @@ namespace AllJoynUnity
 			 */
 			public SessionPortListener()
 			{
-			
 				_acceptSessionJoiner = new InternalAcceptSessionJoiner(this._AcceptSessionJoiner);
 				_sessionJoined = new InternalSessionJoined(this._SessionJoined);
 
@@ -49,34 +48,33 @@ namespace AllJoynUnity
 			}
 
 			#region Virtual Methods
-			    /**
-			     * Accept or reject an incoming JoinSession request. The session does not exist until this
-			     * after this function returns.
-			     *
-			     * This callback is only used by session creators. Therefore it is only called on listeners
-			     * passed to BusAttachment.BindSessionPort.
-			     *
-			     * @param sessionPort    Session port that was joined.
-			     * @param joiner         Unique name of potential joiner.
-			     * @param opts           Session options requested by the joiner.
-			     * @return   Return true if JoinSession request is accepted. false if rejected.
-			     */
+			/**
+			 * Accept or reject an incoming JoinSession request. The session does not exist until this
+			 * after this function returns.
+			 *
+			 * This callback is only used by session creators. Therefore it is only called on listeners
+			 * passed to BusAttachment.BindSessionPort.
+			 *
+			 * @param sessionPort    Session port that was joined.
+			 * @param joiner         Unique name of potential joiner.
+			 * @param opts           Session options requested by the joiner.
+			 * @return   Return true if JoinSession request is accepted. false if rejected.
+			 */
 			protected virtual bool AcceptSessionJoiner(ushort sessionPort, string joiner, SessionOpts opts)
 			{
-			
 				return false;
 			}
 
 			/**
-			     * Called by the bus when a session has been successfully joined. The session is now fully up.
-			     *
-			     * This callback is only used by session creators. Therefore it is only called on listeners
-			     * passed to BusAttachment.BindSessionPort.
-			     *
-			     * @param sessionPort    Session port that was joined.
-			     * @param sessionId             Id of session.
-			     * @param joiner         Unique name of the joiner.
-			     */
+			 * Called by the bus when a session has been successfully joined. The session is now fully up.
+			 *
+			 * This callback is only used by session creators. Therefore it is only called on listeners
+			 * passed to BusAttachment.BindSessionPort.
+			 *
+			 * @param sessionPort    Session port that was joined.
+			 * @param sessionId             Id of session.
+			 * @param joiner         Unique name of the joiner.
+			 */
 			protected virtual void SessionJoined(ushort sessionPort, uint sessionId, string joiner)
 			{
 			
@@ -91,14 +89,14 @@ namespace AllJoynUnity
 
 			private void _SessionJoined(IntPtr context, ushort sessionPort, uint sessionId, IntPtr joiner)
 			{
-                ushort _sessionPort = sessionPort;
-                uint _sessionId = sessionId;
-                String _joiner = Marshal.PtrToStringAnsi(joiner);
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        SessionJoined(_sessionPort, _sessionId, _joiner);
-                    });
-                callIt.Start();
+				ushort _sessionPort = sessionPort;
+				uint _sessionId = sessionId;
+				String _joiner = Marshal.PtrToStringAnsi(joiner);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						SessionJoined(_sessionPort, _sessionId, _joiner);
+					});
+				callIt.Start();
 			}
 			#endregion
 
@@ -135,12 +133,11 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_sessionportlistener_destroy(_sessionPortListener);
 					_sessionPortListener = IntPtr.Zero;
-                    main.Free();
+					main.Free();
 				}
 				_isDisposed = true;
 			}
@@ -174,10 +171,10 @@ namespace AllJoynUnity
 			IntPtr _sessionPortListener;
 			bool _isDisposed = false;
 
-            GCHandle main;
-            InternalAcceptSessionJoiner _acceptSessionJoiner;
+			GCHandle main;
+			InternalAcceptSessionJoiner _acceptSessionJoiner;
 			InternalSessionJoined _sessionJoined;
-            SessionPortListenerCallbacks callbacks;
+			SessionPortListenerCallbacks callbacks;
 			#endregion
 		}
 	}

@@ -54,13 +54,11 @@ namespace AllJoynUnity
 			 */
 			public Credentials()
 			{
-			
 				_credentials = alljoyn_credentials_create();
 			}
 
 			internal Credentials(IntPtr credentials)
 			{
-			
 				_credentials = credentials;
 				_isDisposed = true;
 			}
@@ -73,7 +71,6 @@ namespace AllJoynUnity
 			 */
 			public bool IsSet(CredentialFlags credMask)
 			{
-			
 				return (alljoyn_credentials_isset(_credentials, (ushort)credMask) == 1 ? true : false);
 			}
 
@@ -82,7 +79,6 @@ namespace AllJoynUnity
 			 */
 			public void Clear()
 			{
-			
 				alljoyn_credentials_clear(_credentials);
 			}
 
@@ -187,7 +183,6 @@ namespace AllJoynUnity
 			 */
 			public void Dispose()
 			{
-			
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
@@ -198,7 +193,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_credentials_destroy(_credentials);
@@ -209,7 +203,6 @@ namespace AllJoynUnity
 
 			~Credentials()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

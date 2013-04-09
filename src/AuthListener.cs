@@ -31,8 +31,8 @@ namespace AllJoynUnity
 		public abstract class AuthListener : IDisposable
 		{
 			/**
-     			 * Constructor for AuthListener class 
-     			 */
+				 * Constructor for AuthListener class 
+				 */
 			public AuthListener()
 			{
 			

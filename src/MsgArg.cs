@@ -74,10 +74,8 @@ namespace AllJoynUnity
 			 */
 			public MsgArg()
 			{
-			
 				_msgArg = alljoyn_msgarg_create();
 				_length = 1;
-
 			}
 
 			/**
@@ -1524,7 +1522,6 @@ namespace AllJoynUnity
 			 */
 			public void Dispose()
 			{
-			
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
@@ -1535,7 +1532,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_msgarg_destroy(_msgArg);
@@ -1546,7 +1542,6 @@ namespace AllJoynUnity
 
 			~MsgArg()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

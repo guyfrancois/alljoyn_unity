@@ -20,19 +20,18 @@ using System;
 
 namespace AllJoynUnityTest
 {
-    class AllJoynTestCommon
-    {
-        public static string GetConnectSpec()
-        {
-            if (Environment.OSVersion.Platform == System.PlatformID.Unix || Environment.OSVersion.Platform == System.PlatformID.MacOSX)
-            {
-                return "unix:abstract=alljoyn";
-            }
-            else
-            {
-                return "tcp:addr=127.0.0.1,port=9955";
-            }
-
-        }
-    }
+	class AllJoynTestCommon
+	{
+		public static string GetConnectSpec()
+		{
+			if (Environment.OSVersion.Platform == System.PlatformID.Unix || Environment.OSVersion.Platform == System.PlatformID.MacOSX)
+			{
+				return "unix:abstract=alljoyn";
+			}
+			else
+			{
+				return "tcp:addr=127.0.0.1,port=9955";
+			}
+		}
+	}
 }

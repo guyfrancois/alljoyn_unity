@@ -50,44 +50,44 @@ namespace AllJoynUnity
 				_sessionListener = alljoyn_sessionlistener_create(main.AddrOfPinnedObject(), IntPtr.Zero);
 			}
 
-		    /**
-		     * Request the raw pointer of the AllJoyn C SessionListener
-		     *
-		     * @return the raw pointer of the AllJoyn C SessionListener
-		     */ 
-		    public IntPtr getAddr()
-		    {
-			return _sessionListener;
-		    }
+			/**
+			 * Request the raw pointer of the AllJoyn C SessionListener
+			 *
+			 * @return the raw pointer of the AllJoyn C SessionListener
+			 */ 
+			public IntPtr getAddr()
+			{
+				return _sessionListener;
+			}
 
 			#region Virtual Methods
-			    /**
-			     * Called by the bus when an existing session becomes disconnected.
-			     *
-			     * @param sessionId     Id of session that was lost.
-			     */
+			/**
+			 * Called by the bus when an existing session becomes disconnected.
+			 *
+			 * @param sessionId     Id of session that was lost.
+			 */
 			protected virtual void SessionLost(uint sessionId)
 			{
 			
 			}
 
 			/**
-			     * Called by the bus when a member of a multipoint session is added.
-			     *
-			     * @param sessionId     Id of session whose member(s) changed.
-			     * @param uniqueName    Unique name of member who was added.
-			     */
+			 * Called by the bus when a member of a multipoint session is added.
+			 *
+			 * @param sessionId     Id of session whose member(s) changed.
+			 * @param uniqueName    Unique name of member who was added.
+			 */
 			protected virtual void SessionMemberAdded(uint sessionId, string uniqueName)
 			{
 			
 			}
 
 			/**
-			     * Called by the bus when a member of a multipoint session is removed.
-			     *
-			     * @param sessionId     Id of session whose member(s) changed.
-			     * @param uniqueName    Unique name of member who was removed.
-			     */
+			 * Called by the bus when a member of a multipoint session is removed.
+			 *
+			 * @param sessionId     Id of session whose member(s) changed.
+			 * @param uniqueName    Unique name of member who was removed.
+			 */
 			protected virtual void SessionMemberRemoved(uint sessionId, string uniqueName)
 			{
 			
@@ -97,34 +97,34 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _SessionLost(IntPtr context, uint sessionId)
 			{
-                uint _sessionId = sessionId;
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        SessionLost(_sessionId);
-                    });
-                callIt.Start();
+				uint _sessionId = sessionId;
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						SessionLost(_sessionId);
+					});
+				callIt.Start();
 			}
 
 			private void _SessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName)
 			{
-                uint _sessionId = sessionId;
-                String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        SessionMemberAdded(_sessionId, _uniqueName);
-                    });
-                callIt.Start();
+				uint _sessionId = sessionId;
+				String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						SessionMemberAdded(_sessionId, _uniqueName);
+					});
+				callIt.Start();
 			}
 
 			private void _SessionMemberRemoved(IntPtr context, uint sessionId, IntPtr uniqueName)
-            {
-                uint _sessionId = sessionId;
-                String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
+			{
+				uint _sessionId = sessionId;
+				String _uniqueName = Marshal.PtrToStringAnsi(uniqueName);
 				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        SessionMemberRemoved(_sessionId, _uniqueName);
-                    });
-                 callIt.Start();
+					{
+						SessionMemberRemoved(_sessionId, _uniqueName);
+					});
+				 callIt.Start();
 			}
 			#endregion
 
@@ -163,19 +163,17 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_sessionlistener_destroy(_sessionListener);
 					_sessionListener = IntPtr.Zero;
-                    main.Free();
+					main.Free();
 				}
 				_isDisposed = true;
 			}
 
 			~SessionListener()
 			{
-			
 				Dispose(false);
 			}
 			#endregion
@@ -203,11 +201,11 @@ namespace AllJoynUnity
 			IntPtr _sessionListener;
 			bool _isDisposed = false;
 
-            GCHandle main;
+			GCHandle main;
 			InternalSessionLost _sessionLost;
 			InternalSessionMemberAdded _sessionMemberAdded;
 			InternalSessionMemberRemoved _sessionMemberRemoved;
-            SessionListenerCallbacks callbacks;
+			SessionListenerCallbacks callbacks;
 			#endregion
 		}
 	}

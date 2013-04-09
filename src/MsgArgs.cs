@@ -79,7 +79,6 @@ namespace AllJoynUnity
 			 */
 			public void Dispose()
 			{
-			
 				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
@@ -95,7 +94,6 @@ namespace AllJoynUnity
 
 			~MsgArgs()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

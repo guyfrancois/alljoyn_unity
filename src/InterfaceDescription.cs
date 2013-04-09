@@ -70,7 +70,6 @@ namespace AllJoynUnity
 
 			internal InterfaceDescription(IntPtr interfaceDescription)
 			{
-			
 				_interfaceDescription = interfaceDescription;
 			}
 
@@ -100,7 +99,6 @@ namespace AllJoynUnity
 			 * @return true if InterfaceDescriptions are not equal
 			 */public static bool operator !=(InterfaceDescription one, InterfaceDescription other)
 			{
-			
 				return !(one == other);
 			}
 
@@ -130,7 +128,6 @@ namespace AllJoynUnity
 			 */
 			public override int GetHashCode()
 			{
-			
 				return (int)_interfaceDescription;
 			}
 			#endregion
@@ -260,18 +257,18 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Add a member to the interface.
-			     *
-			     * @param type        Message type.
-			     * @param name        Name of member.
-			     * @param inputSignature    Signature of input parameters or NULL for none.
-			     * @param outputSignature      Signature of output parameters or NULL for none.
-			     * @param argNames    Comma separated list of input and then output arg names used in interface XML.
-			     *
-			     * @return
-			     *      - QStatus.OK if successful
-			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
-			     */
+			 * Add a member to the interface.
+			 *
+			 * @param type        Message type.
+			 * @param name        Name of member.
+			 * @param inputSignature    Signature of input parameters or NULL for none.
+			 * @param outputSignature      Signature of output parameters or NULL for none.
+			 * @param argNames    Comma separated list of input and then output arg names used in interface XML.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames)
 			{
@@ -309,7 +306,6 @@ namespace AllJoynUnity
 			 */
 			public bool GetMemberAnnotation(string member, string name, ref string value)
 			{
-
 				UIntPtr value_size = new UIntPtr(); ;
 				alljoyn_interfacedescription_getmemberannotation(_interfaceDescription, member, name, IntPtr.Zero, ref value_size);
 
@@ -331,44 +327,43 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Add a member to the interface.
-			     *
-			     * @param type        Message type.
-			     * @param name        Name of member.
-			     * @param inputSignature    Signature of input parameters or NULL for none.
-			     * @param outputSignature      Signature of output parameters or NULL for none.
-			     * @param argNames    Comma separated list of input and then output arg names used in interface XML.
-			     * @param annotation  Annotation flags.
-			     *
-			     * @return
-			     *      - QStatus.OK if successful
-			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
-			     */
+			 * Add a member to the interface.
+			 *
+			 * @param type        Message type.
+			 * @param name        Name of member.
+			 * @param inputSignature    Signature of input parameters or NULL for none.
+			 * @param outputSignature      Signature of output parameters or NULL for none.
+			 * @param argNames    Comma separated list of input and then output arg names used in interface XML.
+			 * @param annotation  Annotation flags.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
 			public QStatus AddMember(Message.Type type, string name, string inputSignature,
 				string outputSignature, string argNames, AnnotationFlags annotation)
 			{
-			
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
 			}
 
 			/**
-			     * Add a signal member to the interface.
-			     *
-			     * @param name        Name of method call member.
-			     * @param inputSignature         Signature of parameters or NULL for none.
-			     * @param argNames    Comma separated list of arg names used in interface XML.
-			     * @param annotation  Annotation flags.
-			     *
-			     * @return
-			     *      - QStatus.OK if successful
-			     *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
-			     */
-		    public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
-		    {
+			 * Add a signal member to the interface.
+			 *
+			 * @param name        Name of method call member.
+			 * @param inputSignature         Signature of parameters or NULL for none.
+			 * @param argNames    Comma separated list of arg names used in interface XML.
+			 * @param annotation  Annotation flags.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
+			{
 			return alljoyn_interfacedescription_addmember(_interfaceDescription,
-			    (int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
-		    }
+				(int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
+			}
 
 			/**
 			 * Activate this interface. An interface must be activated before it can be used. Activating an
@@ -376,7 +371,6 @@ namespace AllJoynUnity
 			 */
 			public void Activate()
 			{
-			
 				alljoyn_interfacedescription_activate(_interfaceDescription);
 			}
 
@@ -390,7 +384,6 @@ namespace AllJoynUnity
 			 */
 			public Member GetMember(string name)
 			{
-			
 				_Member retMember = new _Member();
 				if(alljoyn_interfacedescription_getmember(_interfaceDescription, name, ref retMember) == 1)
 				{
@@ -409,7 +402,6 @@ namespace AllJoynUnity
 			 */
 			public Member[] GetMembers()
 			{
-			
 				UIntPtr numMembers = alljoyn_interfacedescription_getmembers(_interfaceDescription,
 					IntPtr.Zero, (UIntPtr)0);
 				_Member[] members = new _Member[(int)numMembers];
@@ -443,20 +435,18 @@ namespace AllJoynUnity
 			 */
 			public bool HasMember(string name, string inSig, string outSig)
 			{
-			
 				return (alljoyn_interfacedescription_hasmember(_interfaceDescription,
 					name, inSig, outSig) == 1 ? true : false );
 			}
 
 			/**
-			     * Lookup a property description by name
-			     *
-			     * @param name  Name of the property to lookup
-			     * @return a structure representing the properties of the interface
-			     */
+			 * Lookup a property description by name
+			 *
+			 * @param name  Name of the property to lookup
+			 * @return a structure representing the properties of the interface
+			 */
 			public Property GetProperty(string name)
 			{
-			
 				_Property retProp = new _Property();
 				if(alljoyn_interfacedescription_getproperty(_interfaceDescription, name, ref retProp) == 1)
 				{
@@ -469,13 +459,12 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Get all the properties.
-			     *
-			     * @return  The property array that represents the available properties.
-			     */
+			 * Get all the properties.
+			 *
+			 * @return  The property array that represents the available properties.
+			 */
 			public Property[] GetProperties()
 			{
-			
 				UIntPtr numProperties = alljoyn_interfacedescription_getproperties(_interfaceDescription,
 					IntPtr.Zero, (UIntPtr)0);
 				_Property[] props = new _Property[(int)numProperties];
@@ -496,32 +485,30 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Add a property to the interface.
-			     *
-			     * @param name       Name of property.
-			     * @param signature  Property type.
-			     * @param access     Read, Write or ReadWrite
-			     * @return
-			     *      - QStatus.OK if successful.
-			     *      - QStatus.BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
-			     *                                        because it already exists.
-			     */
+			 * Add a property to the interface.
+			 *
+			 * @param name       Name of property.
+			 * @param signature  Property type.
+			 * @param access     Read, Write or ReadWrite
+			 * @return
+			 *      - QStatus.OK if successful.
+			 *      - QStatus.BUS_PROPERTY_ALREADY_EXISTS if the property can not be added
+			 *                                        because it already exists.
+			 */
 			public QStatus AddProperty(string name, string signature, AccessFlags access)
 			{
-			
 				return alljoyn_interfacedescription_addproperty(_interfaceDescription,
 					name, signature, (byte)access);
 			}
 
 			/**
-			     * Check for existence of a property.
-			     *
-			     * @param name       Name of the property to lookup
-			     * @return true if the property exists.
-			     */
+			 * Check for existence of a property.
+			 *
+			 * @param name       Name of the property to lookup
+			 * @return true if the property exists.
+			 */
 			public bool HasProperty(string name)
 			{
-			
 				return (alljoyn_interfacedescription_hasproperty(_interfaceDescription, name) == 1 ? true : false);
 			}
 
@@ -555,7 +542,6 @@ namespace AllJoynUnity
 			 */
 			public bool GetPropertyAnnotation(string property, string name, ref string value)
 			{
-
 				UIntPtr value_size = new UIntPtr(); ;
 				alljoyn_interfacedescription_getpropertyannotation(_interfaceDescription, property, name, IntPtr.Zero, ref value_size);
 
@@ -632,15 +618,15 @@ namespace AllJoynUnity
 					}
 				}
 
-			/**
-			 * Get the value of an annotation
-			 *
-			 * @param name       Name of annotation.
-			 * @param value      Returned value of the annotation
-			 * @return
-			 *      - true if annotation found.
-			 *      - false if annotation not found
-			 */
+				/**
+				 * Get the value of an annotation
+				 *
+				 * @param name       Name of annotation.
+				 * @param value      Returned value of the annotation
+				 * @return
+				 *      - true if annotation found.
+				 *      - false if annotation not found
+				 */
 				public bool GetAnnotation(string name, ref string value)
 				{
 
@@ -763,7 +749,6 @@ namespace AllJoynUnity
 				 */
 				public bool GetAnnotation(string name, ref string value)
 				{
-
 					UIntPtr value_size = new UIntPtr(); ;
 					alljoyn_interfacedescription_property_getannotation(_property, name, IntPtr.Zero, ref value_size);
 

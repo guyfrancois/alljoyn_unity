@@ -36,54 +36,51 @@ namespace AllJoynUnity
 		public class ProxyBusObject : IDisposable
 		{
 			/**
-			     * Create an empty proxy object that refers to an object at given remote service name. Note
-			     * that the created proxy object does not contain information about the interfaces that the
-			     * actual remote object implements with the exception that org.freedesktop.DBus.Peer
-			     * interface is special-cased (per the DBus spec) and can always be called on any object. Nor
-			     * does it contain information about the child objects that the actual remote object might
-			     * contain.
-			     *
-			     * To fill in this object with the interfaces and child object names that the actual remote
-			     * object describes in its introspection data, call IntrospectRemoteObject() or
-			     * IntrospectRemoteObjectAsync().
-			     *
-			     * @param bus        The bus.
-			     * @param service    The remote service name (well-known or unique).
-			     * @param path       The absolute (non-relative) object path for the remote object.
-			     * @param sessionId  The session id the be used for communicating with remote object.
-			     */
+			 * Create an empty proxy object that refers to an object at given remote service name. Note
+			 * that the created proxy object does not contain information about the interfaces that the
+			 * actual remote object implements with the exception that org.freedesktop.DBus.Peer
+			 * interface is special-cased (per the DBus spec) and can always be called on any object. Nor
+			 * does it contain information about the child objects that the actual remote object might
+			 * contain.
+			 *
+			 * To fill in this object with the interfaces and child object names that the actual remote
+			 * object describes in its introspection data, call IntrospectRemoteObject() or
+			 * IntrospectRemoteObjectAsync().
+			 *
+			 * @param bus        The bus.
+			 * @param service    The remote service name (well-known or unique).
+			 * @param path       The absolute (non-relative) object path for the remote object.
+			 * @param sessionId  The session id the be used for communicating with remote object.
+			 */
 			public ProxyBusObject(BusAttachment bus, string service, string path, uint sessionId)
 			{
-			
 				_proxyBusObject = alljoyn_proxybusobject_create(bus.UnmanagedPtr, service, path, sessionId);
 			}
 
 			internal ProxyBusObject(IntPtr busObject)
 			{
-			
 				_proxyBusObject = busObject;
 				_isDisposed = true;
 			}
 
 			/**
-			     * Add an interface to this ProxyBusObject.
-			     *
-			     * Occasionally, AllJoyn library user may wish to call a method on
-			     * a %ProxyBusObject that was not reported during introspection of the remote object.
-			     * When this happens, the InterfaceDescription will have to be registered with the
-			     * Bus manually and the interface will have to be added to the %ProxyBusObject using this method.
-			     * @remark
-			     * The interface added via this call must have been previously registered with the
-			     * Bus. (i.e. it must have come from a call to Bus.GetInterface()).
-			     *
-			     * @param iface    The interface to add to this object. Must come from Bus.GetInterface().
-			     * @return
-			     *      - QStatus.OK if successful.
-			     *      - An error status otherwise
-			     */
+			 * Add an interface to this ProxyBusObject.
+			 *
+			 * Occasionally, AllJoyn library user may wish to call a method on
+			 * a %ProxyBusObject that was not reported during introspection of the remote object.
+			 * When this happens, the InterfaceDescription will have to be registered with the
+			 * Bus manually and the interface will have to be added to the %ProxyBusObject using this method.
+			 * @remark
+			 * The interface added via this call must have been previously registered with the
+			 * Bus. (i.e. it must have come from a call to Bus.GetInterface()).
+			 *
+			 * @param iface    The interface to add to this object. Must come from Bus.GetInterface().
+			 * @return
+			 *      - QStatus.OK if successful.
+			 *      - An error status otherwise
+			 */
 			public QStatus AddInterface(InterfaceDescription iface)
 			{
-			
 				return alljoyn_proxybusobject_addinterface(_proxyBusObject, iface.UnmanagedPtr);
 			}
 
@@ -109,7 +106,6 @@ namespace AllJoynUnity
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
 			{
-			
 				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}
@@ -139,8 +135,8 @@ namespace AllJoynUnity
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}
 
-            #region DLL Imports
-            [DllImport(DLL_IMPORT_TARGET)]
+			#region DLL Imports
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string service,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
@@ -168,8 +164,8 @@ namespace AllJoynUnity
 			 * Dispose the ProxyBusObject
 			 */
 			public void Dispose()
-            {
-                Dispose(true);
+			{
+				Dispose(true);
 				GC.SuppressFinalize(this); 
 			}
 
@@ -179,7 +175,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_proxybusobject_destroy(_proxyBusObject);
@@ -190,7 +185,6 @@ namespace AllJoynUnity
 
 			~ProxyBusObject()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

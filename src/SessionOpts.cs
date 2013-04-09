@@ -61,11 +61,11 @@ namespace AllJoynUnity
 			}
 
 			/**
-			     * Multi-point session capable.
-			     * A session is multi-point if it can be joined multiple times to form a single
-			     * session with multi (greater than 2) endpoints. When false, each join attempt
-			     * creates a new point-to-point session.
-			     */
+			 * Multi-point session capable.
+			 * A session is multi-point if it can be joined multiple times to form a single
+			 * session with multi (greater than 2) endpoints. When false, each join attempt
+			 * creates a new point-to-point session.
+			 */
 			public bool IsMultipoint
 			{
 				get
@@ -93,7 +93,7 @@ namespace AllJoynUnity
 				}
 			}
 
-		    /** Allowed Transports  */
+			/** Allowed Transports  */
 			public TransportMask Transports
 			{
 				get
@@ -109,50 +109,45 @@ namespace AllJoynUnity
 			#endregion
 
 			/**
-			     * Construct a SessionOpts with specific parameters.
-			     *
-			     * @param trafficType       Type of traffic.
-			     * @param isMultipoint  true iff session supports multipoint (greater than two endpoints).
-			     * @param proximity     Proximity constraint bitmask.
-			     * @param transports    Allowed transport types bitmask.
-			     *
-			     */
+			 * Construct a SessionOpts with specific parameters.
+			 *
+			 * @param trafficType       Type of traffic.
+			 * @param isMultipoint  true iff session supports multipoint (greater than two endpoints).
+			 * @param proximity     Proximity constraint bitmask.
+			 * @param transports    Allowed transport types bitmask.
+			 */
 			public SessionOpts(TrafficType trafficType, bool isMultipoint, ProximityType proximity, TransportMask transports)
 			{
-			
 				_sessionOpts = alljoyn_sessionopts_create((byte)trafficType, isMultipoint ? 1 : 0, (byte)proximity, (ushort)transports);
 			}
 
 			internal SessionOpts(IntPtr sessionOpts)
 			{
-			
 				_sessionOpts = sessionOpts;
 				_isDisposed = true;
 			}
 
 			/**
-			     * Determine whether this SessionOpts is compatible with the SessionOpts offered by other
-			     *
-			     * @param other  Options to be compared against this one.
-			     * @return true iff this SessionOpts can use the option set offered by other.
-			     */
+			 * Determine whether this SessionOpts is compatible with the SessionOpts offered by other
+			 *
+			 * @param other  Options to be compared against this one.
+			 * @return true iff this SessionOpts can use the option set offered by other.
+			 */
 			public bool IsCompatible(SessionOpts other)
 			{
-			
 				return (alljoyn_sessionopts_iscompatible(_sessionOpts, other._sessionOpts) == 1 ? true : false);
 			}
 
 			/**
-			     * Compare SessionOpts
-			     *
-			     * @param one the SessionOpts being compared to
-			     * @param other the SessionOpts being compared against
-			     * @return true if all of the SessionOpts parameters are the same
-			     *
-			     */
+			 * Compare SessionOpts
+			 *
+			 * @param one the SessionOpts being compared to
+			 * @param other the SessionOpts being compared against
+			 * @return true if all of the SessionOpts parameters are the same
+			 *
+			 */
 			public static int Compare(SessionOpts one, SessionOpts other)
 			{
-			
 				return alljoyn_sessionopts_cmp(one._sessionOpts, other._sessionOpts);
 			}
 
@@ -211,7 +206,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_sessionopts_destroy(_sessionOpts);
@@ -222,7 +216,6 @@ namespace AllJoynUnity
 
 			~SessionOpts()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

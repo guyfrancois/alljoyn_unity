@@ -40,23 +40,23 @@ namespace AllJoynUnity
 		private const string DLL_IMPORT_TARGET = "alljoyn_c";
 #endif
 
-        private const string UNITY_VERSION = ".3";
+		private const string UNITY_VERSION = ".3";
 
-        private static readonly int DEFERED_CALLBACK_WAIT_TIMER = 50;
+		private static readonly int DEFERED_CALLBACK_WAIT_TIMER = 50;
 
-        private static Boolean autoProcessCallback = true;
-        private static Thread callbackPumpThread = null;
-        private static Boolean isProcessing = false;
+		private static Boolean autoProcessCallback = true;
+		private static Thread callbackPumpThread = null;
+		private static Boolean isProcessing = false;
 
 	/**
 	 * Request version of the C# binding
 	 *
 	 * @return string representing the version of the csharp language binding
 	 */
-        public static string GetExtensionVersion()
-        {
-            return UNITY_VERSION;
-        }
+		public static string GetExtensionVersion()
+		{
+			return UNITY_VERSION;
+		}
 
 	/**
 	 *  Get the version string from AllJoyn.
@@ -95,56 +95,56 @@ namespace AllJoynUnity
 	/**
 	 * Starts a thread to process AllJoyn callback data.
 	 */
-        public static void StartAllJoynCallbackProcessing()
-        {
-            if(!autoProcessCallback)
-            {
-                return;
-            }
-            if (callbackPumpThread == null)
-            {
-                alljoyn_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
-                callbackPumpThread = new Thread((object o) =>
-                {
-                    int numprocessed = 0;
-                    while (isProcessing)
-                    {
-                        numprocessed = alljoyn_unity_deferred_callbacks_process();
-                        Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
-                    }
-                });
-            }
-            if (!callbackPumpThread.IsAlive)
-            {
-                isProcessing = true;
-                callbackPumpThread.Start();
-            }
-            alljoyn_unity_deferred_callbacks_process();
-        }
+		public static void StartAllJoynCallbackProcessing()
+		{
+			if(!autoProcessCallback)
+			{
+				return;
+			}
+			if (callbackPumpThread == null)
+			{
+				alljoyn_unity_set_deferred_callback_mainthread_only(1); //FOR ANDROID THIS NEEDS TO BE SET TO 1 INSTEAD OF 0
+				callbackPumpThread = new Thread((object o) =>
+				{
+					int numprocessed = 0;
+					while (isProcessing)
+					{
+						numprocessed = alljoyn_unity_deferred_callbacks_process();
+						Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
+					}
+				});
+			}
+			if (!callbackPumpThread.IsAlive)
+			{
+				isProcessing = true;
+				callbackPumpThread.Start();
+			}
+			alljoyn_unity_deferred_callbacks_process();
+		}
 
 	/**
 	 * Stops the thread processing AllJoyn callback data.
 	 */
-        public static void StopAllJoynProcessing()
-        {
-            if (callbackPumpThread != null && callbackPumpThread.IsAlive)
-            {
-                isProcessing = false;
-                Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
-                callbackPumpThread.Join();
-            }
-            callbackPumpThread = null;
-        }
+		public static void StopAllJoynProcessing()
+		{
+			if (callbackPumpThread != null && callbackPumpThread.IsAlive)
+			{
+				isProcessing = false;
+				Thread.Sleep(DEFERED_CALLBACK_WAIT_TIMER);
+				callbackPumpThread.Join();
+			}
+			callbackPumpThread = null;
+		}
 
 	
 	/**
 	 * Call to trigger callbacks on main thread. Allows to manually process the callbacks.
 	 * @return the number of callbacks processed
 	 */
-        public static int TriggerCallbacks()
-        {
-            return alljoyn_unity_deferred_callbacks_process();
-        }
+		public static int TriggerCallbacks()
+		{
+			return alljoyn_unity_deferred_callbacks_process();
+		}
 
 	
 
@@ -153,10 +153,10 @@ namespace AllJoynUnity
 	 * NOTE: For Android this should be called with a value of true
 	 * @param mainThreadOnly set to true to limit callbacks to the main thread
 	 */ 
-        public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
-        {
-            alljoyn_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
-        }
+		public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
+		{
+			alljoyn_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
+		}
 
 	[Flags]
 	/** Bitmask of all transport types */

@@ -40,6 +40,7 @@ namespace basic_client
 			protected override void FoundAdvertisedName(string name, AllJoyn.TransportMask transport, string namePrefix)
 			{
 				Console.WriteLine("FoundAdvertisedName(name=" + name + ", prefix=" + namePrefix + ")");
+				Console.WriteLine("FoundAdvertisedName ThreadID = {0}", AppDomain.GetCurrentThreadId());
 				if(string.Compare(SERVICE_NAME, name) == 0)
 				{
 					// We found a remote bus that is advertising basic service's  well-known name so connect to it
@@ -61,6 +62,7 @@ namespace basic_client
 
 			protected override void NameOwnerChanged(string busName, string previousOwner, string newOwner)
 			{
+				Console.WriteLine("NameOwnerChanged ThreadID = {0}", AppDomain.GetCurrentThreadId());
 				if(string.Compare(SERVICE_NAME, busName) == 0)
 				{
 					Console.WriteLine("NameOwnerChanged: name=" + busName + ", oldOwner=" +
@@ -71,6 +73,7 @@ namespace basic_client
 
 		public static void Main(string[] args)
 		{
+			Console.WriteLine("Main ThreadID = {0}", AppDomain.GetCurrentThreadId());
 			Console.WriteLine("AllJoyn Library version: " + AllJoyn.GetVersion());
 			Console.WriteLine("AllJoyn Library buildInfo: " + AllJoyn.GetBuildInfo());
 

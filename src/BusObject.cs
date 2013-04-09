@@ -45,7 +45,6 @@ namespace AllJoynUnity
 			 */
 			public BusObject(string path, bool isPlaceholder)
 			{
-			
 				// Can't let the GC free these delegates so they must be members
 				_propertyGet = new InternalPropertyGetEventHandler(this._PropertyGet);
 				_propertySet = new InternalPropertySetEventHandler(this._PropertySet);
@@ -79,52 +78,50 @@ namespace AllJoynUnity
 			public BusObject(BusAttachment bus, string path, bool isPlaceholder) : this(path, isPlaceholder){}
 
 			/**
-			     * Request the raw pointer of the AllJoyn C BusObject
-			     *
-			     * @return the raw pointer of the AllJoyn C BusObject
-			     */ 
+			 * Request the raw pointer of the AllJoyn C BusObject
+			 *
+			 * @return the raw pointer of the AllJoyn C BusObject
+			 */ 
 			public IntPtr getAddr()
 			{
 				return _busObject;
 			}
 
 			/**
-			     * Add an interface to this object. If the interface has properties this will also add the
-			     * standard property access interface. An interface must be added before its method handlers can be
-			     * added. Note that the Peer interface (org.freedesktop.DBus.peer) is implicit on all objects and
-			     * cannot be explicitly added, and the Properties interface (org.freedesktop,DBus.Properties) is
-			     * automatically added when needed and cannot be explicitly added.
-			     *
-			     * Once an object is registered, it should not add any additional interfaces. Doing so would
-			     * confuse remote objects that may have already introspected this object.
-			     *
-			     * @param iface  The interface to add
-			     *
-			     * @return
-			     *      - QStatus.OK if the interface was successfully added.
-			     *      - QStatus.BUS_IFACE_ALREADY_EXISTS if the interface already exists.
-			     *      - An error status otherwise
-			     */
+			 * Add an interface to this object. If the interface has properties this will also add the
+			 * standard property access interface. An interface must be added before its method handlers can be
+			 * added. Note that the Peer interface (org.freedesktop.DBus.peer) is implicit on all objects and
+			 * cannot be explicitly added, and the Properties interface (org.freedesktop,DBus.Properties) is
+			 * automatically added when needed and cannot be explicitly added.
+			 *
+			 * Once an object is registered, it should not add any additional interfaces. Doing so would
+			 * confuse remote objects that may have already introspected this object.
+			 *
+			 * @param iface  The interface to add
+			 *
+			 * @return
+			 *      - QStatus.OK if the interface was successfully added.
+			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if the interface already exists.
+			 *      - An error status otherwise
+			 */
 			public QStatus AddInterface(InterfaceDescription iface)
 			{
-			
 				return alljoyn_busobject_addinterface(_busObject, iface.UnmanagedPtr);
 			}
 
 			/**
-			     * Add a method handler to this object. The interface for the method handler must have already
-			     * been added by calling AddInterface().
-			     *
-			     * @param member   Interface member implemented by handler.
-			     * @param handler  Method handler.
-			     *
-			     * @return
-			     *      - QStatus.OK if the method handler was added.
-			     *      - An error status otherwise
-			     */
+			 * Add a method handler to this object. The interface for the method handler must have already
+			 * been added by calling AddInterface().
+			 *
+			 * @param member   Interface member implemented by handler.
+			 * @param handler  Method handler.
+			 *
+			 * @return
+			 *      - QStatus.OK if the method handler was added.
+			 *      - An error status otherwise
+			 */
 			public QStatus AddMethodHandler(InterfaceDescription.Member member, MethodHandler handler)
 			{
-			
 				InternalMethodHandler internalMethodHandler = (IntPtr bus, IntPtr m, IntPtr msg) =>
 				{
 					MethodHandler h = handler;
@@ -158,7 +155,6 @@ namespace AllJoynUnity
 			[Obsolete("Usage of MethodReply that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
 			protected QStatus MethodReply(Message message, MsgArgs args)
 			{
-			
 				return alljoyn_busobject_methodreply_args(_busObject, message.UnmanagedPtr, args.UnmanagedPtr,
 					(UIntPtr)args.Length);
 			}
@@ -174,40 +170,37 @@ namespace AllJoynUnity
 			 */
 			protected QStatus MethodReply(Message message, MsgArg args)
 			{
-
 				return alljoyn_busobject_methodreply_args(_busObject, message.UnmanagedPtr, args.UnmanagedPtr,
 					(UIntPtr)args.Length);
 			}
 
 			/**
-			     * Reply to a method call with an error message.
-			     *
-			     * @param message              The method call message
-			     * @param error            The name of the error
-			     * @param errorMessage     An error message string
-			     * @return
-			     *      - QStatus.OK if successful
-			     *      - An error status otherwise
-			     */
+			 * Reply to a method call with an error message.
+			 *
+			 * @param message              The method call message
+			 * @param error            The name of the error
+			 * @param errorMessage     An error message string
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - An error status otherwise
+			 */
 			protected QStatus MethodReply(Message message, string error, string errorMessage)
 			{
-			
 				return alljoyn_busobject_methodreply_err(_busObject, message.UnmanagedPtr, error,
 					errorMessage);
 			}
 
 			/**
-			     * Reply to a method call with an error message.
-			     *
-			     * @param message        The method call message
-			     * @param status     The status code for the error
-			     * @return
-			     *      - QStatus.OK if successful
-			     *      - An error status otherwise
-			     */
+			 * Reply to a method call with an error message.
+			 *
+			 * @param message        The method call message
+			 * @param status     The status code for the error
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - An error status otherwise
+			 */
 			protected QStatus MethodReply(Message message, QStatus status)
 			{
-			
 				return alljoyn_busobject_methodreply_status(_busObject, message.UnmanagedPtr, status.value);
 			}
 
@@ -223,10 +216,10 @@ namespace AllJoynUnity
 			 *      - An error status otherwise
 			 */
 			[Obsolete("Usage of Signal that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
-            protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
-            {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0, IntPtr.Zero);
-            }
+			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArgs args)
+			{
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0, IntPtr.Zero);
+			}
 
 			/**
 			 * Send a signal.
@@ -267,11 +260,11 @@ namespace AllJoynUnity
 			 *      - An error status otherwise
 			 */
 			[Obsolete("Usage of Signal that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
-            protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
-                MsgArgs args, ushort timeToLife, byte flags)
-            {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
-            }
+			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
+				MsgArgs args, ushort timeToLife, byte flags)
+			{
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
+			}
 
 			/**
 			 * Send a signal.
@@ -294,10 +287,10 @@ namespace AllJoynUnity
 			 *      - An error status otherwise
 			 */
 			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
-                MsgArg args, ushort timeToLife, byte flags)
-            {
-                return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
-            }
+				MsgArg args, ushort timeToLife, byte flags)
+			{
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
+			}
 			#region Properties
 			/**
 			 * Return the path for the object
@@ -335,7 +328,7 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Delegates
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			/**
 			 * MethodHandlers are %MessageReceiver methods which are called by AllJoyn library
 			 * to forward AllJoyn method_calls to AllJoyn library users.
@@ -344,15 +337,15 @@ namespace AllJoynUnity
 			 * @param message   The received method call message.
 			 */
 			public delegate void MethodHandler(InterfaceDescription.Member member, Message message);
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalMethodHandler(IntPtr bus, IntPtr member, IntPtr message);
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertyGetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalPropertySetEventHandler(IntPtr context, IntPtr ifcName, IntPtr propName, IntPtr val);
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectRegisteredEventHandler(IntPtr context);
-            [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalObjectUnregisteredEventHandler(IntPtr context);
 			#endregion
 
@@ -362,10 +355,10 @@ namespace AllJoynUnity
 			 * BusObjects that implement properties should override this method.
 			 * The default version simply returns ER_BUS_NO_SUCH_PROPERTY
 			 *
-			 * @param ifcName    Identifies the interface that the property is defined on
+			 * @param ifcName   Identifies the interface that the property is defined on
 			 * @param propName  Identifies the the property to get
-			 * @param[out] val        Returns the property value. The type of this value is the actual value
-			 *                   type.
+			 * @param[out] val  Returns the property value. The type of this value is the actual value
+			 *                  type.
 			 */
 			protected virtual void OnPropertyGet(string ifcName, string propName, MsgArg val)
 			{
@@ -471,13 +464,13 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busobject_methodreply_status(IntPtr bus, IntPtr msg, int status);
 
-            [DllImport(DLL_IMPORT_TARGET)]
-            private extern static int alljoyn_busobject_signal(IntPtr bus,
-                [MarshalAs(UnmanagedType.LPStr)] string destination,
-                uint sessionId,
-                InterfaceDescription._Member signal,
-                IntPtr msgArgs, UIntPtr numArgs,
-                ushort timeToLive, byte flags, IntPtr msg);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busobject_signal(IntPtr bus,
+				[MarshalAs(UnmanagedType.LPStr)] string destination,
+				uint sessionId,
+				InterfaceDescription._Member signal,
+				IntPtr msgArgs, UIntPtr numArgs,
+				ushort timeToLive, byte flags, IntPtr msg);
 
 			#endregion
 
@@ -501,8 +494,8 @@ namespace AllJoynUnity
 				if(!_isDisposed)
 				{
 					Thread destroyThread = new Thread((object o) => {
-                        alljoyn_busobject_destroy(_busObject); 
-                    });
+						alljoyn_busobject_destroy(_busObject); 
+					});
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
@@ -510,7 +503,7 @@ namespace AllJoynUnity
 						Thread.Sleep(0);
 					}
 					_busObject = IntPtr.Zero;
-                    main.Free();
+					main.Free();
 				}
 				_isDisposed = true;
 			}
@@ -554,13 +547,13 @@ namespace AllJoynUnity
 			IntPtr _busObject;
 			bool _isDisposed = false;
 
-            GCHandle main;
+			GCHandle main;
 			InternalPropertyGetEventHandler _propertyGet;
 			InternalPropertySetEventHandler _propertySet;
 			InternalObjectRegisteredEventHandler _objectRegistered;
 			InternalObjectUnregisteredEventHandler _objectUnregistered;
 
-            BusObjectCallbacks callbacks;
+			BusObjectCallbacks callbacks;
 
 			List<InternalMethodHandler> _methodHandlerDelegateRefHolder;
 			#endregion

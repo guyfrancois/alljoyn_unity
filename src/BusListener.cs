@@ -49,9 +49,9 @@ namespace AllJoynUnity
 
 				callbacks.listenerRegistered = Marshal.GetFunctionPointerForDelegate(_listenerRegistered);
 				callbacks.listenerUnregistered = Marshal.GetFunctionPointerForDelegate(_listenerUnregistered);
-                callbacks.foundAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_foundAdvertisedName);
-                callbacks.lostAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_lostAdvertisedName);
-                callbacks.nameOwnerChanged = Marshal.GetFunctionPointerForDelegate(_nameOwnerChanged);
+				callbacks.foundAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_foundAdvertisedName);
+				callbacks.lostAdvertisedName =  Marshal.GetFunctionPointerForDelegate(_lostAdvertisedName);
+				callbacks.nameOwnerChanged = Marshal.GetFunctionPointerForDelegate(_nameOwnerChanged);
 				callbacks.busStopping = Marshal.GetFunctionPointerForDelegate(_busStopping);
 				callbacks.busDisconnected = Marshal.GetFunctionPointerForDelegate(_busDisconnected);
 
@@ -61,55 +61,55 @@ namespace AllJoynUnity
 
 			#region Virtual Methods
 			/**
-			     * Called by the bus when the listener is registered. This give the listener implementation the
-			     * opportunity to save a reference to the bus.
-			     *
-			     * @param busAttachment  The bus the listener is registered with.
-			     */
+			 * Called by the bus when the listener is registered. This give the listener implementation the
+			 * opportunity to save a reference to the bus.
+			 *
+			 * @param busAttachment  The bus the listener is registered with.
+			 */
 			protected virtual void ListenerRegistered(BusAttachment busAttachment){}
 
 			/**
-			     * Called by the bus when the listener is unregistered.
-			     */
+			 * Called by the bus when the listener is unregistered.
+			 */
 			protected virtual void ListenerUnregistered() {}
 
 			/**
-			     * Called by the bus when an external bus is discovered that is advertising a well-known name
-			     * that this attachment has registered interest in via a DBus call to org.alljoyn.Bus.FindAdvertisedName
-			     *
-			     * @param name         A well known name that the remote bus is advertising.
-			     * @param transport    Transport that received the advertisement.
-			     * @param namePrefix   The well-known name prefix used in call to FindAdvertisedName that triggered this callback.
-			     */
+			 * Called by the bus when an external bus is discovered that is advertising a well-known name
+			 * that this attachment has registered interest in via a DBus call to org.alljoyn.Bus.FindAdvertisedName
+			 *
+			 * @param name         A well known name that the remote bus is advertising.
+			 * @param transport    Transport that received the advertisement.
+			 * @param namePrefix   The well-known name prefix used in call to FindAdvertisedName that triggered this callback.
+			 */
 			protected virtual void FoundAdvertisedName(string name, TransportMask transport, string namePrefix) {}
 
 			/**
-			     * Called by the bus when an advertisement previously reported through FoundName has become unavailable.
-			     *
-			     * @param name         A well known name that the remote bus is advertising that is of interest to this attachment.
-			     * @param transport    Transport that stopped receiving the given advertised name.
-			     * @param namePrefix   The well-known name prefix that was used in a call to FindAdvertisedName that triggered this callback.
-			     */
+			 * Called by the bus when an advertisement previously reported through FoundName has become unavailable.
+			 *
+			 * @param name         A well known name that the remote bus is advertising that is of interest to this attachment.
+			 * @param transport    Transport that stopped receiving the given advertised name.
+			 * @param namePrefix   The well-known name prefix that was used in a call to FindAdvertisedName that triggered this callback.
+			 */
 			protected virtual void LostAdvertisedName(string name, TransportMask transport, string namePrefix) {}
 
 			/**
-			     * Called by the bus when the ownership of any well-known name changes.
-			     *
-			     * @param busName        The well-known name that has changed.
-			     * @param previousOwner  The unique name that previously owned the name or NULL if there was no previous owner.
-			     * @param newOwner       The unique name that now owns the name or NULL if the there is no new owner.
-			     */
+			 * Called by the bus when the ownership of any well-known name changes.
+			 *
+			 * @param busName        The well-known name that has changed.
+			 * @param previousOwner  The unique name that previously owned the name or NULL if there was no previous owner.
+			 * @param newOwner       The unique name that now owns the name or NULL if the there is no new owner.
+			 */
 			protected virtual void NameOwnerChanged(string busName, string previousOwner, string newOwner) {}
 
 			/**
-			     * Called when a BusAttachment this listener is registered with is stopping.
-			     */
+			 * Called when a BusAttachment this listener is registered with is stopping.
+			 */
 			protected virtual void BusStopping() {}
 
 			/**
-			     * Called when a BusAttachment this listener is registered with is has become disconnected from
-			     * the bus.
-			     */
+			 * Called when a BusAttachment this listener is registered with is has become disconnected from
+			 * the bus.
+			 */
 			protected virtual void BusDisconnected() {}
 			#endregion
 
@@ -133,77 +133,77 @@ namespace AllJoynUnity
 			#region Callbacks
 			private void _ListenerRegistered(IntPtr context, IntPtr bus)
 			{
-                IntPtr _bus = bus;
-			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-				        _registeredBus = BusAttachment.MapBusAttachment(_bus);
-				        ListenerRegistered(_registeredBus);
-                    });
-                callIt.Start();
+				IntPtr _bus = bus;
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						_registeredBus = BusAttachment.MapBusAttachment(_bus);
+						ListenerRegistered(_registeredBus);
+					});
+				callIt.Start();
 			}
 
 			private void _ListenerUnregistered(IntPtr context)
 			{
-			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                {
-				    ListenerUnregistered();
-				    _registeredBus = null;
-                });
-                callIt.Start();
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+				{
+					ListenerUnregistered();
+					_registeredBus = null;
+				});
+				callIt.Start();
 			}
 
 			private void _FoundAdvertisedName(IntPtr context, IntPtr name, System.UInt16 transport, IntPtr namePrefix)
 			{
-                String _name = Marshal.PtrToStringAnsi(name);
-                TransportMask _transport = (TransportMask)transport;
-                String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                        {
-                            FoundAdvertisedName(_name, _transport, _namePrefix);
-                        });
-                callIt.Start();
+				String _name = Marshal.PtrToStringAnsi(name);
+				TransportMask _transport = (TransportMask)transport;
+				String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+						{
+							FoundAdvertisedName(_name, _transport, _namePrefix);
+						});
+				callIt.Start();
 			}
 
 			private void _LostAdvertisedName(IntPtr context, IntPtr name, ushort transport, IntPtr namePrefix)
 			{
-                String _name = Marshal.PtrToStringAnsi(name);
-                TransportMask _transport = (TransportMask)transport;
-                String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
-			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                        {
-				            LostAdvertisedName(_name, _transport, _namePrefix);
-                        });
-                callIt.Start();
+				String _name = Marshal.PtrToStringAnsi(name);
+				TransportMask _transport = (TransportMask)transport;
+				String _namePrefix = Marshal.PtrToStringAnsi(namePrefix);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+						{
+							LostAdvertisedName(_name, _transport, _namePrefix);
+						});
+				callIt.Start();
 			}
 
 			private void _NameOwnerChanged(IntPtr context, IntPtr busName, IntPtr previousOwner, IntPtr newOwner)
 			{
-                String _busName = Marshal.PtrToStringAnsi(busName);
-                String _previousOwner = Marshal.PtrToStringAnsi(previousOwner);
-                String _newOwner = Marshal.PtrToStringAnsi(newOwner);
-			    System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        NameOwnerChanged(_busName, _previousOwner, _newOwner);
-                    });
-                callIt.Start();
+				String _busName = Marshal.PtrToStringAnsi(busName);
+				String _previousOwner = Marshal.PtrToStringAnsi(previousOwner);
+				String _newOwner = Marshal.PtrToStringAnsi(newOwner);
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						NameOwnerChanged(_busName, _previousOwner, _newOwner);
+					});
+				callIt.Start();
 			}
 
 			private void _BusStopping(IntPtr context)
 			{
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        BusStopping();
-                    });
-                callIt.Start();
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						BusStopping();
+					});
+				callIt.Start();
 			}
 
 			private void _BusDisconnected(IntPtr context)
 			{
-                System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-                    {
-                        BusDisconnected();
-                    });
-                callIt.Start();
+				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
+					{
+						BusDisconnected();
+					});
+				callIt.Start();
 			}
 			#endregion
 
@@ -236,15 +236,15 @@ namespace AllJoynUnity
 			
 				if(!_isDisposed)
 				{
-                	// Dispose of BusAttachment before listeners
+					// Dispose of BusAttachment before listeners
 					if(_registeredBus != null)
 					{
 						_registeredBus.Dispose();
 					}
 					
 					Thread destroyThread = new Thread((object o) => {
-                        alljoyn_buslistener_destroy(_busListener);
-                    });
+						alljoyn_buslistener_destroy(_busListener);
+					});
 					destroyThread.Start();
 					while(destroyThread.IsAlive)
 					{
@@ -252,8 +252,8 @@ namespace AllJoynUnity
 						Thread.Sleep(0);
 					}
 
-                    _busListener = IntPtr.Zero;
-                    main.Free();
+					_busListener = IntPtr.Zero;
+					main.Free();
 				}
 				_isDisposed = true;
 			}
@@ -294,8 +294,8 @@ namespace AllJoynUnity
 			bool _isDisposed = false;
 			BusAttachment _registeredBus;
 
-            GCHandle main;
-            BusListenerCallbacks callbacks;
+			GCHandle main;
+			BusListenerCallbacks callbacks;
 			InternalListenerRegisteredDelegate _listenerRegistered;
 			InternalListenerUnregisteredDelegate _listenerUnregistered;
 			InternalFoundAdvertisedNameDelegate _foundAdvertisedName;
@@ -307,4 +307,3 @@ namespace AllJoynUnity
 		}
 	}
 }
-

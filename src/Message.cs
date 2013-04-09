@@ -76,25 +76,23 @@ namespace AllJoynUnity
 				Signal = 4 ///< a signal message type
 			}
 
-			    /**
-			     * Constructor for a message
-			     *
-			     * @param bus  The bus that this message is sent or received on.
-			     */
+			/**
+			 * Constructor for a message
+			 *
+			 * @param bus  The bus that this message is sent or received on.
+			 */
 			public Message(BusAttachment bus)
 			{
-			
 				_message = alljoyn_message_create(bus.UnmanagedPtr);
 			}
 
-			    /**
-			     * Copy constructor for a message
-			     *
-			     * @param other  Message to copy from.
-			     */
+			/**
+			 * Copy constructor for a message
+			 *
+			 * @param other  Message to copy from.
+			 */
 			internal Message(IntPtr message)
 			{
-			
 				_message = message;
 				_isDisposed = true;
 			}
@@ -110,7 +108,6 @@ namespace AllJoynUnity
 			 */
 			public MsgArg GetArg(int index)
 			{
-			
 				IntPtr msgArgs = alljoyn_message_getarg(_message, (UIntPtr)index);
 				return (msgArgs != IntPtr.Zero ? new MsgArg(msgArgs) : null);
 			}
@@ -122,11 +119,11 @@ namespace AllJoynUnity
 			 *      - The senders well-known name string stored in the AllJoyn header field.
 			 *      - An empty string if the message did not specify a sender.
 			 */
-		    public string GetSender()
-		    {
+			public string GetSender()
+			{
 			IntPtr sender = alljoyn_message_getsender(_message);
 			return (sender != IntPtr.Zero ? Marshal.PtrToStringAnsi(sender) : null);
-		    }
+			}
 
 			/**
 			 * Return a specific argument.
@@ -202,7 +199,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_message_destroy(_message);
@@ -213,7 +209,6 @@ namespace AllJoynUnity
 
 			~Message()
 			{
-			
 				Dispose(false);
 			}
 			#endregion
@@ -228,8 +223,8 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_message_getarg(IntPtr msg, UIntPtr argN);
 
-            [DllImport(DLL_IMPORT_TARGET)]
-            private static extern IntPtr alljoyn_message_getsender(IntPtr msg);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_message_getsender(IntPtr msg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_message_isbroadcastsignal(IntPtr msg);

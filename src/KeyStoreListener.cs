@@ -52,30 +52,30 @@ namespace AllJoynUnity
 			}
 
 			#region Abstract Methods
-			    /**
-			     * This method is called when a key store needs to be loaded.
-			     * @remark The application must call <tt>KeyStore#PutKeys</tt> to put the new key store data into the
-			     * internal key store.
-			     *
-			     * @param store   Reference to the KeyStore to be loaded.
-			     *
-			     * @return
-			     *      - QStatus.OK if the load request was satisfied
-			     *      - An error status otherwise
-			     *
-			     */
+			/**
+			 * This method is called when a key store needs to be loaded.
+			 * @remark The application must call <tt>KeyStore#PutKeys</tt> to put the new key store data into the
+			 * internal key store.
+			 *
+			 * @param store   Reference to the KeyStore to be loaded.
+			 *
+			 * @return
+			 *      - QStatus.OK if the load request was satisfied
+			 *      - An error status otherwise
+			 *
+			 */
 			public abstract QStatus LoadRequest(KeyStore store);
 
 			/**
-			     * This method is called when a key store needs to be stored.
-			     * @remark The application must call <tt>KeyStore#GetKeys</tt> to obtain the key data to be stored.
-			     *
-			     * @param store   Reference to the KeyStore to be stored.
-			     *
-			     * @return
-			     *      - QStatus.OK if the store request was satisfied
-			     *      - An error status otherwise
-			     */
+			 * This method is called when a key store needs to be stored.
+			 * @remark The application must call <tt>KeyStore#GetKeys</tt> to obtain the key data to be stored.
+			 *
+			 * @param store   Reference to the KeyStore to be stored.
+			 *
+			 * @return
+			 *      - QStatus.OK if the store request was satisfied
+			 *      - An error status otherwise
+			 */
 			public abstract QStatus StoreRequest(KeyStore store);
 			#endregion
 
@@ -192,7 +192,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-			
 				if(!_isDisposed)
 				{
 					alljoyn_keystorelistener_destroy(_keyStoreListener);
@@ -203,7 +202,6 @@ namespace AllJoynUnity
 
 			~KeyStoreListener()
 			{
-			
 				Dispose(false);
 			}
 			#endregion

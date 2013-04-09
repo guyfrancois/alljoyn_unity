@@ -24,201 +24,201 @@ using Xunit;
 namespace AllJoynUnityTest
 {
 
-    public class BusAttachmentTest
-    {
+	public class BusAttachmentTest
+	{
 
 		//AutoResetEvent notifyEventOne = new AutoResetEvent(false);
 		//AutoResetEvent notifyEventTwo = new AutoResetEvent(false);
 
-        private bool handledSignalsOne;
-        private bool handledSignalsTwo;
-        private string signalOneMsg;
-        private string signalTwoMsg;
+		private bool handledSignalsOne;
+		private bool handledSignalsTwo;
+		private string signalOneMsg;
+		private string signalTwoMsg;
 
-        [Fact]
-        public void TestCreateInterface()
-        {
-            AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
-            AllJoyn.BusAttachment bus = null;
-            bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
-            Assert.NotNull(bus);
+		[Fact]
+		public void TestCreateInterface()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(bus);
 
-            AllJoyn.InterfaceDescription testIntf = null;
-            status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            Assert.NotNull(testIntf);
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
 
-            // TODO: move these into a teardown method?
-            bus.Dispose();
-        }
+			// TODO: move these into a teardown method?
+			bus.Dispose();
+		}
 
-        [Fact]
-        public void TestDeleteInterface()
-        {
-            AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
-            AllJoyn.BusAttachment bus = null;
-            bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
-            Assert.NotNull(bus);
+		[Fact]
+		public void TestDeleteInterface()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(bus);
 
-            AllJoyn.InterfaceDescription testIntf = null;
-            status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            Assert.NotNull(testIntf);
-            status = bus.DeleteInterface(testIntf);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+			status = bus.DeleteInterface(testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // TODO: move these into a teardown method?
-            bus.Dispose();
-        }
+			// TODO: move these into a teardown method?
+			bus.Dispose();
+		}
 
-        [Fact]
-        public void TestStartAndStop()
-        {
-            AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
-            AllJoyn.BusAttachment bus = null;
-            bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
-            Assert.NotNull(bus);
+		[Fact]
+		public void TestStartAndStop()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(bus);
 
-            status = bus.Start();
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = bus.Stop();
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = bus.Start();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = bus.Stop();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // TODO: move these into a teardown method?
-            bus.Dispose();
-        }
+			// TODO: move these into a teardown method?
+			bus.Dispose();
+		}
 
-        //[Fact]
-        public void TestRegisterSignalHandler()
-        {
-            AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+		//[Fact]
+		public void TestRegisterSignalHandler()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
-            // create bus attachment
-            AllJoyn.BusAttachment bus = null;
-            bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
-            Assert.NotNull(bus);
+			// create bus attachment
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(bus);
 
-            // create the interface description
-            AllJoyn.InterfaceDescription testIntf = null;
-            status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            Assert.NotNull(testIntf);
+			// create the interface description
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
 
-            // add the signal member to the interface
-            status = testIntf.AddSignal("testSignal", "s", "msg", 0);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// add the signal member to the interface
+			status = testIntf.AddSignal("testSignal", "s", "msg", 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // activate the interface
-            testIntf.Activate();
+			// activate the interface
+			testIntf.Activate();
 
-            // start the bus attachment
-            status = bus.Start();
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// start the bus attachment
+			status = bus.Start();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // connect to the bus
-            status = bus.Connect(AllJoynTestCommon.GetConnectSpec());
+			// connect to the bus
+			status = bus.Connect(AllJoynTestCommon.GetConnectSpec());
 
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // create the bus object &
-            // add the interface to the bus object
-            TestBusObject testBusObject = new TestBusObject(bus, "/test");
+			// create the bus object &
+			// add the interface to the bus object
+			TestBusObject testBusObject = new TestBusObject(bus, "/test");
 			bus.RegisterBusObject(testBusObject);
 
-            // get the signal member from the interface description
-            AllJoyn.InterfaceDescription.Member testSignalMember = testIntf.GetMember("testSignal");
+			// get the signal member from the interface description
+			AllJoyn.InterfaceDescription.Member testSignalMember = testIntf.GetMember("testSignal");
 
-            // register the signal handler
-            status = bus.RegisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// register the signal handler
+			status = bus.RegisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // add match for the signal
-            status = bus.AddMatch("type='signal',member='testSignal'");
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// add match for the signal
+			status = bus.AddMatch("type='signal',member='testSignal'");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            handledSignalsOne = false;
-            signalOneMsg = null;
+			handledSignalsOne = false;
+			signalOneMsg = null;
 
-            // send a signal
-            testBusObject.SendTestSignal("test msg");
+			// send a signal
+			testBusObject.SendTestSignal("test msg");
 
-            //wait to see if we receive the signal
+			//wait to see if we receive the signal
 			for (int i = 0; i < 1000; i++)
 			{
-			    if (handledSignalsOne)
-			    {
-			        break;
-			    }
-			    Thread.Sleep(5);
+				if (handledSignalsOne)
+				{
+					break;
+				}
+				Thread.Sleep(5);
 			}
 			//WaitEventOne(TimeSpan.FromSeconds(2));
 
-            Assert.Equal(true, handledSignalsOne);
-            Assert.Equal("test msg", signalOneMsg);
+			Assert.Equal(true, handledSignalsOne);
+			Assert.Equal("test msg", signalOneMsg);
 
 
-            // TODO: move these into a teardown method?
-            bus.Dispose();
-        }
+			// TODO: move these into a teardown method?
+			bus.Dispose();
+		}
 
-        //[Fact]
-        public void TestUnregisterSignalHandler()
-        {
-            AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+		//[Fact]
+		public void TestUnregisterSignalHandler()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
-            // create bus attachment
-            AllJoyn.BusAttachment bus = null;
-            bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
-            Assert.NotNull(bus);
+			// create bus attachment
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(bus);
 
-            // create the interface description
-            AllJoyn.InterfaceDescription testIntf = null;
-            status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            Assert.NotNull(testIntf);
+			// create the interface description
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
 
-            // add the signal member to the interface
-            status = testIntf.AddSignal("testSignal", "s", "msg", 0);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// add the signal member to the interface
+			status = testIntf.AddSignal("testSignal", "s", "msg", 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // activate the interface
-            testIntf.Activate();
+			// activate the interface
+			testIntf.Activate();
 
-            // start the bus attachment
-            status = bus.Start();
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// start the bus attachment
+			status = bus.Start();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // connect to the bus
-            status = bus.Connect(AllJoynTestCommon.GetConnectSpec());
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// connect to the bus
+			status = bus.Connect(AllJoynTestCommon.GetConnectSpec());
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // create the bus object &
-            // add the interface to the bus object
-            TestBusObject testBusObject = new TestBusObject(bus, "/test");
+			// create the bus object &
+			// add the interface to the bus object
+			TestBusObject testBusObject = new TestBusObject(bus, "/test");
 			bus.RegisterBusObject(testBusObject);
 
-            // get the signal member from the interface description
-            AllJoyn.InterfaceDescription.Member testSignalMember = testIntf.GetMember("testSignal");
+			// get the signal member from the interface description
+			AllJoyn.InterfaceDescription.Member testSignalMember = testIntf.GetMember("testSignal");
 
-            // register both signal handlers
-            status = bus.RegisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
-            status = bus.RegisterSignalHandler(this.TestSignalHandlerTwo, testSignalMember, null);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// register both signal handlers
+			status = bus.RegisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = bus.RegisterSignalHandler(this.TestSignalHandlerTwo, testSignalMember, null);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // add match for the signal
-            status = bus.AddMatch("type='signal',member='testSignal'");
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			// add match for the signal
+			status = bus.AddMatch("type='signal',member='testSignal'");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            handledSignalsOne = false;
-            handledSignalsTwo = false;
-            signalOneMsg = null;
-            signalTwoMsg = null;
+			handledSignalsOne = false;
+			handledSignalsTwo = false;
+			signalOneMsg = null;
+			signalTwoMsg = null;
 
-            // send a signal
-            testBusObject.SendTestSignal("test msg");
+			// send a signal
+			testBusObject.SendTestSignal("test msg");
 
-            // wait to see if we receive the signal
+			// wait to see if we receive the signal
 			for (int i = 0; i < 1000; i++)
 			{
 				if (handledSignalsOne)
@@ -238,25 +238,25 @@ namespace AllJoynUnityTest
 			//WaitEventOne(TimeSpan.FromSeconds(2));
 			//WaitEventTwo(TimeSpan.FromSeconds(2));
 
-            // make sure that both handlers got the signal
-            Assert.Equal(true, handledSignalsOne);
-            Assert.Equal("test msg", signalOneMsg);
-            Assert.Equal(true, handledSignalsTwo);
-            Assert.Equal("test msg", signalTwoMsg);
+			// make sure that both handlers got the signal
+			Assert.Equal(true, handledSignalsOne);
+			Assert.Equal("test msg", signalOneMsg);
+			Assert.Equal(true, handledSignalsTwo);
+			Assert.Equal("test msg", signalTwoMsg);
 
-            // now unregister one handler & make sure it doesn't receive the signal
-            handledSignalsOne = false;
-            handledSignalsTwo = false;
-            signalOneMsg = null;
-            signalTwoMsg = null;
+			// now unregister one handler & make sure it doesn't receive the signal
+			handledSignalsOne = false;
+			handledSignalsTwo = false;
+			signalOneMsg = null;
+			signalTwoMsg = null;
 
-            status = bus.UnregisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
-            Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = bus.UnregisterSignalHandler(this.TestSignalHandlerOne, testSignalMember, null);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
 
-            // send another signal
-            testBusObject.SendTestSignal("test msg");
+			// send another signal
+			testBusObject.SendTestSignal("test msg");
 
-            // wait to see if we receive the signal
+			// wait to see if we receive the signal
 			//WaitEventTwo(TimeSpan.FromSeconds(2));
 			for (int i = 0; i < 1000; i++)
 			{
@@ -267,75 +267,75 @@ namespace AllJoynUnityTest
 				Thread.Sleep(5);
 			}
 
-            // make sure that only the second handler got the signal
-            Assert.Equal(false, handledSignalsOne);
-            Assert.Null(signalOneMsg);
-            Assert.Equal(true, handledSignalsTwo);
-            Assert.Equal("test msg", signalTwoMsg);
+			// make sure that only the second handler got the signal
+			Assert.Equal(false, handledSignalsOne);
+			Assert.Null(signalOneMsg);
+			Assert.Equal(true, handledSignalsTwo);
+			Assert.Equal("test msg", signalTwoMsg);
 
-            // TODO: move these into a teardown method?
-            bus.Dispose();
-        }
+			// TODO: move these into a teardown method?
+			bus.Dispose();
+		}
 
 		//private void WaitEventOne(TimeSpan timeout)
 		//{
-		//    notifyEventOne.WaitOne(timeout);
-		//    notifyEventOne.Reset();
+		//	notifyEventOne.WaitOne(timeout);
+		//	notifyEventOne.Reset();
 		//}
 
 		//private void WaitEventTwo(TimeSpan timeout)
 		//{
-		//    notifyEventTwo.WaitOne(timeout);
-		//    notifyEventTwo.Reset();
+		//	notifyEventTwo.WaitOne(timeout);
+		//	notifyEventTwo.Reset();
 		//}
 
 		//private void NotifyEventOne()
 		//{
-		//    notifyEventOne.Set();
+		//	notifyEventOne.Set();
 		//}
 
 		//private void NotifyEventTwo()
 		//{
-		//    notifyEventTwo.Set();
+		//	notifyEventTwo.Set();
 		//}
 
-        public void TestSignalHandlerOne(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
-        {
-            signalOneMsg = message[0];
+		public void TestSignalHandlerOne(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
+		{
+			signalOneMsg = message[0];
 			// mark that the signal was received
 			handledSignalsOne = true;
 			//NotifyEventOne();
-        }
+		}
 
-        public void TestSignalHandlerTwo(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
-        {
-            signalTwoMsg = message[0];
+		public void TestSignalHandlerTwo(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
+		{
+			signalTwoMsg = message[0];
 			// mark that the signal was received
 			handledSignalsTwo = true;
 			//NotifyEventTwo();
-        }
+		}
 
-        class TestBusObject : AllJoyn.BusObject
-        {
-            private AllJoyn.InterfaceDescription.Member testSignalMember;
+		class TestBusObject : AllJoyn.BusObject
+		{
+			private AllJoyn.InterfaceDescription.Member testSignalMember;
 
-            public TestBusObject(AllJoyn.BusAttachment bus, string path)
-                : base(path, false)
-            {
-                AllJoyn.InterfaceDescription testIntf = bus.GetInterface("org.alljoyn.test.BusAttachment");
-                AllJoyn.QStatus status = AddInterface(testIntf);
-                Assert.Equal(AllJoyn.QStatus.OK, status);
+			public TestBusObject(AllJoyn.BusAttachment bus, string path)
+				: base(path, false)
+			{
+				AllJoyn.InterfaceDescription testIntf = bus.GetInterface("org.alljoyn.test.BusAttachment");
+				AllJoyn.QStatus status = AddInterface(testIntf);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
 
-                testSignalMember = testIntf.GetMember("testSignal");
-            }
+				testSignalMember = testIntf.GetMember("testSignal");
+			}
 
-            public void SendTestSignal(String msg)
-            {
-                AllJoyn.MsgArg payload = new AllJoyn.MsgArg();
-                payload.Set(msg);
-                AllJoyn.QStatus status = Signal(null, 0, testSignalMember, payload, 0, 64);
-                Assert.Equal(AllJoyn.QStatus.OK, status);
-            }
+			public void SendTestSignal(String msg)
+			{
+				AllJoyn.MsgArg payload = new AllJoyn.MsgArg();
+				payload.Set(msg);
+				AllJoyn.QStatus status = Signal(null, 0, testSignalMember, payload, 0, 64);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+			}
 //Still test sending signals using obsolete Signal calls till the obsolete method is removed.
 #pragma warning disable 618
 			public void SendTestSignal2(String msg)
@@ -346,6 +346,6 @@ namespace AllJoynUnityTest
 				Assert.Equal(AllJoyn.QStatus.OK, status);
 			}
 #pragma warning restore 618
-        }
-    }
+		}
+	}
 }

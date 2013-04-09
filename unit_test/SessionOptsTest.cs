@@ -31,7 +31,7 @@ namespace AllJoynUnityTest
 			
 			AllJoyn.SessionOpts opts = new AllJoyn.SessionOpts(AllJoyn.SessionOpts.TrafficType.Messages,
 				false, AllJoyn.SessionOpts.ProximityType.Any, AllJoyn.TransportMask.Any);
-			
+
 			Assert.Equal(AllJoyn.SessionOpts.TrafficType.Messages, opts.Traffic);
 			Assert.False(opts.IsMultipoint);
 			Assert.Equal(AllJoyn.SessionOpts.ProximityType.Any, opts.Proximity);

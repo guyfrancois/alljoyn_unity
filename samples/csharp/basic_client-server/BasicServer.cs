@@ -197,7 +197,7 @@ namespace basic_clientserver
 					Console.WriteLine("Server Failed to advertise name {0} ({1})", SERVICE_NAME, status);
 				}
 			}
-            Console.WriteLine("Should have setup server");
+			Console.WriteLine("Should have setup server");
 		}
 
 		public bool KeepRunning
