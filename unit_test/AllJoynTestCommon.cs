@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="AllJoynTestCommon.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,7 +30,11 @@ namespace AllJoynUnityTest
 			}
 			else
 			{
-				return "tcp:addr=127.0.0.1,port=9955";
+				// Unix platforms are the only platforms we expect to have a non bundled daemon.
+				// In the past we would return "tcp:addr=127.0.0.1,port=9956" however something
+				// about the way xunit runs its test code caused this to have error when calling
+				// BusAttachment.Connect(...)
+				return "null:";
 			}
 		}
 	}
