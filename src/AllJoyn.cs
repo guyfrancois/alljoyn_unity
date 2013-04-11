@@ -40,7 +40,7 @@ namespace AllJoynUnity
 		private const string DLL_IMPORT_TARGET = "alljoyn_c";
 #endif
 
-		private const string UNITY_VERSION = ".3";
+		private const string UNITY_VERSION = "0.0.3";
 
 		private static readonly int DEFERED_CALLBACK_WAIT_TIMER = 50;
 
@@ -61,7 +61,7 @@ namespace AllJoynUnity
 	/**
 	 *  Get the version string from AllJoyn.
 	 *
-	 * @return string representiong the version from AllJoyn
+	 * @return string representing the version from AllJoyn
 	 */
 	public static string GetVersion()
 	{
@@ -71,13 +71,22 @@ namespace AllJoynUnity
 	/**
 	 *  Get the build info string from AllJoyn
 	 *
-	 * @return string representiong the buid info from AllJoyn
+	 * @return string representing the buid info from AllJoyn
 	 */
 	public static string GetBuildInfo()
 	{
 		return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
 	}
 
+	/**
+	 * Gives the version of AllJoyn Library as a single number
+	 * 
+	 * @return a number representing the version of AllJoyn
+	 */
+	public static uint GetNumericVersion()
+	{
+		return alljoyn_getnumericversion();
+	}
 	/**
 	 * Turn off auto processing of callback data from a seperate thread. 
 	 * Used if developer manually calls Trigger callbacks on their schedule.
@@ -177,6 +186,9 @@ namespace AllJoynUnity
 
 	[DllImport(DLL_IMPORT_TARGET)]
 	private extern static IntPtr alljoyn_getbuildinfo();
+
+	[DllImport(DLL_IMPORT_TARGET)]
+	private extern static uint alljoyn_getnumericversion();
 
 	[DllImport(DLL_IMPORT_TARGET)]
 	private extern static int alljoyn_unity_deferred_callbacks_process();

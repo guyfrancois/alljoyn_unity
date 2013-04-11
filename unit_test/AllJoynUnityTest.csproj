@@ -49,6 +49,7 @@
     <Compile Include="MsgArgsTest.cs" />
     <Compile Include="SessionOptsTest.cs" />
     <Compile Include="SessionTest.cs" />
+    <Compile Include="VersionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\src\AllJoynUnity.csproj">
