@@ -1,4 +1,4 @@
-# Copyright 2012, Qualcomm Innovation Center, Inc.
+# Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -45,7 +45,7 @@ if(env.has_key('XUNIT_DIR')):
     
     # In addition to AllJoynUnitTest.dll the unit tests require xunit.dll, 
     # alljoyn_unity.dll, and alljoyn_c.dll to run
-    #place alljoyn_unity.dll into the test dir
+    # place alljoyn_unity.dll into the test dir
     envtest.Install('$UNITY_TESTDIR', envtest['ALLJOYN_UNITY_LIB'])
     #place alljoyn_c.dll into the test dir
     envtest.Install('$UNITY_TESTDIR', envtest['ALLJOYN_C_LIB_SHARED'])
@@ -54,7 +54,10 @@ if(env.has_key('XUNIT_DIR')):
         envtest.Install('bin/Debug', envtest['ALLJOYN_C_LIB_SHARED'])
     elif envtest['VARIANT'] == 'release':
         envtest.Install('bin/Release', envtest['ALLJOYN_C_LIB_SHARED'])
-    #place alljoyn_c.dll into the test dir
+    # place xunit.dll into the test dir
     envtest.Install('$UNITY_TESTDIR', envtest['XUNIT_DIR'] + os.sep + 'xunit.dll')
+    # place xunit.dll into project folder so unit test can be built and run 
+    # from visual studio very useful for development and debugging.
+    envtest.Install('..' + os.sep, envtest['XUNIT_DIR'] + os.sep + 'xunit.dll')
     
     Return('alljoyn_unity_test')
