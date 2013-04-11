@@ -115,7 +115,7 @@ namespace AllJoynUnityTest
 			ewh.WaitOne(MaxWaitTime);
 			Assert.Equal(true, acceptSessionJoinerFlag);
 			Assert.Equal(true, sessionJoinedFlag);
-
+			servicebus.ReleaseName(OBJECT_NAME);
 			servicebus.Dispose();
 			bus.Dispose();
 
@@ -225,6 +225,16 @@ namespace AllJoynUnityTest
 			ewh.WaitOne(MaxWaitTime);
 			Assert.Equal(true, sessionMemberRemovedFlag);
 
+			hostBus.ReleaseName(OBJECT_NAME);
+
+			memberOneBus.Stop();
+			memberOneBus.Join();
+
+			memberTwoBus.Stop();
+			memberTwoBus.Join();
+
+			hostBus.Stop();
+			hostBus.Join();
 
 			memberOneBus.Dispose();
 			memberTwoBus.Dispose();
@@ -298,6 +308,7 @@ namespace AllJoynUnityTest
 			sessionLostFlag = false;
 			sessionMemberRemovedFlag = false;
 			hostBus.Stop();
+			hostBus.Join();
 			ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "SessionLost");
 			ewh.WaitOne(MaxWaitTime);
 			Assert.Equal(true, sessionLostFlag);
@@ -306,6 +317,11 @@ namespace AllJoynUnityTest
 			ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "SessionMemberRemoved");
 			ewh.WaitOne(MaxWaitTime);
 			Assert.Equal(true, sessionMemberRemovedFlag);
+
+			hostBus.ReleaseName(OBJECT_NAME);
+
+			memberOneBus.Stop();
+			memberOneBus.Join();
 
 			memberOneBus.Dispose();
 			hostBus.Dispose();

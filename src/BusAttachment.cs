@@ -35,8 +35,8 @@ namespace AllJoynUnity
 			/**
 			 * Construct a BusAttachment.
 			 *
-			 * @param applicationName	Name of the application.
-			 * @param allowRemoteMessages	True if this attachment is allowed to receive messages from remote devices.
+			 * @param applicationName      Name of the application.
+			 * @param allowRemoteMessages  True if this attachment is allowed to receive messages from remote devices.
 			 */
 			public BusAttachment(string applicationName, bool allowRemoteMessages)
 			{
@@ -92,7 +92,7 @@ namespace AllJoynUnity
 				IntPtr interfaceDescription = new IntPtr();
 				int qstatus = alljoyn_busattachment_createinterface(_busAttachment,
 					interfaceName, ref interfaceDescription, secure ? 1 : 0);
-				if(qstatus == 0)
+				if (qstatus == 0)
 				{
 					iface = new InterfaceDescription(interfaceDescription);
 				}
@@ -226,6 +226,40 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Wait for all of the threads spawned by the bus attachment to be completely 
+			 * exited.
+			 *
+			 * A call to the Join() method should be thought of as mapping to a
+			 * threading package join function call.  It blocks and waits until all of
+			 * the threads in the BusAttachment have, in fact, exited their Run functions,
+			 * gone through the stopping state and have returned their status.  When
+			 * the Join() method returns, one may be assured that no threads are running
+			 * in the bus attachment, and therefore there will be no callbacks in
+			 * progress and no further callbacks will ever come out of the instance of a
+			 * bus attachment on which Join() was called.
+			 *
+			 * A call to Join() is implied as one of the first steps in the destruction
+			 * of a bus attachment.  Thus, when a bus attachment is destroyed, it is
+			 * guaranteed that before it completes its destruction process, there will be
+			 * no callbacks in process.
+			 *
+			 * @warning If Join() is called without a previous Stop() it will result in
+			 * blocking "forever."
+			 *
+			 * @see Start()
+			 * @see Stop()
+			 *
+			 * @return
+			 *      - QStatus.OK if successful.
+			 *      - QStatus.ER_BUS_BUS_ALREADY_STARTED if already started
+			 *      - Other error status codes indicating a failure
+			 */
+			public QStatus Join()
+			{
+				return alljoyn_busattachment_join(_busAttachment);
+			}
+
+			/**
 			 * Connect to a remote bus address.
 			 *
 			 * @param connectSpec  A transport connection spec string of the form:
@@ -255,7 +289,7 @@ namespace AllJoynUnity
 			 * Unregister an object that was previously registered with RegisterBusListener.
 			 *
 			 * @param listener  Object instance to un-register as a listener.
-			 */ 
+			 */
 			public void UnregisterBusListener(BusListener listener)
 			{
 				alljoyn_busattachment_unregisterbuslistener(_busAttachment, listener.UnmanagedPtr);
@@ -294,7 +328,7 @@ namespace AllJoynUnity
 			 */
 			public QStatus FindAdvertisedNameByTransport(string namePrefix, TransportMask transports)
 			{
-				return alljoyn_busattachment_findadvertisednamebytransport(_busAttachment, namePrefix,  (ushort)transports);
+				return alljoyn_busattachment_findadvertisednamebytransport(_busAttachment, namePrefix, (ushort)transports);
 			}
 			/**
 			 * Cancel interest in a well-known name prefix that was previously
@@ -359,12 +393,13 @@ namespace AllJoynUnity
 				IntPtr optsPtr = opts.UnmanagedPtr;
 				uint sessionId_out = 0;
 				int qstatus = 0;
-				Thread joinSessionThread = new Thread((object o) => {
+				Thread joinSessionThread = new Thread((object o) =>
+				{
 					qstatus = alljoyn_busattachment_joinsession(_busAttachment, sessionHost, sessionPort,
 						(listener == null ? IntPtr.Zero : listener.UnmanagedPtr), ref sessionId_out, optsPtr);
 				});
 				joinSessionThread.Start();
-				while(joinSessionThread.IsAlive)
+				while (joinSessionThread.IsAlive)
 				{
 					AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
@@ -511,7 +546,8 @@ namespace AllJoynUnity
 			 *
 			 * @return ER_OK if successful.
 			 */
-			public QStatus UnregisterAllHandlers() {
+			public QStatus UnregisterAllHandlers()
+			{
 				return alljoyn_busattachment_unregisterallhandlers(_busAttachment);
 			}
 
@@ -586,12 +622,13 @@ namespace AllJoynUnity
 			{
 				QStatus ret = QStatus.OK;
 				ushort otherSessionPort = sessionPort;
-				Thread bindThread = new Thread((object o) => {
+				Thread bindThread = new Thread((object o) =>
+				{
 					ret = alljoyn_busattachment_bindsessionport(_busAttachment, ref otherSessionPort,
 						opts.UnmanagedPtr, listener.UnmanagedPtr);
 				});
 				bindThread.Start();
-				while(bindThread.IsAlive)
+				while (bindThread.IsAlive)
 				{
 					AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
@@ -613,11 +650,12 @@ namespace AllJoynUnity
 			public QStatus UnbindSessionPort(ushort sessionPort)
 			{
 				QStatus ret = QStatus.OK;
-				Thread bindThread = new Thread((object o) => {
+				Thread bindThread = new Thread((object o) =>
+				{
 					ret = alljoyn_busattachment_unbindsessionport(_busAttachment, sessionPort);
 				});
 				bindThread.Start();
-				while(bindThread.IsAlive)
+				while (bindThread.IsAlive)
 				{
 					AllJoyn.TriggerCallbacks();
 					Thread.Sleep(0);
@@ -685,19 +723,19 @@ namespace AllJoynUnity
 			 */
 			public InterfaceDescription[] GetInterfaces()
 			{
-			
+
 				UIntPtr numIfaces = alljoyn_busattachment_getinterfaces(_busAttachment, IntPtr.Zero, (UIntPtr)0);
 				IntPtr[] ifaces = new IntPtr[(int)numIfaces];
 				GCHandle gch = GCHandle.Alloc(ifaces, GCHandleType.Pinned);
 				UIntPtr numIfacesFilled = alljoyn_busattachment_getinterfaces(_busAttachment,
 					gch.AddrOfPinnedObject(), numIfaces);
 				gch.Free();
-				if(numIfaces != numIfacesFilled)
+				if (numIfaces != numIfacesFilled)
 				{
 					// Warn?
 				}
 				InterfaceDescription[] ret = new InterfaceDescription[(int)numIfacesFilled];
-				for(int i = 0; i < ret.Length; i++)
+				for (int i = 0; i < ret.Length; i++)
 				{
 					ret[i] = new InterfaceDescription(ifaces[i]);
 				}
@@ -849,7 +887,7 @@ namespace AllJoynUnity
 			 */
 			public QStatus AddLogonEntry(string authMechanism, string userName, string password)
 			{
-			
+
 				return alljoyn_busattachment_addlogonentry(_busAttachment, authMechanism, userName, password);
 			}
 
@@ -882,7 +920,7 @@ namespace AllJoynUnity
 			 */
 			public QStatus RemoveMatch(string rule)
 			{
-			
+
 				return alljoyn_busattachment_removematch(_busAttachment, rule);
 			}
 
@@ -974,11 +1012,11 @@ namespace AllJoynUnity
 			 */
 			public QStatus GetPeerGuid(string name, out string guid)
 			{
-			
+
 				UIntPtr guidSz = new UIntPtr();
 				QStatus ret = alljoyn_busattachment_getpeerguid(_busAttachment, name,
 					IntPtr.Zero, ref guidSz);
-				if(!ret)
+				if (!ret)
 				{
 					guid = "";
 				}
@@ -989,7 +1027,7 @@ namespace AllJoynUnity
 					ret = alljoyn_busattachment_getpeerguid(_busAttachment, name,
 						gch.AddrOfPinnedObject(), ref guidSz);
 					gch.Free();
-					if(!ret)
+					if (!ret)
 					{
 						guid = "";
 					}
@@ -1075,12 +1113,19 @@ namespace AllJoynUnity
 			 * @param message   The received message.
 			 */
 			public delegate void SignalHandler(InterfaceDescription.Member member, string srcPath, Message message);
-			
+
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSignalHandler(IntPtr member, IntPtr srcPath, IntPtr message);
 			#endregion
 
 			#region Properties
+			public uint Concurrency
+			{
+				get
+				{
+					return alljoyn_busattachment_getconcurrency(_busAttachment);
+				}
+			}
 			/**
 			 * Check is peer security has been enabled for this bus attachment.
 			 *
@@ -1229,7 +1274,7 @@ namespace AllJoynUnity
 
 			internal static BusAttachment MapBusAttachment(IntPtr key)
 			{
-			
+
 				return _sBusAttachmentMap[key];
 			}
 
@@ -1239,9 +1284,9 @@ namespace AllJoynUnity
 			 */
 			public void Dispose()
 			{
-			
+
 				Dispose(true);
-				GC.SuppressFinalize(this); 
+				GC.SuppressFinalize(this);
 			}
 
 			/**
@@ -1250,10 +1295,11 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-				if(!_isDisposed)
+				if (!_isDisposed)
 				{
 					AllJoyn.StopAllJoynProcessing();
-					Thread destroyThread = new Thread((object o) => {
+					Thread destroyThread = new Thread((object o) =>
+					{
 						if (_signalHandlerDelegateRefHolder.Count > 0)
 						{
 							UnregisterAllHandlers();
@@ -1261,7 +1307,7 @@ namespace AllJoynUnity
 						alljoyn_busattachment_destroy(_busAttachment);
 					});
 					destroyThread.Start();
-					while(destroyThread.IsAlive)
+					while (destroyThread.IsAlive)
 					{
 						AllJoyn.TriggerCallbacks();
 						Thread.Sleep(0);
@@ -1289,6 +1335,15 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_stop(IntPtr bus);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_join(IntPtr bus);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_busattachment_getconcurrency(IntPtr bus);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static void alljoyn_busattachment_enableconcurrentcallbacks(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_createinterface(
