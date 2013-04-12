@@ -44,7 +44,24 @@ namespace AllJoynUnity
 				_busAttachment = alljoyn_busattachment_create(applicationName, allowRemoteMessages ? 1 : 0);
 
 				_signalHandlerDelegateRefHolder = new Dictionary<SignalHandler, InternalSignalHandler>();
-				if(_sBusAttachmentMap == null) _sBusAttachmentMap = new Dictionary<IntPtr, BusAttachment>();
+				if (_sBusAttachmentMap == null) _sBusAttachmentMap = new Dictionary<IntPtr, BusAttachment>();
+				_sBusAttachmentMap.Add(_busAttachment, this);
+			}
+
+			/**
+			 * Construct a BusAttachment.
+			 *
+			 * @param applicationName      Name of the application.
+			 * @param allowRemoteMessages  True if this attachment is allowed to receive messages from remote devices.
+			 * @param concurrency          The maximum number of concurrent method and signal handlers locally executing.
+			 */
+			public BusAttachment(string applicationName, bool allowRemoteMessages, uint concurrency)
+			{
+				SetMainThreadOnlyCallbacks(true);
+				_busAttachment = alljoyn_busattachment_create_concurrency(applicationName, allowRemoteMessages ? 1 : 0, concurrency);
+
+				_signalHandlerDelegateRefHolder = new Dictionary<SignalHandler, InternalSignalHandler>();
+				if (_sBusAttachmentMap == null) _sBusAttachmentMap = new Dictionary<IntPtr, BusAttachment>();
 				_sBusAttachmentMap.Add(_busAttachment, this);
 			}
 
@@ -274,6 +291,10 @@ namespace AllJoynUnity
 				return alljoyn_busattachment_connect(_busAttachment, connectSpec);
 			}
 
+			public void EnableConcurrentCallbacks()
+			{
+				alljoyn_busattachment_enableconcurrentcallbacks(_busAttachment);
+			}
 
 			/**
 			 * Register an object that will receive bus event notifications.
@@ -1329,6 +1350,11 @@ namespace AllJoynUnity
 			private extern static IntPtr alljoyn_busattachment_create(
 				[MarshalAs(UnmanagedType.LPStr)] string applicationName,
 				int allowRemoteMessages);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_busattachment_create_concurrency(
+				[MarshalAs(UnmanagedType.LPStr)] string applicationName,
+				int allowRemoteMessages, uint concurrency);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_busattachment_destroy(IntPtr busAttachment);

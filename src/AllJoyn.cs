@@ -27,9 +27,9 @@ using System.Threading;
 
 namespace AllJoynUnity
 {
-/**
- * %AllJoyn namespace and methods to request the library for version information, also starts AllJoyn processing for callbacks.
- */
+	/**
+	 * %AllJoyn namespace and methods to request the library for version information, also starts AllJoyn processing for callbacks.
+	 */
 	public partial class AllJoyn
 	{
 		// DLL name for externs
@@ -48,65 +48,66 @@ namespace AllJoynUnity
 		private static Thread callbackPumpThread = null;
 		private static Boolean isProcessing = false;
 
-	/**
-	 * Request version of the C# binding
-	 *
-	 * @return string representing the version of the csharp language binding
-	 */
+		/**
+		 * Request version of the C# binding
+		 *
+		 * @return string representing the version of the csharp language binding
+		 */
 		public static string GetExtensionVersion()
 		{
 			return UNITY_VERSION;
 		}
 
-	/**
-	 *  Get the version string from AllJoyn.
-	 *
-	 * @return string representing the version from AllJoyn
-	 */
-	public static string GetVersion()
-	{
-		return Marshal.PtrToStringAnsi(alljoyn_getversion());
-	}
-
-	/**
-	 *  Get the build info string from AllJoyn
-	 *
-	 * @return string representing the buid info from AllJoyn
-	 */
-	public static string GetBuildInfo()
-	{
-		return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
-	}
-
-	/**
-	 * Gives the version of AllJoyn Library as a single number
-	 * 
-	 * @return a number representing the version of AllJoyn
-	 */
-	public static uint GetNumericVersion()
-	{
-		return alljoyn_getnumericversion();
-	}
-	/**
-	 * Turn off auto processing of callback data from a seperate thread. 
-	 * Used if developer manually calls Trigger callbacks on their schedule.
-	 * @param autoProcess	Turn on/off the ability for AllJoyn to process the callbacks in a new thread
-	 */
-	public static void SetAutoAllJoynCallbackProcessing(Boolean autoProcess)
-	{
-		autoProcessCallback = autoProcess;
-		if(autoProcessCallback)
+		/**
+		 *  Get the version string from AllJoyn.
+		 *
+		 * @return string representing the version from AllJoyn
+		 */
+		public static string GetVersion()
 		{
-			StartAllJoynCallbackProcessing();
+			return Marshal.PtrToStringAnsi(alljoyn_getversion());
 		}
-	}
 
-	/**
-	 * Starts a thread to process AllJoyn callback data.
-	 */
+		/**
+		 *  Get the build info string from AllJoyn
+		 *
+		 * @return string representing the buid info from AllJoyn
+		 */
+		public static string GetBuildInfo()
+		{
+			return Marshal.PtrToStringAnsi(alljoyn_getbuildinfo());
+		}
+
+		/**
+		 * Gives the version of AllJoyn Library as a single number
+		 * 
+		 * @return a number representing the version of AllJoyn
+		 */
+		public static uint GetNumericVersion()
+		{
+			return alljoyn_getnumericversion();
+		}
+
+		/**
+		 * Turn off auto processing of callback data from a seperate thread. 
+		 * Used if developer manually calls Trigger callbacks on their schedule.
+		 * @param autoProcess	Turn on/off the ability for AllJoyn to process the callbacks in a new thread
+		 */
+		public static void SetAutoAllJoynCallbackProcessing(Boolean autoProcess)
+		{
+			autoProcessCallback = autoProcess;
+			if (autoProcessCallback)
+			{
+				StartAllJoynCallbackProcessing();
+			}
+		}
+
+		/**
+		 * Starts a thread to process AllJoyn callback data.
+		 */
 		public static void StartAllJoynCallbackProcessing()
 		{
-			if(!autoProcessCallback)
+			if (!autoProcessCallback)
 			{
 				return;
 			}
@@ -131,9 +132,9 @@ namespace AllJoynUnity
 			alljoyn_unity_deferred_callbacks_process();
 		}
 
-	/**
-	 * Stops the thread processing AllJoyn callback data.
-	 */
+		/**
+		 * Stops the thread processing AllJoyn callback data.
+		 */
 		public static void StopAllJoynProcessing()
 		{
 			if (callbackPumpThread != null && callbackPumpThread.IsAlive)
@@ -145,57 +146,54 @@ namespace AllJoynUnity
 			callbackPumpThread = null;
 		}
 
-	
-	/**
-	 * Call to trigger callbacks on main thread. Allows to manually process the callbacks.
-	 * @return the number of callbacks processed
-	 */
+		/**
+		 * Call to trigger callbacks on main thread. Allows to manually process the callbacks.
+		 * @return the number of callbacks processed
+		 */
 		public static int TriggerCallbacks()
 		{
 			return alljoyn_unity_deferred_callbacks_process();
 		}
 
-	
-
-	/**
-	 * Enable/disable main-thread-only callbacks.
-	 * NOTE: For Android this should be called with a value of true
-	 * @param mainThreadOnly set to true to limit callbacks to the main thread
-	 */ 
+		/**
+		 * Enable/disable main-thread-only callbacks.
+		 * NOTE: For Android this should be called with a value of true
+		 * @param mainThreadOnly set to true to limit callbacks to the main thread
+		 */
 		public static void SetMainThreadOnlyCallbacks(bool mainThreadOnly)
 		{
 			alljoyn_unity_set_deferred_callback_mainthread_only(mainThreadOnly ? 1 : 0);
 		}
 
-	[Flags]
-	/** Bitmask of all transport types */
-	public enum TransportMask : ushort
-	{
-		None = 0x0000, /**< no transports */
-		Any = 0xFFFF, /**< ANY transport */
-		Local = 0x0001, /**< Local (same device) transport */
-		Bluetooth = 0x0002, /**< Bluetooth transport */
-		WLAN = 0x0004, /**< Wireless local-area network transport */
-		WWAN = 0x0008, /**< Wireless wide-area network transport */
-		LAN = 0x0010 /**< Wired local-area network transport */
-	}
+		[Flags]
+		/** Bitmask of all transport types */
+		public enum TransportMask : ushort
+		{
+			None = 0x0000, /**< no transports */
+			Any = 0xFFFF, /**< ANY transport */
+			Local = 0x0001, /**< Local (same device) transport */
+			Bluetooth = 0x0002, /**< Bluetooth transport */
+			WLAN = 0x0004, /**< Wireless local-area network transport */
+			WWAN = 0x0008, /**< Wireless wide-area network transport */
+			LAN = 0x0010 /**< Wired local-area network transport */
+		}
 
-	#region DLL Imports
-	[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
-	private extern static IntPtr alljoyn_getversion();
+		#region DLL Imports
+		[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi, CallingConvention = CallingConvention.Cdecl)]
+		private extern static IntPtr alljoyn_getversion();
 
-	[DllImport(DLL_IMPORT_TARGET)]
-	private extern static IntPtr alljoyn_getbuildinfo();
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static IntPtr alljoyn_getbuildinfo();
 
-	[DllImport(DLL_IMPORT_TARGET)]
-	private extern static uint alljoyn_getnumericversion();
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static uint alljoyn_getnumericversion();
 
-	[DllImport(DLL_IMPORT_TARGET)]
-	private extern static int alljoyn_unity_deferred_callbacks_process();
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static int alljoyn_unity_deferred_callbacks_process();
 
-	[DllImport(DLL_IMPORT_TARGET)]
-	private extern static void alljoyn_unity_set_deferred_callback_mainthread_only(int mainthread_only);
+		[DllImport(DLL_IMPORT_TARGET)]
+		private extern static void alljoyn_unity_set_deferred_callback_mainthread_only(int mainthread_only);
 
-	#endregion
+		#endregion
 	}
 }

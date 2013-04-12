@@ -6,7 +6,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -84,6 +84,10 @@ namespace AllJoynUnity
 				return alljoyn_proxybusobject_addinterface(_proxyBusObject, iface.UnmanagedPtr);
 			}
 
+			public QStatus IntrospectRemoteObject()
+			{
+				return alljoyn_proxybusobject_introspectremoteobject(_proxyBusObject);
+			}
 			/**
 			 * Make a synchronous method call from this object
 			 *
@@ -147,6 +151,9 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_proxybusobject_addinterface(IntPtr bus, IntPtr iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_proxybusobject_introspectremoteobject(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_proxybusobject_methodcall(IntPtr obj,

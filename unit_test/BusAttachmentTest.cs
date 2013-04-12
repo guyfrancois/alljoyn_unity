@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="BusAttachmentTest.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,6 +34,20 @@ namespace AllJoynUnityTest
 		private bool handledSignalsTwo;
 		private string signalOneMsg;
 		private string signalTwoMsg;
+
+		[Fact]
+		public void Concurrency()
+		{
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			// The default value for concurrency is 4
+			Assert.Equal<uint>(4, bus.Concurrency);
+			bus.Dispose();
+
+			bus = new AllJoyn.BusAttachment("BusAttachmentTest", true, 8);
+			Assert.Equal<uint>(8, bus.Concurrency);
+			bus.Dispose();
+		}
 
 		[Fact]
 		public void TestCreateInterface()
