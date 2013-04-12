@@ -23,9 +23,11 @@ returnValue = []
 #returnValue += env.Install('$UNITY_DISTDIR/samples/csharp/basic_client-server', env.Dir('csharp/basic_client-server'))
 #returnValue += env.Install('$UNITY_DISTDIR/samples/csharp/basic_server', env.Dir('csharp/basic_server'))
 
-returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/BasicClient'))
-returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/BasicServer'))
-returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/Chat'))
+# only install the samples for an android build.
+if env['OS'] == 'android':
+    returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/BasicClient'))
+    returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/BasicServer'))
+    returnValue += env.Install('$UNITY_DISTDIR/samples', env.Dir('Unity/Chat'))
 
 #install libraries into samples in the source and the distdir
 if env['OS_GROUP'] == 'windows':
