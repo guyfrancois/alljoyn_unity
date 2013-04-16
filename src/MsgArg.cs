@@ -82,7 +82,7 @@ namespace AllJoynUnity
 			 * Constructor for MsgArgs.
 			 */
 			public MsgArg(uint numArgs)
-			{ 
+			{
 				_msgArg = alljoyn_msgarg_array_create((UIntPtr)numArgs);
 				_length = numArgs;
 			}
@@ -110,7 +110,7 @@ namespace AllJoynUnity
 			 */
 			public MsgArg this[int index]
 			{
-				get 
+				get
 				{
 					MsgArg ret = new MsgArg();
 					ret._msgArg = alljoyn_msgarg_array_element(this._msgArg, (UIntPtr)index);
@@ -403,7 +403,7 @@ namespace AllJoynUnity
 				arg.Set("as", sa);
 				return arg;
 			}
-			#endregion 
+			#endregion
 			#region implicit From MsgArg
 			/** 
 			 * Gets the byte value of a MsgArg Object
@@ -1073,7 +1073,7 @@ namespace AllJoynUnity
 			{
 				QStatus status = QStatus.OK;
 				value = null;
-				switch((AllJoynTypeId)sig[0])
+				switch ((AllJoynTypeId)sig[0])
 				{
 					case AllJoynTypeId.ALLJOYN_BYTE:
 						byte y;
@@ -1129,7 +1129,7 @@ namespace AllJoynUnity
 						IntPtr o;
 						status = alljoyn_msgarg_get_objectpath(_msgArg, out o);
 						value = Marshal.PtrToStringAnsi(o);
-						break;	
+						break;
 					case AllJoynTypeId.ALLJOYN_SIGNATURE:
 						IntPtr g;
 						status = alljoyn_msgarg_get_signature(_msgArg, out g);
@@ -1224,7 +1224,7 @@ namespace AllJoynUnity
 								break;
 							case AllJoynTypeId.ALLJOYN_STRING:
 								IntPtr sa;
-								status = alljoyn_msgarg_get_string_array(_msgArg, out length, out sa);
+								status = alljoyn_msgarg_get_variant_array(_msgArg, "as", out length, out sa);
 								if (status)
 								{
 									string[] as_result = new string[length];
@@ -1246,7 +1246,7 @@ namespace AllJoynUnity
 								break;
 							case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
 								IntPtr ao;
-								status = alljoyn_msgarg_get_objectpath_array(_msgArg, out length, out ao);
+								status = alljoyn_msgarg_get_variant_array(_msgArg, "ao", out length, out ao);
 								if (status)
 								{
 									string[] ao_result = new string[length];
@@ -1268,7 +1268,7 @@ namespace AllJoynUnity
 								break;
 							case AllJoynTypeId.ALLJOYN_SIGNATURE:
 								IntPtr ag;
-								status = alljoyn_msgarg_get_signature_array(_msgArg, out length, out ag);
+								status = alljoyn_msgarg_get_variant_array(_msgArg, "ag", out length, out ag);
 								if (status)
 								{
 									string[] ag_result = new string[length];
@@ -1288,11 +1288,36 @@ namespace AllJoynUnity
 									value = ag_result;
 								}
 								break;
-							//TODO handle ALLJOYN_DICT_ENTRY
+							case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
+								int dict_size = alljoyn_msgarg_get_array_numberofelements(_msgArg);
+								System.Collections.Generic.Dictionary<object, object> dict = new System.Collections.Generic.Dictionary<object, object>();
+								IntPtr temp_s;
+								// signature of form a{KV} where key is always one letter value
+								// just must be a complete signature lenght - 1 for K  - 2 for 'a{' and '}'
+								string key_sig = sig.Substring(2, 1);
+								string value_sig = sig.Substring(3, sig.Length - 4);
+								if (key_sig == null || value_sig == null)
+								{
+									 status = AllJoyn.QStatus.BUS_SIGNATURE_MISMATCH;
+								}
+								for (int j = 0; j < dict_size; ++j)
+								{
+									IntPtr inner_data_ptr;
+									alljoyn_msgarg_get_array_element(_msgArg, j, out inner_data_ptr);
+									Object actualKey;
+									Object actualValue;
+									MsgArg key_MsgArg = new MsgArg(alljoyn_msgarg_getkey(inner_data_ptr));
+									MsgArg value_MsgArg = new MsgArg(alljoyn_msgarg_getvalue(inner_data_ptr));
+									key_MsgArg.Get(key_sig, out actualKey);
+									value_MsgArg.Get(value_sig, out actualValue);
+									dict.Add(actualKey, actualValue);
+								}
+								value = dict;
+								break;
 							case AllJoynTypeId.ALLJOYN_ARRAY:
 								int outer_array_size = alljoyn_msgarg_get_array_numberofelements(_msgArg);
 								object[] outerArray = new object[outer_array_size];
-								for(int j = 0; j < outer_array_size; j++)
+								for (int j = 0; j < outer_array_size; j++)
 								{
 									if (status)
 									{
@@ -1314,11 +1339,11 @@ namespace AllJoynUnity
 								break;
 						}
 						break;
-						//TODO handle ALLJOYN_STRUCT
+					//TODO handle ALLJOYN_STRUCT
 					case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
 						status = QStatus.WRITE_ERROR;
 						break;
-						//TODO handle ALLJOYN_DICT
+					//TODO handle ALLJOYN_DICT
 					case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 						status = QStatus.WRITE_ERROR;
 						break;
@@ -1426,7 +1451,7 @@ namespace AllJoynUnity
 										ab[i] = 0;
 									}
 								}
-								status =  alljoyn_msgarg_set_bool_array(_msgArg, ab.Length, ab);
+								status = alljoyn_msgarg_set_bool_array(_msgArg, ab.Length, ab);
 								break;
 							case AllJoynTypeId.ALLJOYN_INT16:
 								status = alljoyn_msgarg_set_int16_array(_msgArg, ((short[])value).Length, (short[])value);
@@ -1457,6 +1482,23 @@ namespace AllJoynUnity
 							case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
 								goto case AllJoynTypeId.ALLJOYN_STRING;
 							//TODO handle ALLJOYN_DICT_ENTRY
+							case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
+								string inner_dict_sig = sig.Substring(1);
+								System.Collections.Generic.Dictionary<object, object> dict_value = ((System.Collections.Generic.Dictionary<object, object>)value);
+								int dict_size = dict_value.Count;
+								MsgArg dict_args = new MsgArg((uint)dict_size);
+								int dict_element_count = 0;
+								foreach (System.Collections.Generic.KeyValuePair<object, object> pair in dict_value)
+								{
+									status = dict_args[dict_element_count].Set(inner_dict_sig, pair);
+									dict_element_count++;
+									if (status != AllJoyn.QStatus.OK)
+									{
+										break;
+									}
+								}
+								status = alljoyn_msgarg_set(_msgArg, sig, dict_element_count, dict_args.UnmanagedPtr);
+								break;
 							// when working with arrays of arrays the user must pass in a jagged array
 							// i.e.  int[2,4] will not work but int[2][] will work.
 							case AllJoynTypeId.ALLJOYN_ARRAY:
@@ -1486,7 +1528,27 @@ namespace AllJoynUnity
 						status = QStatus.WRITE_ERROR;
 						break;
 					case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
-						status = QStatus.WRITE_ERROR;
+						string key_sig = sig.Substring(1, 1);
+						// signature of form {KV} where key is always one letter value
+						// just must be a complete signature lenght - 1 for K  - 2 for '{' and '}'
+						string value_sig = sig.Substring(2, sig.Length - 3);
+						Object sub_key = ((System.Collections.Generic.KeyValuePair<Object, Object>)value).Key;
+						Object sub_value = ((System.Collections.Generic.KeyValuePair<Object, Object>)value).Value;
+						MsgArg dict_key_arg = new MsgArg();
+						status = dict_key_arg.Set(key_sig, sub_key);
+						if (status != AllJoyn.QStatus.OK)
+						{
+							break;
+						}
+						MsgArg dict_value_arg = new MsgArg();
+						status = dict_value_arg.Set(value_sig, sub_value);
+						status = dict_key_arg.Set(key_sig, sub_key);
+						if (status != AllJoyn.QStatus.OK)
+						{
+							break;
+						}
+
+						status = alljoyn_msgarg_setdictentry(_msgArg, dict_key_arg._msgArg, dict_value_arg._msgArg);
 						break;
 					case AllJoynTypeId.ALLJOYN_VARIANT:
 						status = alljoyn_msgarg_set(_msgArg, sig, ((MsgArg)value)._msgArg);
@@ -1523,7 +1585,7 @@ namespace AllJoynUnity
 			public void Dispose()
 			{
 				Dispose(true);
-				GC.SuppressFinalize(this); 
+				GC.SuppressFinalize(this);
 			}
 
 			/**
@@ -1532,7 +1594,7 @@ namespace AllJoynUnity
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-				if(!_isDisposed)
+				if (!_isDisposed)
 				{
 					alljoyn_msgarg_destroy(_msgArg);
 					_msgArg = IntPtr.Zero;
@@ -1729,19 +1791,23 @@ namespace AllJoynUnity
 			private static extern int alljoyn_msgarg_get_uint64_array(IntPtr arg, out int length, out IntPtr at);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_double_array(IntPtr arg, out int length, out IntPtr ad);
-			/* char* string arrays are passed as an IntPtr */
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get_string_array(IntPtr arg, out int length, out IntPtr sa);
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get_objectpath_array(IntPtr arg, out int length, out IntPtr ao);
-			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_get_signature_array(IntPtr arg, out int length, out IntPtr ag);
+			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
+			private static extern int alljoyn_msgarg_get_variant_array(IntPtr arg, string signature, out int length, out IntPtr av);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_array_numberofelements(IntPtr arg);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern void alljoyn_msgarg_get_array_element(IntPtr arg, int index, out IntPtr element);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_get_array_elementsignature(IntPtr arg, int index);
+			
+			/* Dictionary types */
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_msgarg_getkey(IntPtr arg);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_msgarg_getvalue(IntPtr arg);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_setdictentry(IntPtr arg, IntPtr key, IntPtr val);
+
 			#endregion
 
 			#region Internal Properties

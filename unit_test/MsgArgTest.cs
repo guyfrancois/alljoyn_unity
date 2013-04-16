@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="SessionTest.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -691,6 +691,25 @@ namespace AllJoynUnityTest
 					}
 				}
 			}
+		}
+
+		[Fact]
+		public void dictionaries()
+		{
+			System.Collections.Generic.Dictionary<object, object> dict = new System.Collections.Generic.Dictionary<object, object>();
+			dict.Add("apple", 2);
+			dict.Add("pear", 1);
+			dict.Add("bannana", 0);
+			dict.Add("kiwi", -1);
+
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			AllJoyn.QStatus status = arg.Set("a{si}", dict);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			object out_dict;
+			status = arg.Get("a{si}", out out_dict);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal(dict, (System.Collections.Generic.Dictionary<object, object>)out_dict);
 		}
 	}
 }

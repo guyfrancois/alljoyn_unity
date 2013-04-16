@@ -4,7 +4,7 @@
  */
 
 /******************************************************************************
- * Copyright 2010-2011, Qualcomm Innovation Center, Inc.
+ * Copyright 2010-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -80,13 +80,13 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Callbacks
-			private int _LoadRequest(IntPtr context, IntPtr keyStore)
+			private int _LoadRequest(IntPtr context, IntPtr keyStoreListener, IntPtr keyStore)
 			{
 			
 				return LoadRequest(new KeyStore(keyStore, this.UnmanagedPtr));
 			}
 
-			private int _StoreRequest(IntPtr context, IntPtr keyStore)
+			private int _StoreRequest(IntPtr context, IntPtr keyStoreListener, IntPtr keyStore)
 			{
 			
 				return StoreRequest(new KeyStore(keyStore, this.UnmanagedPtr));
@@ -95,9 +95,9 @@ namespace AllJoynUnity
 
 			#region Delegates
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			private delegate int InternalLoadRequest(IntPtr context, IntPtr keyStore);
+			private delegate int InternalLoadRequest(IntPtr context, IntPtr keyStoreListener, IntPtr keyStore);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			private delegate int InternalStoreRequest(IntPtr context, IntPtr keyStore);
+			private delegate int InternalStoreRequest(IntPtr context, IntPtr keyStoreListener, IntPtr keyStore);
 			#endregion
 
 			/**
