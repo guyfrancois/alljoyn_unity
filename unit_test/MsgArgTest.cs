@@ -771,6 +771,53 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
+		public void ArrayOfStruct()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+			object[][] sii = new object[][]
+							{
+								new object[] {1, 2}, 
+								new object[] {11, 22}, 
+								new object[] {111, 222}
+							};
+
+			//signature a(ii);
+			AllJoyn.MsgArg structs = new AllJoyn.MsgArg(3);
+			status = structs[0].Set("(ii)", sii[0]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = structs[1].Set("(ii)", sii[1]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = structs[2].Set("(ii)", sii[2]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			AllJoyn.MsgArg struct_array = new AllJoyn.MsgArg();
+			status = struct_array.Set("a(ii)", structs);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			object out_struct_array;
+			int a_size;
+			status = struct_array.Get("a(ii)", out out_struct_array);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			AllJoyn.MsgArg ret_value = (AllJoyn.MsgArg)out_struct_array;
+			Assert.Equal(3, ret_value.Length);
+			object rii;
+			status = ret_value[0].Get("(ii)", out rii);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal(2, ((object[])rii).Length);
+			Assert.Equal(1, (int)((object[])rii)[0]);
+			Assert.Equal(2, (int)((object[])rii)[1]);
+			status = ret_value[1].Get("(ii)", out rii);
+			Assert.Equal(2, ((object[])rii).Length);
+			Assert.Equal(11, (int)((object[])rii)[0]);
+			Assert.Equal(22, (int)((object[])rii)[1]);
+			status = ret_value[2].Get("(ii)", out rii);
+			Assert.Equal(2, ((object[])rii).Length);
+			Assert.Equal(111, (int)((object[])rii)[0]);
+			Assert.Equal(222, (int)((object[])rii)[1]);
+
+		}
+
+		[Fact]
 		public void InvalidAssignment()
 		{
 			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();

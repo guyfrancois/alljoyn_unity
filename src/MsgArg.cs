@@ -81,10 +81,19 @@ namespace AllJoynUnity
 			/**
 			 * Constructor for MsgArgs.
 			 */
-			public MsgArg(uint numArgs)
+			public MsgArg(int numArgs)
 			{
 				_msgArg = alljoyn_msgarg_array_create((UIntPtr)numArgs);
 				_length = numArgs;
+			}
+
+			/**
+			 * Constructor for MsgArgs.
+			 */
+			public MsgArg(uint numArgs)
+			{
+				_msgArg = alljoyn_msgarg_array_create((UIntPtr)numArgs);
+				_length = (int)numArgs;
 			}
 			/**
 			 * @cond ALLJOYN_DEV
@@ -130,7 +139,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (int)_length;
+					return _length;
 				}
 			}
 
@@ -1314,6 +1323,18 @@ namespace AllJoynUnity
 								}
 								value = dict;
 								break;
+							case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
+								int struct_array_size = alljoyn_msgarg_get_array_numberofelements(_msgArg);
+								MsgArg struct_array = new MsgArg(struct_array_size);
+								for (int j = 0; j < struct_array_size; ++j)
+								{
+									IntPtr struct_array_ptr;
+									alljoyn_msgarg_get_array_element(_msgArg, j, out struct_array_ptr);
+									AllJoyn.MsgArg tmp = new MsgArg(struct_array_ptr);
+									struct_array[j] = tmp;
+								}
+								value = struct_array;
+								break;
 							case AllJoynTypeId.ALLJOYN_ARRAY:
 								int outer_array_size = alljoyn_msgarg_get_array_numberofelements(_msgArg);
 								object[] outerArray = new object[outer_array_size];
@@ -1503,13 +1524,14 @@ namespace AllJoynUnity
 							case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
 								goto case AllJoynTypeId.ALLJOYN_STRING;
 							case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
-								status = QStatus.WRITE_ERROR;
+								MsgArg array_struct = (MsgArg)value;
+								status = alljoyn_msgarg_set(_msgArg, sig, array_struct.Length, array_struct.UnmanagedPtr);
 								break;
 							case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 								string inner_dict_sig = sig.Substring(1);
 								System.Collections.Generic.Dictionary<object, object> dict_value = ((System.Collections.Generic.Dictionary<object, object>)value);
 								int dict_size = dict_value.Count;
-								MsgArg dict_args = new MsgArg((uint)dict_size);
+								MsgArg dict_args = new MsgArg(dict_size);
 								int dict_element_count = 0;
 								foreach (System.Collections.Generic.KeyValuePair<object, object> pair in dict_value)
 								{
@@ -1527,7 +1549,7 @@ namespace AllJoynUnity
 							case AllJoynTypeId.ALLJOYN_ARRAY:
 								string inner_sig = sig.Substring(1);
 								int array_size = ((System.Array)value).GetLength(0);
-								MsgArg args = new MsgArg((uint)array_size);
+								MsgArg args = new MsgArg(array_size);
 								for (int j = 0; j < array_size; ++j)
 								{
 									if (status != QStatus.OK)
@@ -1560,7 +1582,7 @@ namespace AllJoynUnity
 						{
 							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
 						}
-						MsgArg struct_args = new MsgArg((uint)struct_sigs.Length);
+						MsgArg struct_args = new MsgArg(struct_sigs.Length);
 						for (int j = 0; j < struct_sigs.Length; ++j)
 						{
 							status = struct_args[j].Set(struct_sigs[j], structObjects[j]);
@@ -2092,7 +2114,7 @@ namespace AllJoynUnity
 
 			#region Data
 			IntPtr _msgArg;
-			uint _length;
+			int _length;
 			bool _isDisposed = false;
 			#endregion
 		}
