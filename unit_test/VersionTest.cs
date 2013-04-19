@@ -65,7 +65,7 @@ namespace AllJoynUnityTest
 		public void GetBuildInfo()
 		{
 			// GetBuildInfo is expecte to be a string of type 
-			// AllJoyn Library v#.#.# (Built <weekday> <month> dd  hh:mm:ss UTC yyyy on <computername> by <username>) 
+			// AllJoyn Library v#.#.# (Built <weekday> <month> dd  hh:mm:ss UTC yyyy by <username>) 
 			// This test code is most likely more complex than
 			// the code used to generate the string but it should handle any value 
 			// returned
@@ -104,12 +104,10 @@ namespace AllJoynUnityTest
 			Assert.True(bInfo[8].Equals("UTC"));
 			//year yyyy
 			Assert.True(int.TryParse(bInfo[9], out aaa));
-			Assert.True(bInfo[10].Equals("on"));
-			//bInfo[11] is the computer name will not test
-			Assert.True(bInfo[12].Equals("by"));
-			//bInfo[13] is the user name will not test
+			Assert.True(bInfo[10].Equals("by"));
+			//bInfo[11] is the user name will not test
 			//we know the string should end in ')'
-			Assert.Equal(')', bInfo[13][bInfo[13].Length-1]);
+			Assert.Equal(')', bInfo[11][bInfo[11].Length-1]);
 		}
 
 		[Fact]
