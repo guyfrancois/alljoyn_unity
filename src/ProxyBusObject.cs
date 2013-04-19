@@ -84,6 +84,15 @@ namespace AllJoynUnity
 				return alljoyn_proxybusobject_addinterface(_proxyBusObject, iface.UnmanagedPtr);
 			}
 
+			/**
+			 * Query the remote object on the bus to determine the interfaces and
+			 * children that exist. Use this information to populate this proxy's
+			 * interfaces and children.
+			 *
+			 * @return
+			 *      - #ER_OK if successful
+			 *      - An error status otherwise
+			 */
 			public QStatus IntrospectRemoteObject()
 			{
 				return alljoyn_proxybusobject_introspectremoteobject(_proxyBusObject);
@@ -117,8 +126,8 @@ namespace AllJoynUnity
 			/**
 			 * Make a synchronous method call from this object
 			 *
-			 * @param ifaceName		Name of the interface being used.
-			 * @param methodName       Method being invoked.
+			 * @param ifaceName    Name of the interface being used.
+			 * @param methodName   Method being invoked.
 			 * @param args         The arguments for the method call (can be NULL)
 			 * @param replyMsg     The reply message received for the method call
 			 * @param timeout      Timeout specified in milliseconds to wait for a reply
@@ -173,16 +182,16 @@ namespace AllJoynUnity
 			public void Dispose()
 			{
 				Dispose(true);
-				GC.SuppressFinalize(this); 
+				GC.SuppressFinalize(this);
 			}
 
 			/**
 			 * Dispose the ProxyBusObject
-			 * @param disposing	describes if its activly being disposed
+			 * @param disposing  describes if its activly being disposed
 			 */
 			protected virtual void Dispose(bool disposing)
 			{
-				if(!_isDisposed)
+				if (!_isDisposed)
 				{
 					alljoyn_proxybusobject_destroy(_proxyBusObject);
 					_proxyBusObject = IntPtr.Zero;

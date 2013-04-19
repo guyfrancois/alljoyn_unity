@@ -1298,7 +1298,7 @@ namespace AllJoynUnity
 								string value_sig = sig.Substring(3, sig.Length - 4);
 								if (key_sig == null || value_sig == null)
 								{
-									 status = AllJoyn.QStatus.BUS_SIGNATURE_MISMATCH;
+									status = AllJoyn.QStatus.BUS_SIGNATURE_MISMATCH;
 								}
 								for (int j = 0; j < dict_size; ++j)
 								{
@@ -1339,13 +1339,34 @@ namespace AllJoynUnity
 								break;
 						}
 						break;
-					//TODO handle ALLJOYN_STRUCT
 					case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
-						status = QStatus.WRITE_ERROR;
+						if ((AllJoynTypeId)sig[sig.Length - 1] != AllJoynTypeId.ALLJOYN_STRUCT_CLOSE)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						string[] struct_sigs = splitSignature(sig.Substring(1, sig.Length - 2));
+						int numMembers = alljoyn_msgarg_getnummembers(_msgArg);
+						if (numMembers != struct_sigs.Length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+
+						object[] structObjects = new object[numMembers];
+						for (int j = 0; j < struct_sigs.Length; ++j)
+						{
+							MsgArg arg = new MsgArg(alljoyn_msgarg_getmember(_msgArg, j));
+							status = arg.Get(struct_sigs[j], out structObjects[j]);
+							if (AllJoyn.QStatus.OK != status)
+							{
+								return status;
+							}
+						}
+						value = structObjects;
 						break;
-					//TODO handle ALLJOYN_DICT
 					case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
-						status = QStatus.WRITE_ERROR;
+						// A dictionary entry must start with 'a' followed by '{'
+						// if it starts with '{' it is an invalid signature.
+						status = QStatus.BUS_BAD_SIGNATURE;
 						break;
 					default:
 						status = QStatus.WRITE_ERROR;
@@ -1481,7 +1502,9 @@ namespace AllJoynUnity
 								goto case AllJoynTypeId.ALLJOYN_STRING;
 							case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
 								goto case AllJoynTypeId.ALLJOYN_STRING;
-							//TODO handle ALLJOYN_DICT_ENTRY
+							case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
+								status = QStatus.WRITE_ERROR;
+								break;
 							case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 								string inner_dict_sig = sig.Substring(1);
 								System.Collections.Generic.Dictionary<object, object> dict_value = ((System.Collections.Generic.Dictionary<object, object>)value);
@@ -1525,7 +1548,29 @@ namespace AllJoynUnity
 						}
 						break;
 					case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
-						status = QStatus.WRITE_ERROR;
+						if ((AllJoynTypeId)sig[sig.Length - 1] != AllJoynTypeId.ALLJOYN_STRUCT_CLOSE)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						string[] struct_sigs = splitSignature(sig.Substring(1, sig.Length - 2));
+						object[] structObjects = (object[])value;
+						// The number of values specified in the signature do not match the
+						// number of objects passed in.
+						if (struct_sigs.Length != structObjects.Length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						MsgArg struct_args = new MsgArg((uint)struct_sigs.Length);
+						for (int j = 0; j < struct_sigs.Length; ++j)
+						{
+							status = struct_args[j].Set(struct_sigs[j], structObjects[j]);
+							if (AllJoyn.QStatus.OK != status)
+							{
+								return status;
+							}
+						}
+						//now struct_args can be used to set the struct
+						status = alljoyn_msgarg_setstruct(_msgArg, struct_args._msgArg, struct_sigs.Length);
 						break;
 					case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 						string key_sig = sig.Substring(1, 1);
@@ -1576,6 +1621,223 @@ namespace AllJoynUnity
 				{
 					Set("o", value);
 				}
+			}
+
+			/**
+			 * Take a string with multiple signatures an split
+			 * it into an array of strings with one signature each
+			 *
+			 * this can be used for parsing the contents of a struct
+			 * or for parsing a signature with more than one data type
+			 * @code
+			 * string s = (issa{si}(ba))
+			 * string[] result = splitSignature(s.subString(1, s.length - 2))
+			 * //returns { "i", "s", "s", "a{si}", "(ba)"}
+			 * @endcode
+			 *
+			 * @param signature the signature to split
+			 *
+			 * @return
+			 *   - an array of complete signatures.
+			 *   - null if unable to process signature.
+			 */
+			public static string[] splitSignature(string signature)
+			{
+				System.Collections.Generic.List<string> sigs = new System.Collections.Generic.List<string>();
+				int currentPosition = 0;
+				while(currentPosition < signature.Length)
+				{
+					int position;
+					AllJoyn.QStatus status = parsecompleteType(signature.Substring(currentPosition, signature.Length - currentPosition), out position);
+					if (AllJoyn.QStatus.OK != status)
+					{
+						return null;
+					}
+					sigs.Add(signature.Substring(currentPosition, position));
+					currentPosition += position;
+				}
+				return sigs.ToArray();
+			}
+
+			/**
+			 * Parses a complete type returning the number of characters that make up
+			 * the next complete type.
+			 * Example: for string "ias" position would be set to 1
+			 *          for srting "(sis)u position would be set to 5
+			 *
+			 * @param      signature a string representing one or more AllJoyn data types
+			 * @param[out] position  the number of characters that make up a complete AllJoyn
+			 *                       data type
+			 *
+			 * @return
+			 *      - AllJoyn.QStatus.OK if the signature was prefixed by a complete type.
+			 *      - AllJoyn.QStatus.BUS_BAD_SIGNATURE  if unable to parse the complete type.
+			 */
+			private static AllJoyn.QStatus parsecompleteType(string signature, out int position)
+			{
+				position = 0;
+				switch ((AllJoynTypeId)signature[position])
+				{
+					case AllJoynTypeId.ALLJOYN_BYTE:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_BOOLEAN:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_INT16:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_UINT16:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_INT32:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_UINT32:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_INT64:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_UINT64:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_DOUBLE:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_STRING:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_SIGNATURE:
+						goto case AllJoynTypeId.ALLJOYN_VARIANT;
+					case AllJoynTypeId.ALLJOYN_VARIANT:
+						position++;
+						return AllJoyn.QStatus.OK;
+					case AllJoynTypeId.ALLJOYN_ARRAY:
+						return parseContainerSignature(signature, out position);
+					case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
+						return parseContainerSignature(signature, out position);
+					case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
+						return parseContainerSignature(signature, out position);
+					default:
+						return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+				}
+			}
+
+			/**
+			 * Parses and verifies a signature for a container type
+			 * important this function should only be used for alljoyn container types
+			 * if a non-container type is passed in this function will return
+			 * AllJoyn.QStatus.BUS_BAD_SIGNATURE even if the signature is otherwise a valid
+			 * signature.
+			 *
+			 * @param      container  signature a string representing an AllJoyn container
+			 * @param[out] position the number of characters that make up a complete AllJoyn
+			 *                      data type
+			 * @return
+			 *  - AllJoyn.QStatus.OK if the signature for a container type was verified.
+			 *  - AllJoyn.QStatus.BUS_BAD_SIGNATURE  if unable to parse signature for the container type.
+			 */
+			private static AllJoyn.QStatus parseContainerSignature(string signature, out int position)
+			{
+				position = 0;
+				if(!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN) &&
+					!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_STRUCT_OPEN) &&
+					!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_ARRAY))
+				{
+					return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+				}
+				int structOpenDepth = 0;
+				int structCloseDepth = 0;
+				int dictOpenDepth = 0;
+				int dictCloseDepth = 0;
+				int arrayDepth = 0;
+				// used for stackless brace matching
+				int braceMatch = 0;
+				do
+				{
+					if (position >= signature.Length)
+					{
+						return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+					}
+					switch ((AllJoynTypeId)signature[position])
+					{
+						case AllJoynTypeId.ALLJOYN_BYTE:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_BOOLEAN:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_INT16:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_UINT16:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_INT32:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_UINT32:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_INT64:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_UINT64:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_DOUBLE:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_STRING:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_OBJECT_PATH:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_SIGNATURE:
+							goto case AllJoynTypeId.ALLJOYN_VARIANT;
+						case AllJoynTypeId.ALLJOYN_VARIANT:
+							++position;
+							break;
+						case AllJoynTypeId.ALLJOYN_ARRAY:
+							++arrayDepth;
+							if (arrayDepth > 32)
+							{
+								return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+							}
+							++position;
+							break;
+						case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
+							++dictOpenDepth;
+							if (structOpenDepth + dictOpenDepth > 32)
+							{
+								return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+							}
+							++braceMatch;
+							++position;
+							break;
+						case AllJoynTypeId.ALLJOYN_DICT_ENTRY_CLOSE:
+							--braceMatch;
+							++dictCloseDepth;
+							++position;
+							if (braceMatch < 0)
+							{
+								return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+							}
+							break;
+						case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
+							++structOpenDepth;
+							if (structOpenDepth + dictOpenDepth > 32)
+							{
+								return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+							}
+							++braceMatch;
+							++position;
+							break;
+						case AllJoynTypeId.ALLJOYN_STRUCT_CLOSE:
+							--braceMatch;
+							++structCloseDepth;
+							++position;
+							if (braceMatch < 0)
+							{
+								return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+							}
+							break;
+						default:
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+					}
+				} while ((braceMatch != 0) || ((AllJoynTypeId)signature[position - 1] == AllJoynTypeId.ALLJOYN_ARRAY));
+				//its possible to get to this point with a signature of type "(ai}" and it will still think its good
+				if(structOpenDepth != structCloseDepth) {
+					return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+				}
+				//its possible to get to this point with a signature of type "a{ai)" and it will still think its good
+				if(dictOpenDepth != dictCloseDepth) {
+					return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+				}
+				return AllJoyn.QStatus.OK;
 			}
 
 			#region IDisposable
@@ -1807,6 +2069,14 @@ namespace AllJoynUnity
 			private static extern IntPtr alljoyn_msgarg_getvalue(IntPtr arg);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_setdictentry(IntPtr arg, IntPtr key, IntPtr val);
+
+			/* Struct types */
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_setstruct(IntPtr arg, IntPtr struct_members, int num_members);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_msgarg_getnummembers(IntPtr arg);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_msgarg_getmember(IntPtr arg, int index);
 
 			#endregion
 

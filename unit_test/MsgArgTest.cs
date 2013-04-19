@@ -711,5 +711,99 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal(dict, (System.Collections.Generic.Dictionary<object, object>)out_dict);
 		}
+
+		public struct TestStruct //(issi)
+		{
+			public int a;
+			public string b;
+			public string c;
+			public int d;
+		}
+
+		[Fact]
+		public void AllJoynStructs()
+		{
+			TestStruct testStruct = new TestStruct();
+			testStruct.a = 42;
+			testStruct.b = "Hello";
+			testStruct.c = "World";
+			testStruct.d = 88;
+
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			object[] mystruct = new object[4];
+			mystruct[0] = testStruct.a;
+			mystruct[1] = testStruct.b;
+			mystruct[2] = testStruct.c;
+			mystruct[3] = testStruct.d;
+			AllJoyn.QStatus status = arg.Set("(issi)", mystruct);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			object outstruct;
+			status = arg.Get("(issi)", out outstruct);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			object[] outstructa = (object[])outstruct;
+			Assert.Equal(4, outstructa.Length);
+			Assert.Equal(testStruct.a, (int)outstructa[0]);
+			Assert.Equal(testStruct.b, (string)outstructa[1]);
+			Assert.Equal(testStruct.c, (string)outstructa[2]);
+			Assert.Equal(testStruct.d, (int)outstructa[3]);
+			arg.Dispose();
+			arg = new AllJoyn.MsgArg();
+
+			//struct within a struct
+			object[] mystruct2 = new object[2];
+			mystruct2[0] = "bob";
+			mystruct2[1] = mystruct;
+			status = arg.Set("(s(issi))", mystruct2);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			status = arg.Get("(s(issi))", out outstruct);
+			object[] outstruct1 = (object[])outstruct;
+			Assert.Equal(2, outstruct1.Length);
+			object[] outstruct2 = (object[])outstruct1[1];
+			Assert.Equal(4, outstruct2.Length);
+
+			Assert.Equal("bob", (string)outstruct1[0]);
+			Assert.Equal(testStruct.a, (int)outstruct2[0]);
+			Assert.Equal(testStruct.b, (string)outstruct2[1]);
+			Assert.Equal(testStruct.c, (string)outstruct2[2]);
+			Assert.Equal(testStruct.d, (int)outstruct2[3]);
+		}
+
+		[Fact]
+		public void InvalidAssignment()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			Assert.Throws<System.InvalidCastException>(() => arg.Set("i", true));
+			Assert.Throws<System.InvalidCastException>(() => arg.Set("i", (byte)7));
+			Assert.Throws<System.InvalidCastException>(() => arg.Set("i", (short)42));
+			Assert.Throws<System.InvalidCastException>(() => arg.Set("i", (ushort)42));
+			Assert.Throws<System.InvalidCastException>(() => arg.Set("i", "Error Gold"));
+		}
+
+		[Fact]
+		public void SplitSignature()
+		{
+			string[] a = AllJoyn.MsgArg.splitSignature("issi");
+			Assert.Equal(4, a.Length);
+			Assert.Equal(a[0], "i");
+			Assert.Equal(a[1], "s");
+			Assert.Equal(a[2], "s");
+			Assert.Equal(a[3], "i");
+
+			a = AllJoyn.MsgArg.splitSignature("aas(issi)a{is}(i)(i(suasi(issi)(a{sv})))");
+			Assert.Equal(5, a.Length);
+			Assert.Equal(a[0], "aas");
+			Assert.Equal(a[1], "(issi)");
+			Assert.Equal(a[2], "a{is}");
+			Assert.Equal(a[3], "(i)");
+			Assert.Equal(a[4], "(i(suasi(issi)(a{sv})))");
+
+			//unbalanced containers
+			a = AllJoyn.MsgArg.splitSignature("(ai(ss)");
+			Assert.Null(a);
+			a = AllJoyn.MsgArg.splitSignature("a{si");
+			Assert.Null(a);
+		}
 	}
 }

@@ -291,6 +291,10 @@ namespace AllJoynUnity
 				return alljoyn_busattachment_connect(_busAttachment, connectSpec);
 			}
 
+			/**
+			 * Allow the currently executing method/signal handler to enable concurrent
+			 * callbacks during the scope of the handler's execution.
+			 */
 			public void EnableConcurrentCallbacks()
 			{
 				alljoyn_busattachment_enableconcurrentcallbacks(_busAttachment);
