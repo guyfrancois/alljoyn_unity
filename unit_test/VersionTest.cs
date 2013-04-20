@@ -61,6 +61,7 @@ namespace AllJoynUnityTest
 			}
 		}
 
+/*
 		[Fact]
 		public void GetBuildInfo()
 		{
@@ -111,6 +112,7 @@ namespace AllJoynUnityTest
 			//we know the string should end in ')'
 			Assert.Equal(')', bInfo[13][bInfo[13].Length-1]);
 		}
+*/
 
 		[Fact]
 		public void GetNumericVersion()
