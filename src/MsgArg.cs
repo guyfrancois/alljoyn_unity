@@ -1313,7 +1313,7 @@ namespace AllJoynUnity
 									MsgArg av_result = new MsgArg(av);
 									av_result._length = length;
 									value = av_result;
-								} 
+								}
 								break;
 							case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 								int dict_size = alljoyn_msgarg_get_array_numberofelements(_msgArg);
@@ -1682,7 +1682,7 @@ namespace AllJoynUnity
 
 			/**
 			 * Get the signature of the MsgArg.
-			 * If the MsgArg contains an array of MsgArgs then 
+			 * If the MsgArg contains an array of MsgArgs then
 			 * then a string representing all of the MsgArgs
 			 * will be returned.
 			 *
@@ -1714,7 +1714,6 @@ namespace AllJoynUnity
 						// The returned buffer will contain a nul character an so we must remove the last character.
 						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
 					}
-					
 				}
 			}
 

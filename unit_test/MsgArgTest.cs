@@ -723,7 +723,7 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, arg.Set("s", s));
 			Assert.Equal(AllJoyn.QStatus.OK, variantArg1.Set("v", arg));
 			Assert.Equal(AllJoyn.QStatus.OK, variantArg2.Set("v", variantArg1));
-			
+
 			string s_out;
 			Assert.Equal(AllJoyn.QStatus.OK, variantArg2.Get(out s_out));
 			Assert.Equal(s, s_out);
@@ -1318,8 +1318,12 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", (ulong)42));
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", 3.14));
 			//TODO figure out why object path is not doing error checking.
-			//Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "Error Gold"));
-			//Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "ybnqiuxtdsog"));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "Error Gold"));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "ybnqiuxtdsog"));
+			Assert.Equal(AllJoyn.QStatus.OK, arg.Set("o", "/org/alljoyn/test"));
+			Assert.Equal(AllJoyn.QStatus.OK, arg.Set("o", "/"));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "/org/alljoyn/test/"));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("o", "/org/alljoyn//test"));
 
 			//signature
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("g", (byte)42));
@@ -1333,7 +1337,6 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("g", 3.14));
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("g", "Error Gold"));
 			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg.Set("g", "/org/alljoyn/test"));
-			
 		}
 
 		[Fact]
