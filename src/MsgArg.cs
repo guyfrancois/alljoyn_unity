@@ -1329,7 +1329,7 @@ namespace AllJoynUnity
 								for (int j = 0; j < dict_size; ++j)
 								{
 									IntPtr inner_data_ptr;
-									alljoyn_msgarg_get_array_element(_msgArg, j, out inner_data_ptr);
+									alljoyn_msgarg_get_array_element(_msgArg, (UIntPtr)j, out inner_data_ptr);
 									Object actualKey;
 									Object actualValue;
 									MsgArg key_MsgArg = new MsgArg(alljoyn_msgarg_getkey(inner_data_ptr));
@@ -1346,7 +1346,7 @@ namespace AllJoynUnity
 								for (int j = 0; j < struct_array_size; ++j)
 								{
 									IntPtr struct_array_ptr;
-									alljoyn_msgarg_get_array_element(_msgArg, j, out struct_array_ptr);
+									alljoyn_msgarg_get_array_element(_msgArg, (UIntPtr)j, out struct_array_ptr);
 									AllJoyn.MsgArg tmp = new MsgArg(struct_array_ptr);
 									struct_array[j] = tmp;
 								}
@@ -1360,9 +1360,9 @@ namespace AllJoynUnity
 									if (status)
 									{
 										IntPtr inner_data_ptr;
-										alljoyn_msgarg_get_array_element(_msgArg, j, out inner_data_ptr);
+										alljoyn_msgarg_get_array_element(_msgArg, (UIntPtr)j, out inner_data_ptr);
 										MsgArg tmp = new MsgArg(inner_data_ptr);
-										string inner_array_sig = Marshal.PtrToStringAnsi(alljoyn_msgarg_get_array_elementsignature(_msgArg, j));
+										string inner_array_sig = Marshal.PtrToStringAnsi(alljoyn_msgarg_get_array_elementsignature(_msgArg, (UIntPtr)j));
 										status = tmp.Get(inner_array_sig, out outerArray[j]);
 									}
 									else
@@ -1396,7 +1396,7 @@ namespace AllJoynUnity
 						object[] structObjects = new object[numMembers];
 						for (int j = 0; j < struct_sigs.Length; ++j)
 						{
-							MsgArg arg = new MsgArg(alljoyn_msgarg_getmember(_msgArg, j));
+							MsgArg arg = new MsgArg(alljoyn_msgarg_getmember(_msgArg, (UIntPtr)j));
 							status = arg.Get(struct_sigs[j], out structObjects[j]);
 							if (AllJoyn.QStatus.OK != status)
 							{
@@ -1501,7 +1501,7 @@ namespace AllJoynUnity
 							switch ((AllJoynTypeId)sig[1])
 							{
 								case AllJoynTypeId.ALLJOYN_BYTE:
-									status = alljoyn_msgarg_set_uint8_array(_msgArg, ((byte[])value).Length, (byte[])value);
+									status = alljoyn_msgarg_set_uint8_array(_msgArg, (UIntPtr)((byte[])value).Length, (byte[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_BOOLEAN:
 									Int32[] ab = new Int32[((bool[])value).Length];
@@ -1516,31 +1516,31 @@ namespace AllJoynUnity
 											ab[i] = 0;
 										}
 									}
-									status = alljoyn_msgarg_set_bool_array(_msgArg, ab.Length, ab);
+									status = alljoyn_msgarg_set_bool_array(_msgArg, (UIntPtr)ab.Length, ab);
 									break;
 								case AllJoynTypeId.ALLJOYN_INT16:
-									status = alljoyn_msgarg_set_int16_array(_msgArg, ((short[])value).Length, (short[])value);
+									status = alljoyn_msgarg_set_int16_array(_msgArg, (UIntPtr)((short[])value).Length, (short[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_UINT16:
-									status = alljoyn_msgarg_set_uint16_array(_msgArg, ((ushort[])value).Length, (ushort[])value);
+									status = alljoyn_msgarg_set_uint16_array(_msgArg, (UIntPtr)((ushort[])value).Length, (ushort[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_INT32:
-									status = alljoyn_msgarg_set_int32_array(_msgArg, ((int[])value).Length, (int[])value);
+									status = alljoyn_msgarg_set_int32_array(_msgArg, (UIntPtr)((int[])value).Length, (int[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_UINT32:
-									status = alljoyn_msgarg_set_uint32_array(_msgArg, ((uint[])value).Length, (uint[])value);
+									status = alljoyn_msgarg_set_uint32_array(_msgArg, (UIntPtr)((uint[])value).Length, (uint[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_INT64:
-									status = alljoyn_msgarg_set_int64_array(_msgArg, ((long[])value).Length, (long[])value);
+									status = alljoyn_msgarg_set_int64_array(_msgArg, (UIntPtr)((long[])value).Length, (long[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_UINT64:
-									status = alljoyn_msgarg_set_uint64_array(_msgArg, ((ulong[])value).Length, (ulong[])value);
+									status = alljoyn_msgarg_set_uint64_array(_msgArg, (UIntPtr)((ulong[])value).Length, (ulong[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_DOUBLE:
-									status = alljoyn_msgarg_set_double_array(_msgArg, ((double[])value).Length, (double[])value);
+									status = alljoyn_msgarg_set_double_array(_msgArg, (UIntPtr)((double[])value).Length, (double[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_STRING:
-									status = alljoyn_msgarg_set_and_stabilize(_msgArg, sig, ((string[])value).Length, (string[])value);
+									status = alljoyn_msgarg_set_and_stabilize(_msgArg, sig, (UIntPtr)((string[])value).Length, (string[])value);
 									break;
 								case AllJoynTypeId.ALLJOYN_SIGNATURE:
 									goto case AllJoynTypeId.ALLJOYN_STRING;
@@ -1548,7 +1548,7 @@ namespace AllJoynUnity
 									goto case AllJoynTypeId.ALLJOYN_STRING;
 								case AllJoynTypeId.ALLJOYN_STRUCT_OPEN:
 									MsgArg array_struct = (MsgArg)value;
-									status = alljoyn_msgarg_set(_msgArg, sig, array_struct.Length, array_struct.UnmanagedPtr);
+									status = alljoyn_msgarg_set(_msgArg, sig, (UIntPtr)array_struct.Length, array_struct.UnmanagedPtr);
 									break;
 								case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 									string inner_dict_sig = sig.Substring(1);
@@ -1565,7 +1565,7 @@ namespace AllJoynUnity
 											break;
 										}
 									}
-									status = alljoyn_msgarg_set(_msgArg, sig, dict_element_count, dict_args.UnmanagedPtr);
+									status = alljoyn_msgarg_set(_msgArg, sig, (UIntPtr)dict_element_count, dict_args.UnmanagedPtr);
 									break;
 								// when working with arrays of arrays the user must pass in a jagged array
 								// i.e.  int[2,4] will not work but int[2][] will work.
@@ -1584,11 +1584,11 @@ namespace AllJoynUnity
 									}
 									if (status = QStatus.OK)
 									{
-										status = alljoyn_msgarg_set(_msgArg, sig, array_size, args.UnmanagedPtr);
+										status = alljoyn_msgarg_set(_msgArg, sig, (UIntPtr)array_size, args.UnmanagedPtr);
 									}
 									break;
 								case AllJoynTypeId.ALLJOYN_VARIANT:
-									status = alljoyn_msgarg_set(_msgArg, sig, ((AllJoyn.MsgArg)value).Length, ((AllJoyn.MsgArg)value).UnmanagedPtr);
+									status = alljoyn_msgarg_set(_msgArg, sig, (UIntPtr)((AllJoyn.MsgArg)value).Length, ((AllJoyn.MsgArg)value).UnmanagedPtr);
 									break;
 								default:
 									status = QStatus.WRITE_ERROR;
@@ -1622,7 +1622,7 @@ namespace AllJoynUnity
 								}
 							}
 							//now struct_args can be used to set the struct
-							status = alljoyn_msgarg_setstruct(_msgArg, struct_args._msgArg, struct_sigs.Length);
+							status = alljoyn_msgarg_setstruct(_msgArg, struct_args._msgArg, (UIntPtr)struct_sigs.Length);
 							break;
 						case AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN:
 							string key_sig = sig.Substring(1, 1);
@@ -2104,39 +2104,32 @@ namespace AllJoynUnity
 
 			/* set functions for arrays of basic types. */
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_uint8_array(IntPtr arg, int length, byte[] ay);
+			private static extern int alljoyn_msgarg_set_uint8_array(IntPtr arg, UIntPtr length, byte[] ay);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_bool_array(IntPtr arg, int length, Int32[] ab);
+			private static extern int alljoyn_msgarg_set_bool_array(IntPtr arg, UIntPtr length, Int32[] ab);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_int16_array(IntPtr arg, int length, short[] an);
+			private static extern int alljoyn_msgarg_set_int16_array(IntPtr arg, UIntPtr length, short[] an);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_uint16_array(IntPtr arg, int length, ushort[] aq);
+			private static extern int alljoyn_msgarg_set_uint16_array(IntPtr arg, UIntPtr length, ushort[] aq);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_int32_array(IntPtr arg, int length, int[] ai);
+			private static extern int alljoyn_msgarg_set_int32_array(IntPtr arg, UIntPtr length, int[] ai);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_uint32_array(IntPtr arg, int length, uint[] au);
+			private static extern int alljoyn_msgarg_set_uint32_array(IntPtr arg, UIntPtr length, uint[] au);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_int64_array(IntPtr arg, int length, long[] ax);
+			private static extern int alljoyn_msgarg_set_int64_array(IntPtr arg, UIntPtr length, long[] ax);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_uint64_array(IntPtr arg, int length, ulong[] at);
+			private static extern int alljoyn_msgarg_set_uint64_array(IntPtr arg, UIntPtr length, ulong[] at);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_set_double_array(IntPtr arg, int length, double[] ad);
+			private static extern int alljoyn_msgarg_set_double_array(IntPtr arg, UIntPtr length, double[] ad);
 			/* char* string arrays are passed as an IntPtr */
-			//TODO investigate if these next 3 imports are still needed.
 			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set_string_array(IntPtr arg, int length, [In]string[] sa);
-			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set_objectpath_array(IntPtr arg, int length, [In]string[] ao);
-			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set_signature_array(IntPtr arg, int length, [In]string[] ag);
-			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set_and_stabilize(IntPtr arg, string sig, int length, string[] s);
+			private static extern int alljoyn_msgarg_set_and_stabilize(IntPtr arg, string sig, UIntPtr length, string[] s);
 			/* DllImport for Arrays of Varients*/
 			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set_and_stabilize(IntPtr arg, string sig, int length, IntPtr s);
+			private static extern int alljoyn_msgarg_set_and_stabilize(IntPtr arg, string sig, UIntPtr length, IntPtr s);
 			/* DllImport for Arrays of Arrays data types */
 			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
-			private static extern int alljoyn_msgarg_set(IntPtr arg, string sig, int length, IntPtr v);
+			private static extern int alljoyn_msgarg_set(IntPtr arg, string sig, UIntPtr length, IntPtr v);
 
 			/* get functions for arrays of basic types. */
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -2162,9 +2155,9 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_get_array_numberofelements(IntPtr arg);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern void alljoyn_msgarg_get_array_element(IntPtr arg, int index, out IntPtr element);
+			private static extern void alljoyn_msgarg_get_array_element(IntPtr arg, UIntPtr index, out IntPtr element);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgarg_get_array_elementsignature(IntPtr arg, int index);
+			private static extern IntPtr alljoyn_msgarg_get_array_elementsignature(IntPtr arg, UIntPtr index);
 			
 			/* Dictionary types */
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -2176,11 +2169,11 @@ namespace AllJoynUnity
 
 			/* Struct types */
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_msgarg_setstruct(IntPtr arg, IntPtr struct_members, int num_members);
+			private static extern int alljoyn_msgarg_setstruct(IntPtr arg, IntPtr struct_members, UIntPtr num_members);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_getnummembers(IntPtr arg);
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_msgarg_getmember(IntPtr arg, int index);
+			private static extern IntPtr alljoyn_msgarg_getmember(IntPtr arg, UIntPtr index);
 
 			#endregion
 
