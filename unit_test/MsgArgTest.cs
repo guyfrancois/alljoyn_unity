@@ -1340,6 +1340,44 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
+		public void InitilizedConstructor()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg("y", (byte)13);
+			Assert.Equal((byte)13, (byte)arg);
+
+			arg = new AllJoyn.MsgArg("b", true);
+			Assert.True((bool)arg);
+
+			arg = new AllJoyn.MsgArg("n", (short)42);
+			Assert.Equal((short)42, (short)arg);
+
+			arg = new AllJoyn.MsgArg("q", (ushort)0xBEBE);
+			Assert.Equal((ushort)0xBEBE, (ushort)arg);
+
+			arg = new AllJoyn.MsgArg("i", (int)-9999);
+			Assert.Equal((int)-9999, (int)arg);
+
+			arg = new AllJoyn.MsgArg("u", (uint)0x32323232);
+			Assert.Equal((uint)0x32323232, (uint)arg);
+
+			arg = new AllJoyn.MsgArg("x", (long)-1);
+			Assert.Equal((long)-1, (long)arg);
+
+			arg = new AllJoyn.MsgArg("t", (ulong)0x6464646464646464);
+			Assert.Equal((ulong)0x6464646464646464, (ulong)arg);
+
+			arg = new AllJoyn.MsgArg("d", (double)3.14159265D);
+			Assert.Equal((double)3.14159265D, (double)arg);
+
+			arg = new AllJoyn.MsgArg("s", (string)"this is a string");
+			Assert.Equal("this is a string", (string)arg);
+
+			//error case
+			arg = new AllJoyn.MsgArg("s", 42);
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_INVALID, arg.TypeId);
+		}
+
+		[Fact]
 		public void SplitSignature()
 		{
 			string[] a = AllJoyn.MsgArg.splitSignature("issi");
@@ -1363,5 +1401,118 @@ namespace AllJoynUnityTest
 			a = AllJoyn.MsgArg.splitSignature("a{si");
 			Assert.Null(a);
 		}
+
+		[Fact]
+		public void MsgArgToString()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			arg = "Asign a string";
+			Assert.Equal("<string>Asign a string</string>", arg.ToString());
+			Assert.Equal("  <string>Asign a string</string>", arg.ToString(2));
+
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+			object[][] sii = new object[][]
+							{
+								new object[] {1, 2},
+								new object[] {11, 22},
+								new object[] {111, 222}
+							};
+
+			//signature a(ii);
+			AllJoyn.MsgArg structs = new AllJoyn.MsgArg(3);
+			status = structs[0].Set("(ii)", sii[0]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = structs[1].Set("(ii)", sii[1]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			status = structs[2].Set("(ii)", sii[2]);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			Assert.Equal("(ii)", structs[0].Signature);
+
+			AllJoyn.MsgArg struct_array = new AllJoyn.MsgArg();
+			status = struct_array.Set("a(ii)", structs);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			string expected = "<array type_sig=\"(ii)\">\n" +
+							"  <struct>\n" +
+							"    <int32>1</int32>\n" +
+							"    <int32>2</int32>\n" +
+							"  </struct>\n" +
+							"  <struct>\n" +
+							"    <int32>11</int32>\n" +
+							"    <int32>22</int32>\n" +
+							"  </struct>\n" +
+							"  <struct>\n" +
+							"    <int32>111</int32>\n" +
+							"    <int32>222</int32>\n" +
+							"  </struct>\n" +
+							"</array>";
+
+			Assert.Equal(expected, struct_array.ToString());
+		}
+
+		[Fact]
+		public void HasString()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			arg = "Yo";
+			Assert.True(arg.HasSignature("s"));
+			Assert.False(arg.HasSignature("i"));
+
+			arg = (byte)42;
+			Assert.True(arg.HasSignature("y"));
+			Assert.False(arg.HasSignature("o"));
+		}
+
+		[Fact]
+		public void MsgArgEquals()
+		{
+			AllJoyn.MsgArg arg1 = new AllJoyn.MsgArg();
+			AllJoyn.MsgArg arg2 = new AllJoyn.MsgArg();
+			AllJoyn.MsgArg arg3 = new AllJoyn.MsgArg();
+			arg1 = "Yo";
+			arg2 = "Yo";
+			arg3 = 42;
+			object arg4;
+
+			Assert.True(arg1 == arg2);
+			Assert.False(arg1 != arg2);
+			Assert.True(arg1 != arg3);
+			Assert.False(arg1 == arg3);
+
+			Assert.True(arg1.Equals(arg2));
+			Assert.False(arg1.Equals(arg3));
+
+			Assert.False(arg1.Equals((object)null));
+			arg4 = 42; //not a MsgArg;
+			Assert.False(arg1.Equals(arg4));
+			arg4 = arg2;
+			Assert.True(arg1.Equals(arg4));
+
+			Assert.Equal(arg1.GetHashCode(), arg2.GetHashCode());
+			Assert.NotEqual(arg1.GetHashCode(), arg3.GetHashCode());
+		}
+
+		[Fact]
+		public void TypeId()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			arg = "Bat Man";
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_STRING, arg.TypeId);
+
+			arg = 42;
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_INT32, arg.TypeId);
+		}
+
+		[Fact]
+		public void Clear()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
+			arg = "Bat Man";
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_STRING, arg.TypeId);
+			arg.Clear();
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_INVALID, arg.TypeId);
+		}
+
 	}
 }

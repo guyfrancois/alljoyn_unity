@@ -90,7 +90,7 @@ namespace AllJoynUnity
 			 * interfaces and children.
 			 *
 			 * @return
-			 *      - #ER_OK if successful
+			 *      - QStatus.OK if successful
 			 *      - An error status otherwise
 			 */
 			public QStatus IntrospectRemoteObject()

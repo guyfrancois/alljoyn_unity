@@ -28,10 +28,10 @@ namespace AllJoynUnity
 	{
 		public class MsgArg : IDisposable
 		{
-			/*
+			/**
 			 * The AllJoyn data type IDs.
 			 */
-			enum AllJoynTypeId{
+			public enum AllJoynTypeId{
 				ALLJOYN_INVALID          =  0,     ///< AllJoyn INVALID typeId
 				ALLJOYN_ARRAY            = 'a',    ///< AllJoyn array container type
 				ALLJOYN_BOOLEAN          = 'b',    ///< AllJoyn boolean basic type, @c 0 is @c FALSE and @c 1 is @c TRUE - Everything else is invalid
@@ -95,6 +95,29 @@ namespace AllJoynUnity
 				_msgArg = alljoyn_msgarg_array_create((UIntPtr)numArgs);
 				_length = (int)numArgs;
 			}
+
+			/**
+			 * Constructor to build and initilized message arg. If the constructor fails
+			 * for any reason the type will be set to MsgArg.AllJoynTypeId.ALLJOYN_INVALID.
+			 * See the description of the MsgArg.Set() method for information about the
+			 * signature and parameters. For initializing complex values it is
+			 * recommended to use the default constructor and the MsgArg.Set() method so
+			 * the success of setting the value can be explicitly checked.
+			 *
+			 * @param sig    The signature for MsgArg value.
+			 * @param value  Object containing values to initialize the MsgArg.
+			 */
+			public MsgArg(string sig, object value)
+			{
+				_msgArg = alljoyn_msgarg_create();
+				_length = 1;
+				AllJoyn.QStatus status = Set(sig, value);
+				if (!status)
+				{
+					Clear();
+				}
+			}
+
 			/**
 			 * @cond ALLJOYN_DEV
 			 * @internal
@@ -141,6 +164,81 @@ namespace AllJoynUnity
 				{
 					return _length;
 				}
+			}
+
+			/**
+			 * Equality operator.
+			 *
+			 * @param lhv first value to compair with the second value
+			 * @param rhv second value to compair with the fist value
+			 *
+			 * @return  Returns true if the two message args have the same signatures and values.
+			 */
+			public static bool operator ==(MsgArg lhv, MsgArg rhv)
+			{
+				return alljoyn_msgarg_equal(lhv.UnmanagedPtr, rhv.UnmanagedPtr);
+			}
+
+			/**
+			 * Inequality operator.
+			 *
+			 * @param lhv first value to compair with the second value
+			 * @param rhv second value to compair with the fist value
+			 *
+			 * @return  Returns true if the two message args do not have the same signatures and values.
+			 */
+			public static bool operator !=(MsgArg lhv, MsgArg rhv)
+			{
+				return !alljoyn_msgarg_equal(lhv.UnmanagedPtr, rhv.UnmanagedPtr);
+			}
+
+			/**
+			 * Determines Equality
+			 *
+			 * @param obj object which will be compared with this MsgArg
+			 *
+			 * @return  Returns true if the obj is a MsgArg and it has the same signatures and values.
+			 */
+			public override bool Equals(object obj)
+			{
+				// If parameter is null return false.
+				if (obj == null)
+				{
+					return false;
+				}
+				// if parameter cannot be case to MsgArg return false
+				MsgArg arg = obj as MsgArg;
+				if ((System.Object)arg == null)
+				{
+					return false;
+				}
+				return alljoyn_msgarg_equal(this.UnmanagedPtr, arg.UnmanagedPtr);
+			}
+
+			/**
+			 * Determines Equality
+			 *
+			 * @param arg  the MsgArg which will be compared with this MsgArg
+			 *
+			 * @return  Returns true if the MsgArg is has the same signatures and values.
+			 */
+			public bool Equals(MsgArg arg)
+			{
+				// If parameter is null return false.
+				if ((object)arg == null)
+				{
+					return false;
+				}
+				return alljoyn_msgarg_equal(this.UnmanagedPtr, arg.UnmanagedPtr);
+			}
+
+			/**
+			 * Serves a hash for the MsgArg
+			 * @return a hash code for the current MsgArg
+			 */
+			public override int GetHashCode()
+			{
+				return this.ToString().GetHashCode();
 			}
 
 
@@ -1655,7 +1753,7 @@ namespace AllJoynUnity
 							break;
 					}
 				}
-				catch( System.InvalidCastException)
+				catch (System.InvalidCastException)
 				{
 					status = AllJoyn.QStatus.BUS_BAD_SIGNATURE;
 				}
@@ -1680,6 +1778,69 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Returns an XML string representation of this AllJoyn.MsgArg
+			 *
+			 * @return  an XML string representation of this AllJoyn.MsgArg
+			 */
+			public override string ToString()
+			{
+				return ToString(0);
+			}
+
+			/**
+			 * Returns an XML string representation of this AllJoyn.MsgArg
+			 *
+			 * @param indent Number of spaces to indent the generated xml (default value 0)
+			 *
+			 * @return  an XML string representation of this AllJoyn.MsgArg
+			 */
+			public string ToString(int indent)
+			{
+				UIntPtr signatureSz = alljoyn_msgarg_tostring(_msgArg, IntPtr.Zero, (UIntPtr)0, (UIntPtr)indent);
+				byte[] sink = new byte[(int)signatureSz];
+
+				GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+				alljoyn_msgarg_tostring(_msgArg, gch.AddrOfPinnedObject(), signatureSz, (UIntPtr)indent);
+				gch.Free();
+				// The returned buffer will contain a nul character an so we must remove the last character.
+				return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+			}
+
+			/**
+			 * Checks the signature of this MsgArg.
+			 *
+			 * @param signature  The signature to check
+			 *
+			 * @return  true if this MsgArg has the specified signature, otherwise returns false.
+			 */
+			public bool HasSignature(string signature)
+			{
+				return alljoyn_msgarg_hassignature(_msgArg, signature);
+			}
+
+			/**
+			 * Clear the MsgArg setting the type to ALLJOYN_INVALID and freeing
+			 * any memory allocated for the MsgArg value.
+			 */
+			public void Clear()
+			{
+				alljoyn_msgarg_clear(_msgArg);
+			}
+
+			/**
+			 * Makes a MsgArg stable by completely copying the contents into locally
+			 * managed memory. After a MsgArg has been stabilized any values used to
+			 * initialize or set the message arg can be freed.
+			 *
+			 * @remark Because of C#'s memory management all container types and strings
+			 *         are stabilized by default.  It is unlikely this method will be
+			 *         needed.
+			 */
+			public void Stabilize()
+			{
+				alljoyn_msgarg_stabilize(_msgArg);
+			}
 			/**
 			 * Get the signature of the MsgArg.
 			 * If the MsgArg contains an array of MsgArgs then
@@ -1718,6 +1879,19 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Get the AllJoynTypeId of the MsgArg
+			 *
+			 * @return the AllJoynTypeId of the MsgArg
+			 */
+			public AllJoynTypeId TypeId
+			{
+				get
+				{
+					return (AllJoynTypeId)alljoyn_msgarg_gettype(_msgArg);
+				}
+			}
+
+			/**
 			 * Take a string with multiple signatures an split
 			 * it into an array of strings with one signature each
 			 *
@@ -1739,7 +1913,7 @@ namespace AllJoynUnity
 			{
 				System.Collections.Generic.List<string> sigs = new System.Collections.Generic.List<string>();
 				int currentPosition = 0;
-				while(currentPosition < signature.Length)
+				while (currentPosition < signature.Length)
 				{
 					int position;
 					AllJoyn.QStatus status = parsecompleteType(signature.Substring(currentPosition, signature.Length - currentPosition), out position);
@@ -1827,7 +2001,7 @@ namespace AllJoynUnity
 			private static AllJoyn.QStatus parseContainerSignature(string signature, out int position)
 			{
 				position = 0;
-				if(!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN) &&
+				if (!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_DICT_ENTRY_OPEN) &&
 					!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_STRUCT_OPEN) &&
 					!((AllJoynTypeId)signature[0] == AllJoynTypeId.ALLJOYN_ARRAY))
 				{
@@ -1924,11 +2098,13 @@ namespace AllJoynUnity
 					}
 				} while ((braceMatch != 0) || ((AllJoynTypeId)signature[position - 1] == AllJoynTypeId.ALLJOYN_ARRAY));
 				//its possible to get to this point with a signature of type "(ai}" and it will still think its good
-				if(structOpenDepth != structCloseDepth) {
+				if (structOpenDepth != structCloseDepth)
+				{
 					return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
 				}
 				//its possible to get to this point with a signature of type "a{ai)" and it will still think its good
-				if(dictOpenDepth != dictCloseDepth) {
+				if (dictOpenDepth != dictCloseDepth)
+				{
 					return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
 				}
 				return AllJoyn.QStatus.OK;
@@ -2034,6 +2210,16 @@ namespace AllJoynUnity
 			private static extern UIntPtr alljoyn_msgarg_signature(IntPtr arg, IntPtr str, UIntPtr buf);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern UIntPtr alljoyn_msgarg_array_signature(IntPtr arg, UIntPtr num, IntPtr str, UIntPtr buf);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern UIntPtr alljoyn_msgarg_tostring(IntPtr arg, IntPtr str, UIntPtr buf, UIntPtr indent);
+			[DllImport(DLL_IMPORT_TARGET, CharSet = CharSet.Ansi)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private static extern bool alljoyn_msgarg_hassignature(IntPtr arg, string signature);
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private static extern bool alljoyn_msgarg_equal(IntPtr lhv, IntPtr rhv);
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern void alljoyn_msgarg_clear(IntPtr arg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_msgarg_set_uint8(IntPtr arg, byte y);
@@ -2157,7 +2343,7 @@ namespace AllJoynUnity
 			private static extern void alljoyn_msgarg_get_array_element(IntPtr arg, UIntPtr index, out IntPtr element);
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_get_array_elementsignature(IntPtr arg, UIntPtr index);
-			
+
 			/* Dictionary types */
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_msgarg_getkey(IntPtr arg);

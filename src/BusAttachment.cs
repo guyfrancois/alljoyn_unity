@@ -1144,6 +1144,11 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Properties
+			/**
+			 * Get the concurrent method and signal handler limit.
+			 *
+			 * @return The maximum number of concurrent method and signal handlers.
+			 */
 			public uint Concurrency
 			{
 				get
