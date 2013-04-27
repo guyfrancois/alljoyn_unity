@@ -1194,6 +1194,71 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
+		public void SetMulipleValues()
+		{
+			AllJoyn.MsgArg arg = new AllJoyn.MsgArg(11);
+			object[] input = {
+								(ulong)42,  //t
+								1,          //i
+								3.14,       //d
+								false,      //b
+								"whisp",    //s
+								(byte)0xAB, //b
+								new object[] //(n(no)ai)
+								{
+									(short)2, //n
+									new object[] //(no)
+									{
+										(short)3, //n
+										"/org/alljoyn/test/MsgArg" //o
+									},
+									new int[] {-8, -88, 888, 8888} //ai
+								},
+								"signatu", //g
+								new AllJoyn.MsgArg("i", 42), //v
+								new string[] {"I", "met", "an", "interesting", "lady"}, //as
+								1.618 //d
+							 };
+			Assert.Equal(AllJoyn.QStatus.OK, arg.Set("tidbsy(n(no)ai)gvasd", input));
+			object output;
+			Assert.Equal(AllJoyn.QStatus.OK, arg.Get("tidbsy(n(no)ai)gvasd", out output));
+			Assert.Equal(input[0], ((object[])output)[0]);
+			Assert.Equal(input[1], ((object[])output)[1]);
+			Assert.Equal(input[2], ((object[])output)[2]);
+			Assert.Equal(input[3], ((object[])output)[3]);
+			Assert.Equal(input[4], ((object[])output)[4]);
+			Assert.Equal(input[5], ((object[])output)[5]);
+			Assert.Equal(((object[])input[6])[0], ((object[])((object[])output)[6])[0]);
+			Assert.Equal(((object[])((object[])input[6])[1])[0], ((object[])((object[])((object[])output)[6])[1])[0]);
+			Assert.Equal(((object[])((object[])input[6])[1])[1], ((object[])((object[])((object[])output)[6])[1])[1]);
+			Assert.Equal(((object[])input[6])[2], ((object[])((object[])output)[6])[2]);
+			Assert.Equal(input[7], ((object[])output)[7]);
+			Assert.Equal(input[8], ((object[])output)[8]);
+			Assert.Equal(input[9], ((object[])output)[9]);
+			Assert.Equal(input[10], ((object[])output)[10]);
+
+			AllJoyn.MsgArg arg2 = new AllJoyn.MsgArg(3);
+			//more arguments passed in than we have room for
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg2.Set("sssss", new object[] { "I", "have", "lost", "my", "mind" }));
+			//number of objects and signature don't match
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg2.Set("ss", new object[] { "I", "have", "lost", "my", "mind" }));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg2.Set("sss", new object[] { "hello", "world" }));
+			//data type does not match
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg2.Set("ss", new object[] { 1, 2 }));
+			Assert.Equal(AllJoyn.QStatus.BUS_BAD_SIGNATURE, arg2.Set("sss", new object[] { 1, 2, 3 }));
+
+			//should set the first two elements of the MsgArg
+			Assert.Equal(AllJoyn.QStatus.OK, arg2.Set("ss", new object[] { "hello", "world"} ));
+
+			Assert.Equal(AllJoyn.QStatus.OK, arg2.Get("ss", out output));
+			Assert.Equal("hello", (string)((object[])output)[0]);
+			Assert.Equal("world", (string)((object[])output)[1]);
+			//the element in arg2 should still be INVALID
+			Assert.Equal(AllJoyn.MsgArg.AllJoynTypeId.ALLJOYN_INVALID, arg2[2].TypeId);
+
+
+		}
+		[Fact]
 		public void InvalidAssignment()
 		{
 			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
@@ -1449,6 +1514,10 @@ namespace AllJoynUnityTest
 							"</array>";
 
 			Assert.Equal(expected, struct_array.ToString());
+
+			AllJoyn.MsgArg arg2 = new AllJoyn.MsgArg(2);
+			arg2.Set("ii", new object[] { 42, 24 });
+			Assert.Equal("<int32>42</int32>\n<int32>24</int32>", arg2.ToString());
 		}
 
 		[Fact]

@@ -1180,6 +1180,30 @@ namespace AllJoynUnity
 			{
 				QStatus status = QStatus.OK;
 				value = null;
+				// handle multiple signatures in one get command
+				if (sig.Length > 1)
+				{
+					string[] sigs = splitSignature(sig);
+					if (sigs.Length > 1)
+					{
+						//is the signature larger than the passed in MsgArg?
+						if (sigs.Length > _length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						object[] values = new object[sigs.Length];
+						for (int j = 0; j < sigs.Length; ++j)
+						{
+							status = this[j].Get(sigs[j], out values[j]);
+							if (AllJoyn.QStatus.OK != status)
+							{
+								return status;
+							}
+						}
+						value = values;
+						return status;
+					}
+				}
 				switch ((AllJoynTypeId)sig[0])
 				{
 					case AllJoynTypeId.ALLJOYN_BYTE:
@@ -1557,6 +1581,36 @@ namespace AllJoynUnity
 			public QStatus Set(string sig, object value)
 			{
 				QStatus status = QStatus.OK;
+				// handle multiple signatures in one set command
+				if (sig.Length > 1)
+				{
+					string[] sigs = splitSignature(sig);
+					if (sigs.Length > 1)
+					{
+						if (sigs.Length > _length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						object[] values = (object[])value;
+						if (values.Length > _length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						if (sigs.Length != values.Length)
+						{
+							return AllJoyn.QStatus.BUS_BAD_SIGNATURE;
+						}
+						for (int j = 0; j < values.Length; ++j)
+						{
+							status = this[j].Set(sigs[j], values[j]);
+							if (AllJoyn.QStatus.OK != status)
+							{
+								return status;
+							}
+						}
+						return status;
+					}
+				}
 				try
 				{
 					switch ((AllJoynTypeId)sig[0])
@@ -1797,14 +1851,31 @@ namespace AllJoynUnity
 			 */
 			public string ToString(int indent)
 			{
-				UIntPtr signatureSz = alljoyn_msgarg_tostring(_msgArg, IntPtr.Zero, (UIntPtr)0, (UIntPtr)indent);
-				byte[] sink = new byte[(int)signatureSz];
+				if (_length > 1)
+				{
+					string ret = "";
+					for (int i = 0; i < _length; ++i)
+					{
+						ret += this[i].ToString(indent);
+						//each element should end in a newline except the final element
+						if (i < _length - 1)
+						{
+							ret += "\n";
+						}
+					}
+					return ret;
+				}
+				else
+				{
+					UIntPtr signatureSz = alljoyn_msgarg_tostring(_msgArg, IntPtr.Zero, (UIntPtr)0, (UIntPtr)indent);
+					byte[] sink = new byte[(int)signatureSz];
 
-				GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
-				alljoyn_msgarg_tostring(_msgArg, gch.AddrOfPinnedObject(), signatureSz, (UIntPtr)indent);
-				gch.Free();
-				// The returned buffer will contain a nul character an so we must remove the last character.
-				return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+					GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+					alljoyn_msgarg_tostring(_msgArg, gch.AddrOfPinnedObject(), signatureSz, (UIntPtr)indent);
+					gch.Free();
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+				}
 			}
 
 			/**
