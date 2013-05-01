@@ -5,7 +5,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ namespace AllJoynUnity
 			 */
 			public enum NameFlags : uint
 			{
+				None = 0x00, /**< Do not change the default RequestName behavor */
 				AllowReplacement = 0x01, /**< RequestName input flag: Allow others to take ownership of this name */
 				ReplaceExisting = 0x02, /**< RequestName input flag: Attempt to take ownership of name if already taken */
 				DoNotQueue = 0x04 /**< RequestName input flag: Fail if name cannot be immediately obtained */

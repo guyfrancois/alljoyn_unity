@@ -113,16 +113,48 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Return the arguments for this Message.
+			 *
+			 * @return An AllJoyn.MsgArg containing all the arguments for this Message
+			 */
+			public MsgArg GetArgs()
+			{
+				IntPtr MsgArgPtr;
+				UIntPtr numArgs;
+				alljoyn_message_getargs(_message, out numArgs, out MsgArgPtr);
+				MsgArg args = new MsgArg(MsgArgPtr, (int)numArgs);
+				return args;
+			}
+
+			/**
+			 * Unpack and return the arguments for this message. This method uses the
+			 * functionality from AllJoyn.MsgArg.Get(string, out object) see MsgArg.cs
+			 * for documentation.
+			 *
+			 * @param signature  The signature to match against the message arguments.
+			 * @param value      object unpacked values the values into
+			 * @return
+			 *      - QStatus.OK if the signature matched and MsgArg was successfully unpacked.
+			 *      - QStatus.BUS_SIGNATURE_MISMATCH if the signature did not match.
+			 *      - An error status otherwise
+			 */
+			public QStatus GetArgs(string signature, out object value)
+			{
+				return GetArgs().Get(signature, out value);
+			}
+
+			/**
 			 * Accessor function to get the sender for this message.
 			 *
 			 * @return
 			 *      - The senders well-known name string stored in the AllJoyn header field.
 			 *      - An empty string if the message did not specify a sender.
 			 */
+			[Obsolete("Use the property Sender instead of the function GetSender")]
 			public string GetSender()
 			{
-			IntPtr sender = alljoyn_message_getsender(_message);
-			return (sender != IntPtr.Zero ? Marshal.PtrToStringAnsi(sender) : null);
+				IntPtr sender = alljoyn_message_getsender(_message);
+				return (sender != IntPtr.Zero ? Marshal.PtrToStringAnsi(sender) : null);
 			}
 
 			/**
@@ -142,6 +174,71 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Return true if message's TTL header indicates that it is expired
+			 *
+			 * @return Returns true if the message's TTL header indicates that is has expired.
+			 */
+			public bool IsExpired()
+			{
+				uint throw_away_value;
+				return alljoyn_message_isexpired(_message, out throw_away_value);
+			}
+
+			/**
+			 * Return true if message's TTL header indicates that it is expired
+			 *
+			 * @param[out] tillExpireMS  Written with number of milliseconds before message expires
+			 *                           If message never expires value is set to the uint.MaxValue.
+			 *
+			 * @return Returns true if the message's TTL header indicates that is has expired.
+			 */
+			public bool IsExpired(out uint tillExpireMS)
+			{
+				return alljoyn_message_isexpired(_message, out tillExpireMS);
+			}
+
+			/**
+			 * If the message is an error message returns the error name and optionally the error message string
+			 *
+			 * @param[out] errorMessage  Return the error message string stored
+			 *
+			 * @return
+			 *      - If error detected return error name stored in the AllJoyn header field
+			 *      - NULL if error not detected
+			 */
+			public string GetErrorName(out string errorMessage)
+			{
+				UIntPtr errorMessageSz;
+				alljoyn_message_geterrorname(_message, IntPtr.Zero, out errorMessageSz);
+				byte[] sink = new byte[(int)errorMessageSz];
+
+				GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+				IntPtr errorName = alljoyn_message_geterrorname(_message, gch.AddrOfPinnedObject(), out errorMessageSz);
+				gch.Free();
+				// The returned buffer will contain a nul character an so we must remove the last character.
+				errorMessage = System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)errorMessageSz - 1);
+				return Marshal.PtrToStringAnsi(errorName);
+			}
+
+			/**
+			 * Returns an XML string representation of the message
+			 *
+			 * @return an XML string representation of the message
+			 *
+			 */
+			public override string ToString()
+			{
+				UIntPtr signatureSz = alljoyn_message_tostring(_message, IntPtr.Zero, (UIntPtr)0);
+				byte[] sink = new byte[(int)signatureSz];
+
+				GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+				alljoyn_message_tostring(_message, gch.AddrOfPinnedObject(), signatureSz);
+				gch.Free();
+				// The returned buffer will contain a nul character an so we must remove the last character.
+				return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+			}
+
 			#region Properties
 			/**
 			 * Determine if message is a broadcast signal.
@@ -152,7 +249,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_message_isbroadcastsignal(_message) == 1 ? true : false);
+					return alljoyn_message_isbroadcastsignal(_message);
 				}
 			}
 
@@ -165,7 +262,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_message_isglobalbroadcast(_message) == 1 ? true : false);
+					return alljoyn_message_isglobalbroadcast(_message);
 				}
 			}
 
@@ -178,7 +275,276 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_message_issessionless(_message) == 1 ? true : false);
+					return alljoyn_message_issessionless(_message);
+				}
+			}
+			/**
+			 * Returns the flags for the message.
+			 * @return flags for the message
+			 *
+			 * @see Flag types
+			 */
+			public byte Flags
+			{
+				get
+				{
+					return alljoyn_message_getflags(_message);
+				}
+			}
+
+			/**
+			 * Determine if the message is marked as unreliable. Unreliable messages have a
+			 * non-zero time-to-live and may be silently discarded.
+			 *
+			 * @return  Returns true if the message is unreliable, that is, has a
+			 *          non-zero time-to-live.
+			 */
+			public bool IsUnreliable
+			{
+				get
+				{
+					return alljoyn_message_isunreliable(_message);
+				}
+			}
+
+			/**
+			 * Determine if the message was encrypted.
+			 *
+			 * @return  Returns true if the message was encrypted.
+			 */
+			public bool IsEncrypted
+			{
+				get
+				{
+					return alljoyn_message_isencrypted(_message);
+				}
+			}
+
+			/**
+			 * Get the name of the authentication mechanism that was used to generate
+			 * the encryption key if the message is encrypted.
+			 *
+			 * @return  the name of an authentication mechanism or an empty string.
+			 */
+			public string AuthMechanism
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getauthmechanism(_message));
+				}
+			}
+
+			/**
+			 * Return the type of the message
+			 *
+			 * @return message type
+			 */
+			public Type MessageType
+			{
+				get
+				{
+					return (Type)alljoyn_message_gettype(_message);
+				}
+			}
+
+			/**
+			 * Accessor function to get serial number for the message. Usually only
+			 * important for AllJoyn.Message.MethodCall for matching up the reply to
+			 * the call.
+			 *
+			 * @return the serial number of the Message
+			 */
+			public uint CallSerial
+			{
+				get
+				{
+					return alljoyn_message_getcallserial(_message);
+				}
+			}
+
+			/**
+			 * Get the signature for this message
+			 *
+			 * @return
+			 *      - The AllJoyn SIGNATURE string stored in the AllJoyn header field
+			 *      - An empty string if unable to find the AllJoyn signature
+			 */
+			public string Signature
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getsignature(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the object path for this message
+			 *
+			 * @return
+			 *      - The AllJoyn object path string stored in the AllJoyn header field
+			 *      - An empty string if unable to find the AllJoyn object path
+			 */
+			public string ObjectPath
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getobjectpath(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the interface for this message
+			 *
+			 * @return
+			 *      - The AllJoyn interface string stored in the AllJoyn header field
+			 *      - An empty string if unable to find the interface
+			 */
+			public string Interface
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getinterface(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the member (method/signal) name for this message
+			 *
+			 * @return
+			 *      - The AllJoyn member (method/signal) name string stored in the AllJoyn header field
+			 *      - An empty string if unable to find the member name
+			 */
+			public string MemberName
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getmembername(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the reply serial number for the message. Only meaningful for
+			 * AllJoyn.Message.Type.MethodReturn
+			 *
+			 * @return
+			 *      - The serial number for the message stored in the AllJoyn header field
+			 *      - Zero if unable to find the serial number. Note that 0 is an invalid serial number.
+			 */
+			public uint ReplySerial
+			{
+				get
+				{
+					return alljoyn_message_getreplyserial(_message);
+				}
+			}
+
+			/**
+			 * Accessor function to get the sender for this message.
+			 *
+			 * @return
+			 *      - The senders well-known name string stored in the AllJoyn header field.
+			 *      - An empty string if the message did not specify a sender.
+			 */
+			public string Sender
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getsender(_message));
+				}
+			}
+
+			/**
+			 * Get the unique name of the endpoint that the message was received on.
+			 *
+			 * @return
+			 *     - The unique name of the endpoint that the message was received on.
+			 */
+			public string ReceiveEndPointName
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getreceiveendpointname(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the destination for this message
+			 *
+			 * @return
+			 *      - The message destination string stored in the AllJoyn header field.
+			 *      - An empty string if unable to find the message destination.
+			 */
+			public string Destination
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_message_getdestination(_message));
+				}
+			}
+
+			/**
+			 * Accessor function to get the compression token for the message.
+			 *
+			 * @return
+			 *      - Compression token for the message stored in the AllJoyn header field
+			 *      - 0 'zero' if there is no compression token.
+			 */
+			public uint CompressionToken
+			{
+				get
+				{
+					return alljoyn_message_getcompressiontoken(_message);
+				}
+			}
+
+			/**
+			 * Accessor function to get the session id for the message.
+			 *
+			 * @return
+			 *      - Session id for the message
+			 *      - 0 'zero' if sender did not specify a session
+			 */
+			public uint SessionId
+			{
+				get
+				{
+					return alljoyn_message_getsessionid(_message);
+				}
+			}
+
+			/**
+			 * Returns a string that provides a brief description of the message
+			 *
+			 * @return A string that provides a brief description of the message
+			 */
+			public string Description
+			{
+				get
+				{
+					UIntPtr descriptionSz = alljoyn_message_description(_message, IntPtr.Zero, (UIntPtr)0);
+					byte[] sink = new byte[(int)descriptionSz];
+
+					GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+					alljoyn_message_description(_message, gch.AddrOfPinnedObject(), descriptionSz);
+					gch.Free();
+					// The returned buffer will contain a nul character an so we must remove the last character.
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)descriptionSz - 1);
+				}
+			}
+
+			/**
+			 * Returns the timestamp (in milliseconds) for this message. If the message header contained a
+			 * timestamp this is the estimated timestamp for when the message was sent by the remote device,
+			 * otherwise it is the timestamp for when the message was unmarshaled. Note that the timestamp
+			 * is always relative to local time.
+			 *
+			 * @return The timestamp for this message.
+			 */
+			public uint TimeStamp
+			{
+				get
+				{
+					return alljoyn_message_gettimestamp(_message);
 				}
 			}
 			#endregion
@@ -224,17 +590,85 @@ namespace AllJoynUnity
 			private static extern IntPtr alljoyn_message_getarg(IntPtr msg, UIntPtr argN);
 
 			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern void alljoyn_message_getargs(IntPtr msg, out UIntPtr numArgs, out IntPtr args);
+
+			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_message_getsender(IntPtr msg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_message_isbroadcastsignal(IntPtr msg);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_isbroadcastsignal(IntPtr msg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_message_isglobalbroadcast(IntPtr msg);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_isglobalbroadcast(IntPtr msg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_message_issessionless(IntPtr msg);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_issessionless(IntPtr msg);
 
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static byte alljoyn_message_getflags(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_isexpired(IntPtr msg, out uint tillExpireMS);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_isunreliable(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_message_isencrypted(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getauthmechanism(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_message_gettype(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_message_getcallserial(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getsignature(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getobjectpath(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getinterface(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getmembername(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_message_getreplyserial(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getreceiveendpointname(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_getdestination(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_message_getcompressiontoken(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_message_getsessionid(IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_message_geterrorname(IntPtr msg, IntPtr erroMessage, out UIntPtr errorMessage_size);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_message_tostring(IntPtr msg, IntPtr str, UIntPtr buf);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_message_description(IntPtr msg, IntPtr str, UIntPtr bug);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static uint alljoyn_message_gettimestamp(IntPtr msg);
 			#endregion
 
 			#region Internal Properties
