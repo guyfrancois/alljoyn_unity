@@ -30,11 +30,12 @@ srcs = envtest.Glob('*.cs')
 
 if envtest['OS_GROUP'] == 'windows':
     envtest['CSC'] = 'csc.exe'
-    if envtest['VARIANT'] == 'debug':
-        envtest['CSC_FLAGS']=['debug']
 elif envtest['OS_GROUP'] == 'posix':
     envtest['CSC'] = 'gmcs'
-    envtest['CSC_FLAGS']=['debug']
+
+if envtest['VARIANT'] == 'debug':
+    envtest['CSC_FLAGS']=['debug', 'define:DEBUG']
+    envtest['CSC_LIB_FLAGS']=['debug', 'define:DEBUG']
 
 if(env.has_key('XUNIT_DIR')):
     print("Building Unit Test for Unity Binding")

@@ -1,5 +1,5 @@
 
-# Copyright 2010 - 2011, Qualcomm Innovation Center, Inc.
+# Copyright 2011-2013, Qualcomm Innovation Center, Inc.
 # 
 #    Licensed under the Apache License, Version 2.0 (the "License");
 #    you may not use this file except in compliance with the License.
@@ -21,11 +21,12 @@ Import('env')
 
 if env['OS_GROUP'] == 'windows':
     env['CSC'] = 'csc.exe'
-    if env['VARIANT'] == 'debug':
-        env['CSC_FLAGS']=['debug']
 elif env['OS_GROUP'] == 'posix':
     env['CSC'] = 'gmcs'
-    env['CSC_FLAGS']=['debug']
+
+if env['VARIANT'] == 'debug':
+    env['CSC_FLAGS']=['debug', 'define:DEBUG']
+    env['CSC_LIB_FLAGS']=['debug', 'define:DEBUG']
 
 # AllJoyn Unity status codes
 def unity_status_build_function(target, source, env):
