@@ -1472,8 +1472,13 @@ namespace AllJoynUnityTest
 		{
 			AllJoyn.MsgArg arg = new AllJoyn.MsgArg();
 			arg = "Asign a string";
+#if DEBUG
 			Assert.Equal("<string>Asign a string</string>", arg.ToString());
 			Assert.Equal("  <string>Asign a string</string>", arg.ToString(2));
+#else
+			Assert.Equal("", arg.ToString());
+			Assert.Equal("", arg.ToString(2));
+#endif
 
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 			object[][] sii = new object[][]
@@ -1512,12 +1517,19 @@ namespace AllJoynUnityTest
 							"    <int32>222</int32>\n" +
 							"  </struct>\n" +
 							"</array>";
-
+#if DEBUG
 			Assert.Equal(expected, struct_array.ToString());
+#else
+			Assert.Equal("", struct_array.ToString());
+#endif
 
 			AllJoyn.MsgArg arg2 = new AllJoyn.MsgArg(2);
 			arg2.Set("ii", new object[] { 42, 24 });
+#if DEBUG
 			Assert.Equal("<int32>42</int32>\n<int32>24</int32>", arg2.ToString());
+#else
+			Assert.Equal("", arg2.ToString());
+#endif
 		}
 
 		[Fact]

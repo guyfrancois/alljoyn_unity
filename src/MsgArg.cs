@@ -118,12 +118,12 @@ namespace AllJoynUnity
 				}
 			}
 
+			/** @cond ALLJOYN_DEV */
 			/**
-			 * @cond ALLJOYN_DEV
 			 * @internal
-			 * Constructor for MsgArgs.
-			 * This constructor shold only be used internaly 
-			 * This will create a C# MsgArg using a pointer to an already existing 
+			 * Constructor for MsgArg.
+			 * This constructor should only be used internally
+			 * This will create a C# MsgArg using a pointer to an already existing
 			 * native C MsgArg
 			 * 
 			 * @param nativeMsgArg a pointer to a native C MsgArg
@@ -132,6 +132,23 @@ namespace AllJoynUnity
 			{
 				_msgArg = nativeMsgArg;
 				_length = 1;
+				_isDisposed = true;
+			}
+
+			/**
+			 * @internal
+			 * Constructor for MsgArg array.
+			 * This constructor should only be used internally
+			 * This will create a C# MsgArg using a pointer to an already existing
+			 * native C MsgArg array.
+			 *
+			 * @param nativeMsgArg a pointer to a native C MsgArg array
+			 * @param numArgs      the size of the native array of MsgArgs
+			 */
+			public MsgArg(IntPtr nativeMsgArg, int numArgs)
+			{
+				_msgArg = nativeMsgArg;
+				_length = numArgs;
 				_isDisposed = true;
 			}
 			/** @endcond */
@@ -238,7 +255,23 @@ namespace AllJoynUnity
 			 */
 			public override int GetHashCode()
 			{
-				return this.ToString().GetHashCode();
+				object tmp;
+				string sig = this.Signature;
+				Get(this.Signature, out tmp);
+				int hash = 0;
+				try
+				{
+					object[] tmp2 = (object[])tmp;
+					foreach (object t in tmp2)
+					{
+						hash = (hash * 13) + tmp2.GetHashCode();
+					}
+				}
+				catch (System.InvalidCastException)
+				{
+					hash = tmp.GetHashCode();
+				}
+				return hash;
 			}
 
 
@@ -1169,7 +1202,7 @@ namespace AllJoynUnity
 			 *  - @c '*' This matches any value type. This should not show up in a signature it is used by AllJoyn for matching
 			 *
 			 * @param      sig    The signature for MsgArg value
-			 * @param[out] value  object containing values to initialize the MsgArg
+			 * @param[out] value  object to hold the values unpacked from the MsgArg
 			 * @return
 			 *      - QStatus.OK if the signature matched and MsgArg was successfully unpacked.
 			 *      - QStatus.BUS_SIGNATURE_MISMATCH if the signature did not match.
@@ -1858,7 +1891,7 @@ namespace AllJoynUnity
 					{
 						ret += this[i].ToString(indent);
 						//each element should end in a newline except the final element
-						if (i < _length - 1)
+						if (i < _length - 1 && !ret.Equals(""))
 						{
 							ret += "\n";
 						}
