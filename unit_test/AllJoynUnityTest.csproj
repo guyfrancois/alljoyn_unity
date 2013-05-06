@@ -49,6 +49,7 @@
     <Compile Include="MsgArgTest.cs" />
     <Compile Include="InterfaceDescriptionTest.cs" />
     <Compile Include="MsgArgsTest.cs" />
+    <Compile Include="ProxyBusObjectTest.cs" />
     <Compile Include="SessionOptsTest.cs" />
     <Compile Include="SessionTest.cs" />
     <Compile Include="VersionTest.cs" />

@@ -149,7 +149,14 @@ namespace AllJoynUnity
 						gch.Free();
 					} while(status != QStatus.OK);
 					// The returned buffer will contain a nul character an so we must remove the last character.
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)sinkSz - 1);
+					if (sinkSz != 0)
+					{
+						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)sinkSz - 1);
+					}
+					else
+					{
+						return "";
+					}
 				}
 
 				private IntPtr _keyStore;

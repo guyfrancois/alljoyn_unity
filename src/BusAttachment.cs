@@ -85,7 +85,7 @@ namespace AllJoynUnity
 			 * Because interfaces are added both explicitly (via this method) and implicitly
 			 * (via @c ProxyBusObject.IntrospectRemoteObject), there is the possibility that creating
 			 * an interface here will fail because the interface already exists. If this happens, the
-			 * ER_BUS_IFACE_ALREADY_EXISTS will be returned and NULL will be returned in the iface [OUT]
+			 * QStatus.BUS_IFACE_ALREADY_EXISTS will be returned and NULL will be returned in the iface [OUT]
 			 * parameter.
 			 *
 			 * Interfaces created with this method need to be activated using InterfaceDescription.Activate()
@@ -268,7 +268,7 @@ namespace AllJoynUnity
 			 *
 			 * @return
 			 *      - QStatus.OK if successful.
-			 *      - QStatus.ER_BUS_BUS_ALREADY_STARTED if already started
+			 *      - QStatus.QStatus.BUS_BUS_ALREADY_STARTED if already started
 			 *      - Other error status codes indicating a failure
 			 */
 			public QStatus Join()
@@ -398,8 +398,8 @@ namespace AllJoynUnity
 
 			/**
 			 * Join a session.
-			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.JoinSession method call to the local daemon
-			 * and interprets the response.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.JoinSession method call to
+			 * the local daemon and interprets the response.
 			 *
 			 * @param[in]  sessionHost      Bus name of attachment that is hosting the session to be joined.
 			 * @param[in]  sessionPort      SessionPort of sessionHost to be joined.
@@ -436,8 +436,8 @@ namespace AllJoynUnity
 			/**
 			 * Advertise the existence of a well-known name to other (possibly disconnected) AllJoyn daemons.
 			 *
-			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.AdvertisedName method call to the local daemon
-			 * and interprets the response.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.AdvertisedName method call
+			 * to the local daemon and interprets the response.
 			 *
 			 * @param[in]  name          the well-known name to advertise. (Must be owned by the caller via RequestName).
 			 * @param[in]  transports    Set of transports to use for sending advertisement.
@@ -455,8 +455,8 @@ namespace AllJoynUnity
 			/**
 			 * Stop advertising the existence of a well-known name to other AllJoyn daemons.
 			 *
-			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.CancelAdvertiseName method call to the local daemon
-			 * and interprets the response.
+			 * This method is a shortcut/helper that issues an org.alljoyn.Bus.CancelAdvertiseName method call
+			 * to the local daemon and interprets the response.
 			 *
 			 * @param[in]  name          A well-known name that was previously advertised via AdvertiseName.
 			 * @param[in]  transports    Set of transports whose name advertisement will be canceled.
@@ -569,7 +569,7 @@ namespace AllJoynUnity
 			 * prevents any pending signals or replies from accessing the MessageReceiver after the message
 			 * receiver has been freed.
 			 *
-			 * @return ER_OK if successful.
+			 * @return QStatus.OK if successful.
 			 */
 			public QStatus UnregisterAllHandlers()
 			{
@@ -578,8 +578,8 @@ namespace AllJoynUnity
 
 			/**
 			 * Request a well-known name.
-			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.RequestName method call to the local daemon
-			 * and interprets the response.
+			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.RequestName method
+			 * call to the local daemon and interprets the response.
 			 *
 			 * @param[in]  requestedName  Well-known name being requested.
 			 * @param[in]  flags          Bitmask of DBUS_NAME_FLAG_* defines (see DBusStd.h)
@@ -596,8 +596,8 @@ namespace AllJoynUnity
 
 			/**
 			 * Release a previously requested well-known name.
-			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.ReleaseName method call to the local daemon
-			 * and interprets the response.
+			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.ReleaseName method
+			 * call to the local daemon and interprets the response.
 			 *
 			 * @param[in]  requestedName          Well-known name being released.
 			 *
@@ -789,10 +789,10 @@ namespace AllJoynUnity
 			 * @param connectSpec  The transport connection spec used to connect.
 			 *
 			 * @return
-			 *          - QStatus.OK if successful
-			 *          - QStatus.BUS_BUS_NOT_STARTED if the bus is not started
-			 *          - QStatus.BUS_NOT_CONNECTED if the %BusAttachment is not connected to the bus
-			 *          - Other error status codes indicating a failure
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_BUS_NOT_STARTED if the bus is not started
+			 *      - QStatus.BUS_NOT_CONNECTED if the %BusAttachment is not connected to the bus
+			 *      - Other error status codes indicating a failure
 			 */
 			public QStatus Disconnect(string connectSpec)
 			{
@@ -808,7 +808,7 @@ namespace AllJoynUnity
 			 * @return
 			 *      - QStatus.OK if the key store listener was set
 			 *      - QStatus.BUS_LISTENER_ALREADY_SET if a listener has been set by this function or because
-			 *         EnablePeerSecurity has been called.
+			 *        EnablePeerSecurity has been called.
 			 */
 			public QStatus RegisterKeyStoreListener(KeyStoreListener listener)
 			{
@@ -821,8 +821,9 @@ namespace AllJoynUnity
 			 * applications. It is up to the applications to coordinate how and when the shared key store is
 			 * modified.
 			 *
-			 * @return - ER_OK if the key store was successfully reloaded
-			 *         - An error status indicating that the key store reload failed.
+			 * @return
+			 *      - QStatus.OK if the key store was successfully reloaded
+			 *      - An error status indicating that the key store reload failed.
 			 */
 			public QStatus ReloadKeyStore()
 			{
@@ -845,9 +846,10 @@ namespace AllJoynUnity
 			 *
 			 * @param guid  The guid of a remote authenticated peer.
 			 *
-			 * @return  - ER_OK if the keys were cleared
-			 *          - ER_UNKNOWN_GUID if there is no peer with the specified GUID
-			 *          - Other errors
+			 * @return
+			 *      - QStatus.OK if the keys were cleared
+			 *      - QStatus.UNKNOWN_GUID if there is no peer with the specified GUID
+			 *      - Other errors
 			 */
 			public QStatus ClearKeys(string guid)
 			{
@@ -862,9 +864,10 @@ namespace AllJoynUnity
 			 * @param guid     The GUID of a remote authenticated peer.
 			 * @param timeout  The time in seconds relative to the current time to expire the keys.
 			 *
-			 * @return  - ER_OK if the expiration time was successfully set.
-			 *          - ER_UNKNOWN_GUID if there is no authenticated peer with the specified GUID
-			 *          - Other errors
+			 * @return
+			 *      - QStatus.OK if the expiration time was successfully set.
+			 *      - QStatus.UNKNOWN_GUID if there is no authenticated peer with the specified GUID
+			 *      - Other errors
 			 */
 			public QStatus SetKeyExpiration(string guid, uint timeout)
 			{
@@ -879,9 +882,10 @@ namespace AllJoynUnity
 			 * @param guid     The GUID of a remote authenticated peer.
 			 * @param timeout  The time in seconds relative to the current time when the keys will expire.
 			 *
-			 * @return  - ER_OK if the expiration time was successfully set.
-			 *          - ER_UNKNOWN_GUID if there is no authenticated peer with the specified GUID
-			 *          - Other errors
+			 * @return
+			 *       - QStatus.OK if the expiration time was successfully set.
+			 *       - QStatus.UNKNOWN_GUID if there is no authenticated peer with the specified GUID
+			 *       - Other errors
 			 */
 			public QStatus GetKeyExpiration(string guid, out uint timeout)
 			{
@@ -918,7 +922,8 @@ namespace AllJoynUnity
 
 			/**
 			 * Add a DBus match rule.
-			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.AddMatch method call to the local daemon.
+			 * This method is a shortcut/helper that issues an org.freedesktop.DBus.AddMatch
+			 * method call to the local daemon.
 			 *
 			 * @param[in]  rule  Match rule to be added (see DBus specification for format of this string).
 			 *
@@ -956,7 +961,7 @@ namespace AllJoynUnity
 			 *
 			 * @param sessionId    The session id of an existing session.
 			 * @param listener     The SessionListener to associate with the session. May be NULL to clear previous listener.
-			 * @return  ER_OK if successful.
+			 * @return  QStatus.OK if successful.
 			 */
 			public QStatus SetSessionListener(SessionListener listener, uint sessionId)
 			{
@@ -1070,8 +1075,8 @@ namespace AllJoynUnity
 			 * and interprets the response.
 			 *
 			 * @param[in]  name       The well known name that the caller is inquiring about.
-			 * @param[out] hasOwner   If return is ER_OK, indicates whether name exists on the bus.
-			 *                        If return is not ER_OK, hasOwner parameter is not modified.
+			 * @param[out] hasOwner   If return is QStatus.OK, indicates whether name exists on the bus.
+			 *                        If return is not QStatus.OK, hasOwner parameter is not modified.
 			 * @return
 			 *      - QStatus.OK if name ownership was able to be determined.
 			 *      - An error status otherwise

@@ -4,7 +4,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -68,10 +68,21 @@ namespace AllJoynUnity
 				ReadWrite = 3 /**< Read-Write Access type */
 			}
 
-			internal InterfaceDescription(IntPtr interfaceDescription)
+			/** @cond ALLJOYN_DEV */
+			/**
+			 * @internal
+			 * Constructor for InterfaceDescription.
+			 * This constructor should only be used internally
+			 * This will create a C# InterfaceDescription using a pointer to an already existing
+			 * native C InterfaceDescription
+			 *
+			 * @param nativeMsgArg a pointer to a native C MsgArg
+			 */
+			public InterfaceDescription(IntPtr interfaceDescription)
 			{
 				_interfaceDescription = interfaceDescription;
 			}
+			/** @endcond */
 
 			#region Equality
 			/**
@@ -345,6 +356,42 @@ namespace AllJoynUnity
 			{
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
+			}
+
+			/**
+			 * Returns a description of the interface in introspection XML format
+			 *
+			 * @return The interface description in introspection XML format.
+			 */
+			public string Introspect()
+			{
+				return Introspect(0);
+			}
+
+			/**
+			 * Returns a description of the interface in introspection XML format
+			 *
+			 * @param indent   Number of space chars to use in XML indentation.
+			 *
+			 * @return The interface description in introspection XML format.
+			 */
+			public string Introspect(int indent)
+			{
+				UIntPtr sinkSz = alljoyn_interfacedescription_introspect(_interfaceDescription, IntPtr.Zero, UIntPtr.Zero, (UIntPtr)indent);
+				byte[] sink = new byte[(int)sinkSz];
+
+				GCHandle gch = GCHandle.Alloc(sink, GCHandleType.Pinned);
+				alljoyn_interfacedescription_introspect(_interfaceDescription, gch.AddrOfPinnedObject(), sinkSz, (UIntPtr)indent);
+				gch.Free();
+				// The returned buffer will contain a nul character an so we must remove the last character.
+				if ((int)sinkSz != 0)
+				{
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)sinkSz - 1);
+				}
+				else
+				{
+					return "";
+				}
 			}
 
 			/**
@@ -948,6 +995,9 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static IntPtr alljoyn_interfacedescription_getname(IntPtr iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static UIntPtr alljoyn_interfacedescription_introspect(IntPtr iface, IntPtr str, UIntPtr buf, UIntPtr indent);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_issecure(IntPtr iface);

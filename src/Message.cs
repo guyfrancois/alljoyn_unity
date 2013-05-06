@@ -236,7 +236,14 @@ namespace AllJoynUnity
 				alljoyn_message_tostring(_message, gch.AddrOfPinnedObject(), signatureSz);
 				gch.Free();
 				// The returned buffer will contain a nul character an so we must remove the last character.
-				return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+				if ((int)signatureSz != 0)
+				{
+					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+				}
+				else
+				{
+					return "";
+				}
 			}
 
 			#region Properties
@@ -528,7 +535,14 @@ namespace AllJoynUnity
 					alljoyn_message_description(_message, gch.AddrOfPinnedObject(), descriptionSz);
 					gch.Free();
 					// The returned buffer will contain a nul character an so we must remove the last character.
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)descriptionSz - 1);
+					if ((int)descriptionSz != 0)
+					{
+						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)descriptionSz - 1);
+					}
+					else
+					{
+						return "";
+					}
 				}
 			}
 

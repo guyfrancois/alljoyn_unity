@@ -50,8 +50,7 @@ namespace AllJoynUnityTest
 			// returned
 			string version = AllJoyn.GetVersion();
 			Assert.Equal('v', version[0]);
-			char[] delimiterChars = { '.' };
-			string[] versionLevels = version.Substring(1).Split(delimiterChars);
+			string[] versionLevels = version.Substring(1).Split('.');
 
 			Assert.Equal(3, versionLevels.Length);
 			foreach (string level in versionLevels)
@@ -72,7 +71,6 @@ namespace AllJoynUnityTest
 			string buildInfo = AllJoyn.GetBuildInfo();
 			string failMsg = "Expected the BuildInfo string to start with 'AllJoyn Library' actual string was \n>>>\t " + buildInfo;
 			Assert.True(buildInfo.StartsWith("AllJoyn Library"), failMsg);
-			char[] delimiterChars = { ' ' };
 			string[] bInfo = buildInfo.Split(' ');
 
 			//dummy value to pass into int.TryParse

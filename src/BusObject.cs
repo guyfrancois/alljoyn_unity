@@ -7,7 +7,7 @@
  */
 
 /******************************************************************************
- * Copyright 2012, Qualcomm Innovation Center, Inc.
+ * Copyright 2012-2013, Qualcomm Innovation Center, Inc.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -322,7 +322,14 @@ namespace AllJoynUnity
 					alljoyn_busobject_getname(_busObject, gch.AddrOfPinnedObject(), nameSz);
 					gch.Free();
 					// The returned buffer will contain a nul character an so we must remove the last character.
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)nameSz - 1);
+					if ((int)nameSz != 0)
+					{
+						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (Int32)nameSz - 1);
+					}
+					else
+					{
+						return "";
+					}
 				}
 			}
 			#endregion
@@ -353,7 +360,7 @@ namespace AllJoynUnity
 			/**
 			 * Handle a bus request to read a property from this object.
 			 * BusObjects that implement properties should override this method.
-			 * The default version simply returns ER_BUS_NO_SUCH_PROPERTY
+			 * The default version simply returns QStatus.BUS_NO_SUCH_PROPERTY
 			 *
 			 * @param ifcName   Identifies the interface that the property is defined on
 			 * @param propName  Identifies the the property to get
@@ -368,7 +375,7 @@ namespace AllJoynUnity
 			/**
 			 * Handle a bus attempt to write a property value to this object.
 			 * BusObjects that implement properties should override this method.
-			 * This default version just replies with ER_BUS_NO_SUCH_PROPERTY
+			 * This default version just replies with QStatus.BUS_NO_SUCH_PROPERTY
 			 *
 			 * @param ifcName    Identifies the interface that the property is defined on
 			 * @param propName  Identifies the the property to set

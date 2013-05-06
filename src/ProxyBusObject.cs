@@ -69,7 +69,9 @@ namespace AllJoynUnity
 			 * Occasionally, AllJoyn library user may wish to call a method on
 			 * a %ProxyBusObject that was not reported during introspection of the remote object.
 			 * When this happens, the InterfaceDescription will have to be registered with the
-			 * Bus manually and the interface will have to be added to the %ProxyBusObject using this method.
+			 * Bus manually and the interface will have to be added to the %ProxyBusObject using
+			 * this method.
+			 *
 			 * @remark
 			 * The interface added via this call must have been previously registered with the
 			 * Bus. (i.e. it must have come from a call to Bus.GetInterface()).
@@ -148,24 +150,220 @@ namespace AllJoynUnity
 					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
 			}
 
+			/**
+			 * Returns an interface description. Returns NULL if the object does not implement
+			 * the requested interface.
+			 *
+			 * @param iface  The name of interface to get.
+			 *
+			 * @return
+			 *      - The requested interface description.
+			 *      - NULL if requested interface is not implemented or not found
+			 */
+			public InterfaceDescription GetInterface(string iface)
+			{
+				IntPtr infacePtr = alljoyn_proxybusobject_getinterface(_proxyBusObject, iface);
+				if (infacePtr == IntPtr.Zero)
+				{
+					return null;
+				}
+				else
+				{
+					return new InterfaceDescription(infacePtr);
+				}
+			}
+			/**
+			 * Tests if this object implements the requested interface.
+			 *
+			 * @param iface  Name of the interface to check for
+			 *
+			 * @return  true if the object implements the requested interface
+			 */
+			public bool ImplementsInterface(string iface)
+			{
+				return alljoyn_proxybusobject_implementsinterface(_proxyBusObject, iface);
+			}
+
+			/**
+			 * Initialize this proxy object from an XML string. Calling this method does several things:
+			 *
+			 *  -# Create and register any new InterfaceDescription(s) that are mentioned in the XML.
+			 *     (Interfaces that are already registered with the bus are left "as-is".)
+			 *  -# Add all the interfaces mentioned in the introspection data to this ProxyBusObject.
+			 *  -# Recursively create any child ProxyBusObject(s) and create/add their associated @n
+			 *     interfaces as mentioned in the XML. Then add the descendant object(s) to the appropriate
+			 *     descendant of this ProxyBusObject (in the children collection). If the named child object
+			 *     already exists as a child of the appropriate ProxyBusObject, then it is updated
+			 *     to include any new interfaces or children mentioned in the XML.
+			 *
+			 * Note that when this method fails during parsing, the return code will be set accordingly.
+			 * However, any interfaces which were successfully parsed prior to the failure
+			 * may be registered with the bus. Similarly, any objects that were successfully created
+			 * before the failure will exist in this object's set of children.
+			 *
+			 * @param xml         An XML string in DBus introspection format.
+			 *
+			 * @return
+			 *      - #QStatus.OK if parsing is completely successful.
+			 *      - An error status otherwise.
+			 */
+			public QStatus ParseXml(string xml)
+			{
+				return alljoyn_proxybusobject_parsexml(_proxyBusObject, xml, null);
+			}
+
+			/**
+			 * Initialize this proxy object from an XML string. Calling this method does several things:
+			 *
+			 *  -# Create and register any new InterfaceDescription(s) that are mentioned in the XML.
+			 *     (Interfaces that are already registered with the bus are left "as-is".)
+			 *  -# Add all the interfaces mentioned in the introspection data to this ProxyBusObject.
+			 *  -# Recursively create any child ProxyBusObject(s) and create/add their associated @n
+			 *     interfaces as mentioned in the XML. Then add the descendant object(s) to the appropriate
+			 *     descendant of this ProxyBusObject (in the children collection). If the named child object
+			 *     already exists as a child of the appropriate ProxyBusObject, then it is updated
+			 *     to include any new interfaces or children mentioned in the XML.
+			 *
+			 * Note that when this method fails during parsing, the return code will be set accordingly.
+			 * However, any interfaces which were successfully parsed prior to the failure
+			 * may be registered with the bus. Similarly, any objects that were successfully created
+			 * before the failure will exist in this object's set of children.
+			 *
+			 * @param xml         An XML string in DBus introspection format.
+			 * @param identifier  An optional identifying string to include in error logging messages.
+			 *
+			 * @return
+			 *      - #QStatus.OK if parsing is completely successful.
+			 *      - An error status otherwise.
+			 */
+			public QStatus ParseXml(string xml, string identifier)
+			{
+				return alljoyn_proxybusobject_parsexml(_proxyBusObject, xml, identifier);
+			}
+
+			/**
+			 * Explicitly secure the connection to the remote peer for this proxy object. Peer-to-peer
+			 * connections can only be secured if EnablePeerSecurity() was previously called on the bus
+			 * attachment for this proxy object. If the peer-to-peer connection is already secure this
+			 * function does nothing. Note that peer-to-peer connections are automatically secured when a
+			 * method call requiring encryption is sent.
+			 *
+			 * This call causes messages to be send on the bus, therefore it cannot be called within AllJoyn
+			 * callbacks (method/signal/reply handlers or ObjectRegistered callbacks, etc.)
+			 *
+			 * @return
+			 *          - AllJoyn.QStatus.OK if the connection was secured or an error status indicating that the
+			 *            connection could not be secured.
+			 *          - AllJoyn.QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
+			 *          - AllJoyn.QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
+			 *          - Other error status codes indicating a failure.
+			 */
+			public QStatus SecureConnection()
+			{
+				return SecureConnection(false);
+			}
+
+			/**
+			 * Explicitly secure the connection to the remote peer for this proxy object. Peer-to-peer
+			 * connections can only be secured if EnablePeerSecurity() was previously called on the bus
+			 * attachment for this proxy object. If the peer-to-peer connection is already secure this
+			 * function does nothing. Note that peer-to-peer connections are automatically secured when a
+			 * method call requiring encryption is sent.
+			 *
+			 * This call causes messages to be send on the bus, therefore it cannot be called within AllJoyn
+			 * callbacks (method/signal/reply handlers or ObjectRegistered callbacks, etc.)
+			 *
+			 * @param forceAuth  If true, forces an re-authentication even if the peer connection is already
+			 *                   authenticated.
+			 *
+			 * @return
+			 *          - AllJoyn.QStatus.OK if the connection was secured or an error status indicating that the
+			 *            connection could not be secured.
+			 *          - AllJoyn.QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
+			 *          - AllJoyn.QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
+			 *          - Other error status codes indicating a failure.
+			 */
+			public QStatus SecureConnection(bool forceAuth)
+			{
+				return alljoyn_proxybusobject_secureconnection(_proxyBusObject, forceAuth);
+			}
+			#region Properties
+
+			/**
+			 * Return the absolute object path for the remote object.
+			 *
+			 * @return Object path
+			 */
+			public string Path
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_proxybusobject_getpath(_proxyBusObject));
+				}
+			}
+
+			/**
+			 * Return the remote service name for this object.
+			 *
+			 * @return Service name (typically a well-known service name but may be a unique name)
+			 */
+			public string ServiceName
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_proxybusobject_getservicename(_proxyBusObject));
+				}
+			}
+
+			/**
+			 * Return the session Id for this object.
+			 *
+			 * @return Session Id
+			 */
+			public uint SessionId
+			{
+				get
+				{
+					return alljoyn_proxybusobject_getsessionid(_proxyBusObject);
+				}
+			}
+
+			/**
+			 * Indicates if this is a valid (usable) proxy bus object.
+			 *
+			 * @return true if a valid proxy bus object, false otherwise.
+			 */
+			public bool IsValid
+			{
+				get
+				{
+					return alljoyn_proxybusobject_isvalid(_proxyBusObject);
+				}
+			}
+
+			#endregion
+
 			#region DLL Imports
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr bus,
+			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr proxyObj,
 				[MarshalAs(UnmanagedType.LPStr)] string service,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
 				uint sessionId);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern void alljoyn_proxybusobject_destroy(IntPtr bus);
+			private static extern void alljoyn_proxybusobject_destroy(IntPtr proxyObj);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_proxybusobject_addinterface(IntPtr bus, IntPtr iface);
+			private static extern int alljoyn_proxybusobject_addinterface(IntPtr proxyObj, IntPtr iface);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_proxybusobject_introspectremoteobject(IntPtr bus);
+			private static extern int alljoyn_proxybusobject_addinterface_by_name(IntPtr proxyObj, [MarshalAs(UnmanagedType.LPStr)] string ifaceName);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private static extern int alljoyn_proxybusobject_methodcall(IntPtr obj,
+			private static extern int alljoyn_proxybusobject_introspectremoteobject(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_proxybusobject_methodcall(IntPtr proxyObj,
 				[MarshalAs(UnmanagedType.LPStr)] string ifaceName,
 				[MarshalAs(UnmanagedType.LPStr)] string methodName,
 				IntPtr args,
@@ -173,6 +371,35 @@ namespace AllJoynUnity
 				IntPtr replyMsg,
 				uint timeout,
 				byte flags);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_proxybusobject_getinterface(IntPtr proxyObj, [MarshalAs(UnmanagedType.LPStr)] string iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_proxybusobject_getpath(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_proxybusobject_getservicename(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern uint alljoyn_proxybusobject_getsessionid(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private static extern bool alljoyn_proxybusobject_implementsinterface(IntPtr proxyObj, [MarshalAs(UnmanagedType.LPStr)] string iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private static extern bool alljoyn_proxybusobject_isvalid(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_proxybusobject_parsexml(IntPtr proxyObj,
+				[MarshalAs(UnmanagedType.LPStr)] string xml,
+				[MarshalAs(UnmanagedType.LPStr)] string identifier);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern int alljoyn_proxybusobject_secureconnection(IntPtr proxyObj, [MarshalAs(UnmanagedType.I1)] bool forceAuth);
+
 			#endregion
 
 			#region IDisposable

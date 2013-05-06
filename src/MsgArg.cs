@@ -1907,7 +1907,14 @@ namespace AllJoynUnity
 					alljoyn_msgarg_tostring(_msgArg, gch.AddrOfPinnedObject(), signatureSz, (UIntPtr)indent);
 					gch.Free();
 					// The returned buffer will contain a nul character an so we must remove the last character.
-					return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+					if ((int)signatureSz != 0)
+					{
+						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+					}
+					else
+					{
+						return "";
+					}
 				}
 			}
 
@@ -1966,7 +1973,14 @@ namespace AllJoynUnity
 						alljoyn_msgarg_signature(_msgArg, gch.AddrOfPinnedObject(), signatureSz);
 						gch.Free();
 						// The returned buffer will contain a nul character an so we must remove the last character.
-						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+						if ((int)signatureSz != 0)
+						{
+							return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+						}
+						else
+						{
+							return "";
+						}
 					}
 					else
 					{
@@ -1977,7 +1991,14 @@ namespace AllJoynUnity
 						alljoyn_msgarg_array_signature(_msgArg, (UIntPtr)_length, gch.AddrOfPinnedObject(), signatureSz);
 						gch.Free();
 						// The returned buffer will contain a nul character an so we must remove the last character.
-						return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+						if ((int)signatureSz != 0)
+						{
+							return System.Text.ASCIIEncoding.ASCII.GetString(sink, 0, (int)signatureSz - 1);
+						}
+						else
+						{
+							return "";
+						}
 					}
 				}
 			}

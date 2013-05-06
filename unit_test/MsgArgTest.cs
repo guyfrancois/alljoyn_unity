@@ -1,5 +1,5 @@
 ﻿//-----------------------------------------------------------------------
-// <copyright file="SessionTest.cs" company="Qualcomm Innovation Center, Inc.">
+// <copyright file="MsgArgTest.cs" company="Qualcomm Innovation Center, Inc.">
 // Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -1502,7 +1502,7 @@ namespace AllJoynUnityTest
 			AllJoyn.MsgArg struct_array = new AllJoyn.MsgArg();
 			status = struct_array.Set("a(ii)", structs);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
-
+#if DEBUG
 			string expected = "<array type_sig=\"(ii)\">\n" +
 							"  <struct>\n" +
 							"    <int32>1</int32>\n" +
@@ -1517,7 +1517,6 @@ namespace AllJoynUnityTest
 							"    <int32>222</int32>\n" +
 							"  </struct>\n" +
 							"</array>";
-#if DEBUG
 			Assert.Equal(expected, struct_array.ToString());
 #else
 			Assert.Equal("", struct_array.ToString());
