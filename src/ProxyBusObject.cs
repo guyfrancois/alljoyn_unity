@@ -204,7 +204,7 @@ namespace AllJoynUnity
 			 * @param xml         An XML string in DBus introspection format.
 			 *
 			 * @return
-			 *      - #QStatus.OK if parsing is completely successful.
+			 *      - QStatus.OK if parsing is completely successful.
 			 *      - An error status otherwise.
 			 */
 			public QStatus ParseXml(string xml)
@@ -233,7 +233,7 @@ namespace AllJoynUnity
 			 * @param identifier  An optional identifying string to include in error logging messages.
 			 *
 			 * @return
-			 *      - #QStatus.OK if parsing is completely successful.
+			 *      - QStatus.OK if parsing is completely successful.
 			 *      - An error status otherwise.
 			 */
 			public QStatus ParseXml(string xml, string identifier)
@@ -252,10 +252,10 @@ namespace AllJoynUnity
 			 * callbacks (method/signal/reply handlers or ObjectRegistered callbacks, etc.)
 			 *
 			 * @return
-			 *          - AllJoyn.QStatus.OK if the connection was secured or an error status indicating that the
+			 *          - QStatus.OK if the connection was secured or an error status indicating that the
 			 *            connection could not be secured.
-			 *          - AllJoyn.QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
-			 *          - AllJoyn.QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
+			 *          - QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
+			 *          - QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
 			 *          - Other error status codes indicating a failure.
 			 */
 			public QStatus SecureConnection()
@@ -277,10 +277,10 @@ namespace AllJoynUnity
 			 *                   authenticated.
 			 *
 			 * @return
-			 *          - AllJoyn.QStatus.OK if the connection was secured or an error status indicating that the
+			 *          - QStatus.OK if the connection was secured or an error status indicating that the
 			 *            connection could not be secured.
-			 *          - AllJoyn.QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
-			 *          - AllJoyn.QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
+			 *          - QStatus.BUS_NO_AUTHENTICATION_MECHANISM if BusAttachment.EnablePeerSecurity() has not been called.
+			 *          - QStatus.AUTH_FAIL if the attempt(s) to authenticate the peer failed.
 			 *          - Other error status codes indicating a failure.
 			 */
 			public QStatus SecureConnection(bool forceAuth)

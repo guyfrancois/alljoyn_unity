@@ -268,7 +268,7 @@ namespace AllJoynUnity
 			 *
 			 * @return
 			 *      - QStatus.OK if successful.
-			 *      - QStatus.QStatus.BUS_BUS_ALREADY_STARTED if already started
+			 *      - QStatus.BUS_BUS_ALREADY_STARTED if already started
 			 *      - Other error status codes indicating a failure
 			 */
 			public QStatus Join()

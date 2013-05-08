@@ -25,9 +25,11 @@ namespace AllJoynUnityTest
 	public class InterfaceDescriptionTest
 	{
 		const string INTERFACE_NAME = "org.alljoyn.test.InterfaceDescriptionTest";
+		const string OBJECT_PATH = "/org/alljoyn/test/InterfaceDescriptionTest";
+		const string WELLKNOWN_NAME = "org.alljoyn.test.InterfaceDescriptionTest";
 
 		[Fact]
-		public void TestAddMember()
+		public void AddMember()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -53,7 +55,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestGetMember()
+		public void GetMember()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -106,14 +108,132 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
-		
-		public void TestGetMembers()
+		[Fact]
+		public void GetMembers()
 		{
-			//TODO: implement this...
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			// Test adding a MethodCall
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("one", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("two", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("three", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("four", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("five", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("six", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("seven", "", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("eight", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("nine", "", ""));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("ten", "", ""));
+
+			AllJoyn.InterfaceDescription.Member[] members = testIntf.GetMembers();
+			Assert.Equal(10, members.Length);
+
+			// This test assumes that the members are returned in alphabetic order
+			// nothing states that the changes must be returned this way.
+			Assert.Equal("eight", members[0].Name);
+			Assert.Equal("five", members[1].Name);
+			Assert.Equal("four", members[2].Name);
+			Assert.Equal("nine", members[3].Name);
+			Assert.Equal("one", members[4].Name);
+			Assert.Equal("seven", members[5].Name);
+			Assert.Equal("six", members[6].Name);
+			Assert.Equal("ten", members[7].Name);
+			Assert.Equal("three", members[8].Name);
+			Assert.Equal("two", members[9].Name);
 		}
 
 		[Fact]
-		public void TestHasMember()
+		public void AddMethod()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.NotNull(testIntf);
+
+			// Test adding a MethodCall
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("ping", "s", "s", "in,out"));
+
+			// Test adding a Signal
+			status = testIntf.AddMethod("pong", "", "s", "pong-in", AllJoyn.InterfaceDescription.AnnotationFlags.Deprecated | AllJoyn.InterfaceDescription.AnnotationFlags.NoReply);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			string expectedIntrospect = "<interface name=\"org.alljoyn.test.InterfaceDescriptionTest\">\n" +
+										"  <method name=\"ping\">\n" +
+										"    <arg name=\"in\" type=\"s\" direction=\"in\"/>\n" +
+										"    <arg name=\"out\" type=\"s\" direction=\"out\"/>\n" +
+										"  </method>\n" +
+										"  <method name=\"pong\">\n" +
+										"    <arg name=\"pong-in\" type=\"s\" direction=\"out\"/>\n" +
+										"    <annotation name=\"org.freedesktop.DBus.Deprecated\" value=\"true\"/>\n" +
+										"    <annotation name=\"org.freedesktop.DBus.Method.NoReply\" value=\"true\"/>\n" +
+										"  </method>\n" +
+										"</interface>\n";
+			Assert.Equal(expectedIntrospect, testIntf.Introspect());
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void GetMethod()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			// Test adding a MethodCall
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("ping", "s", "s", "in,out"));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("foo", "", ""));
+
+			// Verify the ping member
+			AllJoyn.InterfaceDescription.Member pingMember = null;
+			pingMember = testIntf.GetMethod("ping");
+			Assert.NotNull(pingMember);
+
+			Assert.Equal(testIntf, pingMember.Iface);
+			Assert.Equal(AllJoyn.Message.Type.MethodCall, pingMember.MemberType);
+			Assert.Equal("ping", pingMember.Name);
+			Assert.Equal("s", pingMember.Signature);
+			Assert.Equal("s", pingMember.ReturnSignature);
+			Assert.Equal("in,out", pingMember.ArgNames);
+
+			AllJoyn.InterfaceDescription.Member fooMember = null;
+			fooMember = testIntf.GetMethod("foo");
+			// since "foo" is a signal is should return null when using GetMethod
+			Assert.Null(fooMember);
+
+			fooMember = testIntf.GetMethod("bar");
+			// since "bar" is not a member of the interface it should be null
+			Assert.Null(fooMember);
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void HasMember()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -150,7 +270,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestActivate()
+		public void Activate()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -183,7 +303,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestIsSecure()
+		public void IsSecure()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -212,7 +332,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestAddProperty()
+		public void AddProperty()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -237,7 +357,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestHasProperty()
+		public void HasProperty()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -268,7 +388,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestHasProperties()
+		public void HasProperties()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -318,7 +438,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestGetProperty()
+		public void GetProperty()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -357,13 +477,34 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
-		public void TestGetProperties()
+		[Fact]
+		public void GetProperties()
 		{
-			//TODO: implement this...
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.NotNull(testIntf);
+
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddProperty("prop1", "s", AllJoyn.InterfaceDescription.AccessFlags.Read));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddProperty("prop2", "i", AllJoyn.InterfaceDescription.AccessFlags.Write));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddProperty("prop3", "u", AllJoyn.InterfaceDescription.AccessFlags.ReadWrite));
+
+			AllJoyn.InterfaceDescription.Property[] properties = testIntf.GetProperties();
+			Assert.Equal(3, properties.Length);
+
+			// This assumes that the properties are returned in alphabetic order
+			// nothing states that the properties must be returned this way.
+			Assert.Equal("prop1", properties[0].Name);
+			Assert.Equal("prop2", properties[1].Name);
+			Assert.Equal("prop3", properties[2].Name);
 		}
 
 		[Fact]
-		public void TestGetName()
+		public void GetName()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -383,7 +524,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestAddSignal()
+		public void AddSignal()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -417,7 +558,49 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestInterfaceAnnotations()
+		public void GetSignal()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("foo", "", "", ""));
+			status = testIntf.AddSignal("chirp", "s", "data", AllJoyn.InterfaceDescription.AnnotationFlags.Default);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// Verify the signal
+			AllJoyn.InterfaceDescription.Member signalMember = null;
+			signalMember = testIntf.GetSignal("chirp");
+			Assert.NotNull(signalMember);
+
+			Assert.Equal(testIntf, signalMember.Iface);
+			Assert.Equal(AllJoyn.Message.Type.Signal, signalMember.MemberType);
+			Assert.Equal("chirp", signalMember.Name);
+			Assert.Equal("s", signalMember.Signature);
+			Assert.Equal("", signalMember.ReturnSignature);
+			Assert.Equal("data", signalMember.ArgNames);
+
+			AllJoyn.InterfaceDescription.Member methodMember = null;
+			methodMember = testIntf.GetSignal("foo");
+			//since "foo" is a method GetSignal should return null
+			Assert.Null(methodMember);
+
+			methodMember = testIntf.GetSignal("bar");
+			// "bar" is not a member of the interface it should return null
+			Assert.Null(methodMember);
+
+			bus.Dispose();
+		}
+
+		[Fact]
+		public void InterfaceAnnotations()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -469,7 +652,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestMethodAnnotations()
+		public void MethodAnnotations()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -536,7 +719,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestSignalAnnotations()
+		public void SignalAnnotations()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -594,7 +777,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestPropertyAnnotations()
+		public void PropertyAnnotations()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -651,6 +834,74 @@ namespace AllJoynUnityTest
 			Assert.True(annotations.TryGetValue("org.alljoyn.test.annotation.five", out value));
 			Assert.Equal("treasure", value);
 			bus.Dispose();
+		}
+
+		[Fact]
+		public void InterfaceDescriptionEquals()
+		{
+			AllJoyn.BusAttachment servicebus = null;
+			servicebus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(servicebus);
+
+			// create the interface one
+			AllJoyn.InterfaceDescription testIntf = null;
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.NotNull(testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("ping", "s", "s", "in,out"));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("chirp", "s", "chirp"));
+			testIntf.Activate();
+
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.Start());
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.Connect(AllJoynTestCommon.GetConnectSpec()));
+
+			AllJoyn.BusObject busObject = new AllJoyn.BusObject(OBJECT_PATH, false);
+			Assert.Equal(AllJoyn.QStatus.OK, busObject.AddInterface(testIntf));
+
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.RegisterBusObject(busObject));
+
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.RequestName(WELLKNOWN_NAME, AllJoyn.DBus.NameFlags.AllowReplacement |
+				AllJoyn.DBus.NameFlags.DoNotQueue | AllJoyn.DBus.NameFlags.ReplaceExisting));
+
+			AllJoyn.BusAttachment clientbus = null;
+			clientbus = new AllJoyn.BusAttachment("InterfaceDescriptionTestclient", true);
+			Assert.NotNull(clientbus);
+
+			Assert.Equal(AllJoyn.QStatus.OK, clientbus.Start());
+			Assert.Equal(AllJoyn.QStatus.OK, clientbus.Connect(AllJoynTestCommon.GetConnectSpec()));
+
+			AllJoyn.ProxyBusObject proxy = new AllJoyn.ProxyBusObject(clientbus, WELLKNOWN_NAME, OBJECT_PATH, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, proxy.IntrospectRemoteObject());
+
+			AllJoyn.InterfaceDescription testIntf2 = proxy.GetInterface(INTERFACE_NAME);
+			Assert.NotNull(testIntf);
+
+			// create the interface three
+			AllJoyn.InterfaceDescription testIntf3 = null;
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME + ".three", false, out testIntf3));
+			Assert.NotNull(testIntf3);
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf3.AddMethod("ping", "s", "s", "in,out"));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf3.AddMethod("pong", "s", "s", "in,out"));
+			Assert.Equal(AllJoyn.QStatus.OK, testIntf3.AddSignal("chirp", "s", "chirp"));
+
+			Assert.True(testIntf == testIntf2);
+			Assert.True(testIntf.Equals(testIntf2));
+			Assert.True(testIntf.GetHashCode() == testIntf2.GetHashCode());
+
+			Assert.False(testIntf == testIntf3);
+			Assert.False(testIntf.Equals(testIntf3));
+			Assert.False(testIntf.GetHashCode() == testIntf3.GetHashCode());
+			
+			proxy.Dispose();
+			busObject.Dispose();
+
+			servicebus.Stop();
+			servicebus.Join();
+
+			clientbus.Stop();
+			clientbus.Join();
+
+			servicebus.Dispose();
+			clientbus.Dispose();
 		}
 	}
 }

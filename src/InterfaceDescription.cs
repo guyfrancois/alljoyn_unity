@@ -98,7 +98,7 @@ namespace AllJoynUnity
 			
 				if((object)one == null && (object)other == null) return true;
 				else if((object)one == null || (object)other == null) return false;
-				return (alljoyn_interfacedescription_eql(one.UnmanagedPtr, other.UnmanagedPtr) == 1 ? true : false);
+				return alljoyn_interfacedescription_eql(one.UnmanagedPtr, other.UnmanagedPtr);
 			}
 
 			/**
@@ -139,7 +139,25 @@ namespace AllJoynUnity
 			 */
 			public override int GetHashCode()
 			{
-				return (int)_interfaceDescription;
+				Member[] members = GetMembers();
+				int hash = Name.GetHashCode();
+				foreach (Member m in members)
+				{
+					hash = (hash * 13) + m.GetType().GetHashCode();
+					hash = (hash * 13) + m.Name.GetHashCode();
+					hash = (hash * 13) + m.Signature.GetHashCode();
+					hash = (hash * 13) + m.ReturnSignature.GetHashCode();
+					hash = (hash * 13) + m.ArgNames.GetHashCode();
+				}
+
+				Property[] properties = GetProperties();
+				foreach (Property p in properties)
+				{
+					hash = (hash * 13) + p.Name.GetHashCode();
+					hash = (hash * 13) + p.Signature.GetHashCode();
+					hash = (hash * 13) + p.Access.GetHashCode();
+				}
+				return hash;
 			}
 			#endregion
 
@@ -180,7 +198,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_interfacedescription_issecure(_interfaceDescription) == 1 ? true : false);
+					return alljoyn_interfacedescription_issecure(_interfaceDescription);
 				}
 			}
 			#endregion
@@ -340,6 +358,20 @@ namespace AllJoynUnity
 			/**
 			 * Add a member to the interface.
 			 *
+			 * If Default annotation flag is used no annotations will be added to the method.
+			 *
+			 * Using the Depricated annotation flag will add the org.freedesktop.DBus.Depricated=true
+			 * annotation to the member. This annotation is an indication that the member has been
+			 * depricated.
+			 *
+			 * Using the NoReply annotation flag will add the org.freedesktop.DBus.Method.NoReply=true
+			 * annotation to the member. If this annotation is set don't expect a reply to the method
+			 * call. This annotation only applies to method type members.
+			 *
+			 * The Depricated and NoReply annotation flags can be ORed together to add both annotations.
+			 *
+			 * To add other annotations use the InterfaceDescription.AddMemberAnnotation method.
+			 *
 			 * @param type        Message type.
 			 * @param name        Name of member.
 			 * @param inputSignature    Signature of input parameters or NULL for none.
@@ -356,6 +388,145 @@ namespace AllJoynUnity
 			{
 				return alljoyn_interfacedescription_addmember(_interfaceDescription,
 					(int)type, name, inputSignature, outputSignature, argNames, (byte)annotation);
+			}
+
+			/**
+			 * Add a member to the interface.
+			 *
+			 * @param name        Name of member.
+			 * @param inputSig    Signature of input parameters or NULL for none.
+			 * @param outSig      Signature of output parameters or NULL for none.
+			 * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddMethod(string name, string inputSig, string outSig, string argNames)
+			{
+				return AddMember(Message.Type.MethodCall, name, inputSig, outSig, argNames);
+			}
+
+			/**
+			 * Add a member to the interface. With one of the built in annotations.
+			 *
+			 * The possible annotations are
+			 *    - AllJoyn.InterfaceDescription.AnnotationFlags.Default = 0x0
+			 *    - AllJoyn.InterfaceDescription.AnnotationFlags.Deprecated = 0x1
+			 *    - AllJoyn.InterfaceDescription.AnnotationFlags.NoReply = 0x2
+			 *
+			 * If Default annotation flag is used no annotations will be added to the method.
+			 *
+			 * Using the Depricated annotation flag will add the org.freedesktop.DBus.Depricated=true
+			 * annotation to the method. This annotation is an indication that the method has been
+			 * depricated.
+			 *
+			 * Using the NoReply annotation flag will add the org.freedesktop.DBus.Method.NoReply=true
+			 * annotation to the method. If this annotation is set don't expect a reply to the method
+			 * call.
+			 *
+			 * The Depricated and NoReply annotation flags can be ORed together to add both annotations.
+			 *
+			 * To add other annotations use the InterfaceDescription.AddMemberAnnotation method.
+			 *
+			 * @param name        Name of member.
+			 * @param inputSig    Signature of input parameters or NULL for none.
+			 * @param outSig      Signature of output parameters or NULL for none.
+			 * @param argNames    Comma separated list of input and then output arg names used in annotation XML.
+			 * @param annotation  Annotation flags.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddMethod(string name, string inputSig, string outSig, string argNames, AnnotationFlags annotation)
+			{
+				return AddMember(Message.Type.MethodCall, name, inputSig, outSig, argNames, annotation);
+			}
+
+			//TODO AddMethod with accessParams
+
+			/**
+			 * Lookup a member method description by name
+			 *
+			 * @param name  Name of the method to lookup
+			 * @return
+			 *      - An InterfaceDescription.Member.
+			 *      - NULL if does not exist.
+			 */
+			public Member GetMethod(string name)
+			{
+				Member ret = GetMember(name);
+				if (ret != null && ret.MemberType == Message.Type.MethodCall)
+				{
+					return ret;
+				}
+				else
+				{
+					return null;
+				}
+			}
+
+			/**
+			 * Add a signal member to the interface.
+			 *
+			 * If Default annotation flag is used no annotations will be added to the method.
+			 *
+			 * Using the Depricated annotation flag will add the org.freedesktop.DBus.Depricated=true
+			 * annotation to the signal. This annotation is an indication that the signal has been
+			 * depricated.
+			 *
+			 * To add other annotations use the InterfaceDescription.AddMemberAnnotation method.
+			 *
+			 * @param name        Name of method call member.
+			 * @param sig         Signature of parameters or NULL for none.
+			 * @param argNames    Comma separated list of arg names used in annotation XML.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddSignal(string name, string sig, string argNames)
+			{
+				return AddMember(Message.Type.Signal, name, sig, "", argNames, InterfaceDescription.AnnotationFlags.Default);
+			}
+
+			/**
+			 * Add a signal member to the interface.
+			 *
+			 * @param name        Name of method call member.
+			 * @param sig         Signature of parameters or NULL for none.
+			 * @param argNames    Comma separated list of arg names used in annotation XML.
+			 * @param annotation  Annotation flags.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
+			 */
+			public QStatus AddSignal(string name, string sig, string argNames, AnnotationFlags annotation)
+			{
+				return AddMember(Message.Type.Signal, name, sig, "", argNames, annotation);
+			}
+
+			/**
+			 * Lookup a member signal description by name
+			 *
+			 * @param name  Name of the signal to lookup
+			 * @return
+			 *      - An InterfaceDescription.Member.
+			 *      - NULL if does not exist.
+			 */
+			public InterfaceDescription.Member GetSignal(string name)
+			{
+				Member ret = GetMember(name);
+				if (ret != null && ret.MemberType == Message.Type.Signal)
+				{
+					return ret;
+				}
+				else
+				{
+					return null;
+				}
 			}
 
 			/**
@@ -395,24 +566,6 @@ namespace AllJoynUnity
 			}
 
 			/**
-			 * Add a signal member to the interface.
-			 *
-			 * @param name        Name of method call member.
-			 * @param inputSignature         Signature of parameters or NULL for none.
-			 * @param argNames    Comma separated list of arg names used in interface XML.
-			 * @param annotation  Annotation flags.
-			 *
-			 * @return
-			 *      - QStatus.OK if successful
-			 *      - QStatus.BUS_MEMBER_ALREADY_EXISTS if member already exists
-			 */
-			public QStatus AddSignal(string name, string inputSignature, string argNames, AnnotationFlags annotation)
-			{
-			return alljoyn_interfacedescription_addmember(_interfaceDescription,
-				(int)Message.Type.Signal, name, inputSignature, null, argNames, (byte) annotation);
-			}
-
-			/**
 			 * Activate this interface. An interface must be activated before it can be used. Activating an
 			 * interface locks the interface so that is can no longer be modified.
 			 */
@@ -432,7 +585,7 @@ namespace AllJoynUnity
 			public Member GetMember(string name)
 			{
 				_Member retMember = new _Member();
-				if(alljoyn_interfacedescription_getmember(_interfaceDescription, name, ref retMember) == 1)
+				if(alljoyn_interfacedescription_getmember(_interfaceDescription, name, ref retMember))
 				{
 					return new Member(retMember);
 				}
@@ -455,6 +608,7 @@ namespace AllJoynUnity
 				GCHandle gch = GCHandle.Alloc(members, GCHandleType.Pinned);
 				UIntPtr numFilledMembers = alljoyn_interfacedescription_getmembers(_interfaceDescription,
 					gch.AddrOfPinnedObject(), numMembers);
+				gch.Free();
 				if(numMembers != numFilledMembers)
 				{
 					// Warn?
@@ -926,7 +1080,8 @@ namespace AllJoynUnity
 			private extern static void alljoyn_interfacedescription_activate(IntPtr iface);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_interfacedescription_getmember(IntPtr iface,
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_interfacedescription_getmember(IntPtr iface,
 				[MarshalAs(UnmanagedType.LPStr)] string name, 
 				ref _Member member);
 
@@ -988,7 +1143,8 @@ namespace AllJoynUnity
 				[MarshalAs(UnmanagedType.LPStr)] string name, IntPtr value, ref UIntPtr value_size);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_interfacedescription_eql(IntPtr one, IntPtr other);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_interfacedescription_eql(IntPtr one, IntPtr other);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_interfacedescription_hasproperties(IntPtr iface);
@@ -1000,7 +1156,8 @@ namespace AllJoynUnity
 			private extern static UIntPtr alljoyn_interfacedescription_introspect(IntPtr iface, IntPtr str, UIntPtr buf, UIntPtr indent);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_interfacedescription_issecure(IntPtr iface);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_interfacedescription_issecure(IntPtr iface);
 			#endregion
 
 			#region Internal Structures

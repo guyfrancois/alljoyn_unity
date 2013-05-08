@@ -2063,8 +2063,8 @@ namespace AllJoynUnity
 			 *                       data type
 			 *
 			 * @return
-			 *      - AllJoyn.QStatus.OK if the signature was prefixed by a complete type.
-			 *      - AllJoyn.QStatus.BUS_BAD_SIGNATURE  if unable to parse the complete type.
+			 *      - QStatus.OK if the signature was prefixed by a complete type.
+			 *      - QStatus.BUS_BAD_SIGNATURE  if unable to parse the complete type.
 			 */
 			private static AllJoyn.QStatus parsecompleteType(string signature, out int position)
 			{
@@ -2120,8 +2120,8 @@ namespace AllJoynUnity
 			 * @param[out] position the number of characters that make up a complete AllJoyn
 			 *                      data type
 			 * @return
-			 *  - AllJoyn.QStatus.OK if the signature for a container type was verified.
-			 *  - AllJoyn.QStatus.BUS_BAD_SIGNATURE  if unable to parse signature for the container type.
+			 *  - QStatus.OK if the signature for a container type was verified.
+			 *  - QStatus.BUS_BAD_SIGNATURE  if unable to parse signature for the container type.
 			 */
 			private static AllJoyn.QStatus parseContainerSignature(string signature, out int position)
 			{
