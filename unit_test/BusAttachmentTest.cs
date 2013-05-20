@@ -50,7 +50,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestCreateInterface()
+		public void CreateInterface()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 			AllJoyn.BusAttachment bus = null;
@@ -67,7 +67,26 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestDeleteInterface()
+		public void Connect_no_params()
+		{
+			AllJoyn.BusAttachment busAttachment = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(busAttachment);
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Start());
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Connect());
+
+			Assert.True(busAttachment.IsConnected);
+
+			Assert.True(busAttachment.ConnectSpec.Equals(AllJoynTestCommon.GetConnectSpec()) || busAttachment.ConnectSpec.Equals("null:"));
+
+			busAttachment.Stop();
+			busAttachment.Join();
+
+			busAttachment.Dispose();
+		}
+
+		[Fact]
+		public void DeleteInterface()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 			AllJoyn.BusAttachment bus = null;
@@ -86,7 +105,7 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
-		public void TestStartAndStop()
+		public void StartAndStop()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 			AllJoyn.BusAttachment bus = null;
@@ -103,7 +122,7 @@ namespace AllJoynUnityTest
 		}
 
 		//[Fact]
-		public void TestRegisterSignalHandler()
+		public void RegisterSignalHandler()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 
@@ -176,7 +195,7 @@ namespace AllJoynUnityTest
 		}
 
 		//[Fact]
-		public void TestUnregisterSignalHandler()
+		public void UnregisterSignalHandler()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
 

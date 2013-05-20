@@ -279,6 +279,21 @@ namespace AllJoynUnity
 			/**
 			 * Connect to a remote bus address.
 			 *
+			 * @param bus          The alljoyn_busattachment to be connected.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful.
+			 *      - An error status otherwise
+			 */
+			public QStatus Connect()
+			{
+				StartAllJoynCallbackProcessing();
+				return alljoyn_busattachment_connect(_busAttachment, IntPtr.Zero);
+			}
+
+			/**
+			 * Connect to a remote bus address.
+			 *
 			 * @param connectSpec  A transport connection spec string of the form:
 			 *                     @c "<transport>:<param1>=<value1>,<param2>=<value2>...[;]"
 			 * @return
@@ -1161,6 +1176,20 @@ namespace AllJoynUnity
 					return alljoyn_busattachment_getconcurrency(_busAttachment);
 				}
 			}
+
+			/**
+			 * Get the connect spec used by the alljoyn_busattachment
+			 *
+			 *  @return The string representing the connect spec used by the alljoyn_busattachment
+			 */
+			public string ConnectSpec
+			{
+				get
+				{
+					return Marshal.PtrToStringAnsi(alljoyn_busattachment_getconnectspec(_busAttachment));
+				}
+			}
+
 			/**
 			 * Check is peer security has been enabled for this bus attachment.
 			 *
@@ -1383,6 +1412,9 @@ namespace AllJoynUnity
 			private extern static uint alljoyn_busattachment_getconcurrency(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static IntPtr alljoyn_busattachment_getconnectspec(IntPtr bus);
+
+			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_busattachment_enableconcurrentcallbacks(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
@@ -1394,6 +1426,9 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_start(IntPtr bus);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_connect(IntPtr bus, IntPtr connectSpec);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_connect(IntPtr bus,
