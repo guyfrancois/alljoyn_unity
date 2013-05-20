@@ -35,7 +35,6 @@ namespace AllJoynUnity
 				 */
 			public AuthListener()
 			{
-			
 				_requestCredentials = new InternalRequestCredentials(this._RequestCredentials);
 				_verifyCredentials = new InternalVerifyCredentials(this._VerifyCredentials);
 				_securityViolation = new InternalSecurityViolation(this._SecurityViolation);
@@ -88,7 +87,6 @@ namespace AllJoynUnity
 			 */
 			protected virtual bool VerifyCredentials(string authMechanism, string peerName, Credentials credentials)
 			{
-			
 				return false;
 			}
 

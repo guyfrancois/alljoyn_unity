@@ -172,6 +172,7 @@ namespace AllJoynUnity
 					return new InterfaceDescription(infacePtr);
 				}
 			}
+
 			/**
 			 * Tests if this object implements the requested interface.
 			 *

@@ -890,7 +890,7 @@ namespace AllJoynUnityTest
 			Assert.False(testIntf == testIntf3);
 			Assert.False(testIntf.Equals(testIntf3));
 			Assert.False(testIntf.GetHashCode() == testIntf3.GetHashCode());
-			
+
 			proxy.Dispose();
 			busObject.Dispose();
 

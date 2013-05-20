@@ -40,6 +40,12 @@ namespace AllJoynUnity
 			 * %BusObject constructor.
 			 *
 			 * @param path           Object path for object.
+			 */
+			public BusObject(string path) : this(path, false) { }
+			/**
+			 * %BusObject constructor.
+			 *
+			 * @param path           Object path for object.
 			 * @param isPlaceholder  Place-holder objects are created by the bus itself and serve only
 			 *                       as parent objects (in the object path sense) to other objects.
 			 */
