@@ -86,6 +86,59 @@ namespace AllJoynUnityTest
 		}
 
 		[Fact]
+		public void Disconnect()
+		{
+			AllJoyn.BusAttachment busAttachment = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(busAttachment);
+
+			Assert.Equal(AllJoyn.QStatus.BUS_BUS_NOT_STARTED, busAttachment.Disconnect(AllJoynTestCommon.GetConnectSpec()));
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Start());
+
+			Assert.Equal(AllJoyn.QStatus.BUS_NOT_CONNECTED, busAttachment.Disconnect(AllJoynTestCommon.GetConnectSpec()));
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Connect(AllJoynTestCommon.GetConnectSpec()));
+
+			Assert.True(busAttachment.IsConnected);
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Disconnect(AllJoynTestCommon.GetConnectSpec()));
+
+			Assert.False(busAttachment.IsConnected);
+
+			busAttachment.Stop();
+			busAttachment.Join();
+
+			busAttachment.Dispose();
+		}
+
+		/* test Connect/Disconnect that use no parameters */
+		[Fact]
+		public void Disconnect_no_params()
+		{
+			AllJoyn.BusAttachment busAttachment = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+			Assert.NotNull(busAttachment);
+
+			Assert.Equal(AllJoyn.QStatus.BUS_BUS_NOT_STARTED, busAttachment.Disconnect());
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Start());
+
+			Assert.Equal(AllJoyn.QStatus.BUS_NOT_CONNECTED, busAttachment.Disconnect());
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Connect());
+
+			Assert.True(busAttachment.IsConnected);
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Disconnect());
+
+			Assert.False(busAttachment.IsConnected);
+
+			busAttachment.Stop();
+			busAttachment.Join();
+
+			busAttachment.Dispose();
+		}
+
+		[Fact]
 		public void DeleteInterface()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;

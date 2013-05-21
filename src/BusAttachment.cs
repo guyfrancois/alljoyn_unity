@@ -799,6 +799,20 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Disconnect from the remote bus using the internal ConnectSpec.
+			 *
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - QStatus.BUS_BUS_NOT_STARTED if the bus is not started
+			 *      - QStatus.BUS_NOT_CONNECTED if the %BusAttachment is not connected to the bus
+			 *      - Other error status codes indicating a failure
+			 */
+			public QStatus Disconnect()
+			{
+				return Disconnect(this.ConnectSpec);
+			}
+
+			/**
 			 * Disconnect a remote bus address connection.
 			 *
 			 * @param connectSpec  The transport connection spec used to connect.
@@ -1216,7 +1230,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_busattachment_isstarted(_busAttachment) == 1 ? true : false);
+					return alljoyn_busattachment_isstarted(_busAttachment);
 				}
 			}
 
@@ -1233,7 +1247,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_busattachment_isstopping(_busAttachment) == 1 ? true : false);
+					return alljoyn_busattachment_isstopping(_busAttachment);
 				}
 			}
 
@@ -1248,7 +1262,7 @@ namespace AllJoynUnity
 			{
 				get
 				{
-					return (alljoyn_busattachment_isconnected(_busAttachment) == 1 ? true : false);
+					return alljoyn_busattachment_isconnected(_busAttachment);
 				}
 			}
 
@@ -1508,13 +1522,16 @@ namespace AllJoynUnity
 			private extern static int alljoyn_busattachment_ispeersecurityenabled(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_busattachment_isstarted(IntPtr bus);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_busattachment_isstarted(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_busattachment_isstopping(IntPtr bus);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_busattachment_isstopping(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
-			private extern static int alljoyn_busattachment_isconnected(IntPtr bus);
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_busattachment_isconnected(IntPtr bus);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static uint alljoyn_busattachment_gettimestamp();
