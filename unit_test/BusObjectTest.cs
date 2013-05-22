@@ -150,12 +150,19 @@ namespace AllJoynUnityTest
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg();
 			input.Set("AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(bus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
 //continue testing obsolete method calls till they are removed.
 #pragma warning disable 618
+			AllJoyn.MsgArg input1 = new AllJoyn.MsgArg();
+			input1.Set("AllJoyn");
+			AllJoyn.Message replyMsg1 = new AllJoyn.Message(bus);
+			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input1, replyMsg1, 5000, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal("AllJoyn", (string)replyMsg1[0]);
+
 			AllJoyn.MsgArgs input2 = new AllJoyn.MsgArgs(1);
 			input2[0].Set("AllJoyn");
 			AllJoyn.Message replyMsg2 = new AllJoyn.Message(bus);
@@ -172,6 +179,131 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
+		class DingBusObject : AllJoyn.BusObject
+		{
+			public DingBusObject(AllJoyn.BusAttachment bus, string path)
+				: base(path)
+			{
+				// add the interface to the bus object
+				AllJoyn.InterfaceDescription testIntf = bus.GetInterface(INTERFACE_NAME);
+				AllJoyn.QStatus status = AddInterface(testIntf);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+
+				// register a method handler for the ping method
+				AllJoyn.InterfaceDescription.Member dingMember = testIntf.GetMember("ding");
+				status = AddMethodHandler(dingMember, this.Ding);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+			}
+
+			protected void Ding(AllJoyn.InterfaceDescription.Member member, AllJoyn.Message message)
+			{
+				AllJoyn.MsgArg outArgs = new AllJoyn.MsgArg();
+				outArgs = "Hello from Ding.";
+
+				AllJoyn.QStatus status = MethodReply(message, outArgs);
+				Assert.Equal(AllJoyn.QStatus.OK, status);
+			}
+		}
+
+		[Fact]
+		public void MethodNoInputParams()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			// create+start+connect bus attachment
+			AllJoyn.BusAttachment servicebus = null;
+			servicebus = new AllJoyn.BusAttachment("BusObjectTestService", true);
+			Assert.NotNull(servicebus);
+
+			status = servicebus.Start();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			status = servicebus.Connect(AllJoynTestCommon.GetConnectSpec());
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// create+activate the interface
+			AllJoyn.InterfaceDescription testIntf = null;
+			status = servicebus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			status = testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "ding", "", "s", "out");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			testIntf.Activate();
+
+			// register bus listener
+			AllJoyn.BusListener testBusListener = new TestBusListener(this);
+			servicebus.RegisterBusListener(testBusListener);
+
+			// create the bus object
+			// the dingBusObject constructor adds the interface & a handler for the ping method
+			DingBusObject dingBusObject = new DingBusObject(servicebus, OBJECT_PATH);
+
+			// register the bus object
+			status = servicebus.RegisterBusObject(dingBusObject);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// request name
+			nameOwnerChangedFlag = false;
+			status = servicebus.RequestName(OBJECT_NAME, AllJoyn.DBus.NameFlags.ReplaceExisting | AllJoyn.DBus.NameFlags.DoNotQueue | AllJoyn.DBus.NameFlags.AllowReplacement);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Wait(MaxWaitTime);
+			Assert.Equal(true, nameOwnerChangedFlag);
+
+			///////////////////////////////////////////////////////////
+
+			// create the proxy bus object & call methods
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("BusObjectTest", true);
+			Assert.NotNull(bus);
+
+			status = bus.Start();
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			status = bus.Connect(AllJoynTestCommon.GetConnectSpec());
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// create+activate the interface
+			AllJoyn.InterfaceDescription iFace = null;
+			status = bus.CreateInterface(INTERFACE_NAME, false, out iFace);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(iFace);
+
+			status = iFace.AddMethod("ding", "", "s", "in,out");
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			iFace.Activate();
+
+			AllJoyn.ProxyBusObject proxyBusObject = new AllJoyn.ProxyBusObject(bus, OBJECT_NAME, OBJECT_PATH, 0);
+			status = proxyBusObject.AddInterface(iFace);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			AllJoyn.Message replyMsg = new AllJoyn.Message(bus);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ding", AllJoyn.MsgArg.Zero, replyMsg, 5000, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal("Hello from Ding.", (string)replyMsg[0]);
+
+			//continue testing obsolete method calls till they are removed.
+#pragma warning disable 618
+			AllJoyn.Message replyMsg1 = new AllJoyn.Message(bus);
+			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ding", AllJoyn.MsgArg.Zero, replyMsg1, 5000, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal("Hello from Ding.", (string)replyMsg1[0]);
+
+			AllJoyn.Message replyMsg2 = new AllJoyn.Message(bus);
+			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ding", AllJoyn.MsgArg.Zero, replyMsg2, 5000, 0);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.Equal("Hello from Ding.", (string)replyMsg2[0]);
+#pragma warning restore 618
+
+			dingBusObject.Dispose();
+			servicebus.Dispose();
+
+			// TODO: need to call dispose on proxyBusObject first otherwise you get an AccessViolation???
+			proxyBusObject.Dispose();
+			bus.Dispose();
+		}
 
 		private void Wait(TimeSpan timeout)
 		{

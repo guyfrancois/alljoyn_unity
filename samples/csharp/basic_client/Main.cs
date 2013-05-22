@@ -168,7 +168,7 @@ namespace basic_client
 					inputs[0] = "Hello ";
 					inputs[1] = "World!";
 
-					status = remoteObj.MethodCallSynch(SERVICE_NAME, "cat", inputs, reply, 5000, 0);
+					status = remoteObj.MethodCall(SERVICE_NAME, "cat", inputs, reply, 5000, 0);
 					
 					if(status)
 					{

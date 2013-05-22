@@ -171,7 +171,7 @@ namespace basic_clientserver
 				inputs[0] = "Hello ";
 				inputs[1] = "World!";
 
-				AllJoyn.QStatus status = remoteObj.MethodCallSynch(SERVICE_NAME, "cat", inputs, reply, 5000, 0);
+				AllJoyn.QStatus status = remoteObj.MethodCall(SERVICE_NAME, "cat", inputs, reply, 5000, 0);
 				
 				if(status)
 				{

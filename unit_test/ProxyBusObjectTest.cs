@@ -25,8 +25,8 @@ namespace AllJoynUnityTest
 {
 	public class ProxyBusObjectTest
 	{
-		private static string WELLKNOWN_NAME = "org.alljoyn.test.ProxyBusObjectTest";
-		private static string OBJECT_PATH = "/org/alljoyn/test/ProxyBusObjectTest";
+		//private static string WELLKNOWN_NAME = "org.alljoyn.test.ProxyBusObjectTest";
+		//private static string OBJECT_PATH = "/org/alljoyn/test/ProxyBusObjectTest";
 		private static string INTERFACE_NAME = "org.alljoyn.test.ProxyBusObjectTest";
 
 		[Fact]

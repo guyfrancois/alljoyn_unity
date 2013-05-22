@@ -155,7 +155,7 @@ namespace AllJoynUnityTest
 			AllJoyn.Message reply = new AllJoyn.Message(clientBus);
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 
-			proxyObj.MethodCallSynch(INTERFACE_NAME, "ping", input, reply, 25000, 0);
+			proxyObj.MethodCall(INTERFACE_NAME, "ping", input, reply, 25000, 0);
 
 			//Actual tests for GetArg/GetArgs
 			// call using GetArg specifying the array index
@@ -234,7 +234,7 @@ namespace AllJoynUnityTest
 			AllJoyn.Message reply = new AllJoyn.Message(clientBus);
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 
-			proxyObj.MethodCallSynch(INTERFACE_NAME, "ping", input, reply, 25000, 0);
+			proxyObj.MethodCall(INTERFACE_NAME, "ping", input, reply, 25000, 0);
 
 			// Actual tests for GetArg/GetArgs
 			// check the message properties

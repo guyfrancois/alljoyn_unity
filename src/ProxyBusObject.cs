@@ -102,9 +102,14 @@ namespace AllJoynUnity
 			/**
 			 * Make a synchronous method call from this object
 			 *
+			 * The MsgArgs passed in for args must be fully initilized and the MsgArgs.Length must match
+			 * the number of arguments required for the Method being invoked.
+			 *
+			 * If the Method being invoked has no input arguments use MsgArgs.Zero for the args parameter.
+			 *
 			 * @param ifaceName		Name of the interface being used.
 			 * @param methodName       Method being invoked.
-			 * @param args         The arguments for the method call (can be NULL)
+			 * @param args         The arguments for the method call
 			 * @param replyMsg     The reply message received for the method call
 			 * @param timeout      Timeout specified in milliseconds to wait for a reply
 			 * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
@@ -117,7 +122,7 @@ namespace AllJoynUnity
 			 *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
 			 *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
 			 */
-			[Obsolete("Usage of MethodCallSynch that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs")]
+			[Obsolete("Usage of MethodCallSynch that takes MsgArgs been depricated. Please use MsgArg inplace of MsgArgs or MethodCall")]
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArgs args, Message replyMsg,
 				uint timeout, byte flags)
 			{
@@ -128,9 +133,14 @@ namespace AllJoynUnity
 			/**
 			 * Make a synchronous method call from this object
 			 *
+			 * The MsgArg passed in for args must be fully initilized and the MsgArg.Length must match
+			 * the number of arguments required for the Method being invoked.
+			 *
+			 * If the Method being invoked has no input arguments use MsgArg.Zero for the args parameter.
+			 *
 			 * @param ifaceName    Name of the interface being used.
 			 * @param methodName   Method being invoked.
-			 * @param args         The arguments for the method call (can be NULL)
+			 * @param args         The arguments for the method call
 			 * @param replyMsg     The reply message received for the method call
 			 * @param timeout      Timeout specified in milliseconds to wait for a reply
 			 * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
@@ -143,7 +153,38 @@ namespace AllJoynUnity
 			 *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
 			 *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
 			 */
+			[Obsolete("Usage of MethodCallSynch has been replaced with MethodCall.")]
 			public QStatus MethodCallSynch(string ifaceName, string methodName, MsgArg args, Message replyMsg,
+				uint timeout, byte flags)
+			{
+				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,
+					(UIntPtr)args.Length, replyMsg.UnmanagedPtr, timeout, flags);
+			}
+
+			/**
+			 * Make a synchronous method call from this object
+			 *
+			 * The MsgArg passed in for args must be fully initilized and the MsgArg.Length must match
+			 * the number of arguments required for the Method being invoked.
+			 *
+			 * If the Method being invoked has no input arguments use MsgArg.Zero for the args parameter.
+			 *
+			 * @param ifaceName    Name of the interface being used.
+			 * @param methodName   Method being invoked.
+			 * @param args         The arguments for the method call.
+			 * @param replyMsg     The reply message received for the method call
+			 * @param timeout      Timeout specified in milliseconds to wait for a reply
+			 * @param flags        Logical OR of the message flags for this method call. The following flags apply to method calls:
+			 *                     - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			 *                     - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
+			 *                     - If ALLJOYN_FLAG_AUTO_START is set the bus will attempt to start a service if it is not running.
+			 *
+			 *
+			 * @return
+			 *      - QStatus.OK if the method call succeeded and the reply message type is MESSAGE_METHOD_RET
+			 *      - QStatus.BUS_REPLY_IS_ERROR_MESSAGE if the reply message type is MESSAGE_ERROR
+			 */
+			public QStatus MethodCall(string ifaceName, string methodName, MsgArg args, Message replyMsg,
 				uint timeout, byte flags)
 			{
 				return alljoyn_proxybusobject_methodcall(_proxyBusObject, ifaceName, methodName, args.UnmanagedPtr,

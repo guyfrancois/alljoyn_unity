@@ -189,7 +189,7 @@ namespace AllJoynUnityTest
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			Console.WriteLine(proxyObj.GetInterface(INTERFACE_NAME).Introspect());
 
-			status = proxyObj.MethodCallSynch(INTERFACE_NAME, "ping", input, reply, 5000, 0);
+			status = proxyObj.MethodCall(INTERFACE_NAME, "ping", input, reply, 5000, 0);
 			if (!status)
 			{
 				return status;
@@ -308,7 +308,7 @@ namespace AllJoynUnityTest
 
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(clientBus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
@@ -457,7 +457,7 @@ namespace AllJoynUnityTest
 
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(clientBus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
@@ -599,7 +599,7 @@ namespace AllJoynUnityTest
 
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(clientBus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
@@ -843,7 +843,7 @@ namespace AllJoynUnityTest
 
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(clientBus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.Equal("AllJoyn", (string)replyMsg[0]);
 
@@ -972,7 +972,7 @@ namespace AllJoynUnityTest
 
 			AllJoyn.MsgArg input = new AllJoyn.MsgArg("s", "AllJoyn");
 			AllJoyn.Message replyMsg = new AllJoyn.Message(clientBus);
-			status = proxyBusObject.MethodCallSynch(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
+			status = proxyBusObject.MethodCall(INTERFACE_NAME, "ping", input, replyMsg, 5000, 0);
 			Assert.Equal(AllJoyn.QStatus.BUS_REPLY_IS_ERROR_MESSAGE, status);
 
 			Assert.True(authflags.requestCreds_service);

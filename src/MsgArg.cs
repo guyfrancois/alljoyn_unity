@@ -2004,6 +2004,25 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * A MsgArg that contains zero elements.
+			 * 
+			 * This is needed when you make a method call on a method that has
+			 * zero input parameters.
+			 * 
+			 * @return A MsgArg that contain zero elements
+			 */
+			public static MsgArg Zero
+			{
+				get
+				{
+					MsgArg a = new MsgArg();
+					a._msgArg = IntPtr.Zero;
+					a._length = 0;
+					return a;
+				}
+			}
+
+			/**
 			 * Get the AllJoynTypeId of the MsgArg
 			 *
 			 * @return the AllJoynTypeId of the MsgArg
