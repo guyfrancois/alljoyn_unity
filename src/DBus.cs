@@ -44,6 +44,14 @@ namespace AllJoynUnity
 				ReplaceExisting = 0x02, /**< RequestName input flag: Attempt to take ownership of name if already taken */
 				DoNotQueue = 0x04 /**< RequestName input flag: Fail if name cannot be immediately obtained */
 			}
+
+			public enum RequestNameReply : uint
+			{
+				PrimaryOwner = 1, /**< The caller is now the primary owner of the name, replacing any previous owner. */
+				InQueue = 2, /**< The name already had an owner and the name request has been added to a queue */
+				Exists = 3, /**< The name already has an owner and the name request was not added to a queue */
+				AlreadyOwner = 4 /**< The application trying to request ownership of a name is already the owener of it */
+			}
 		}
 	}
 }

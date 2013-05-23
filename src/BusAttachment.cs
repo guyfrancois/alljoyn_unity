@@ -279,8 +279,6 @@ namespace AllJoynUnity
 			/**
 			 * Connect to a remote bus address.
 			 *
-			 * @param bus          The alljoyn_busattachment to be connected.
-			 *
 			 * @return
 			 *      - QStatus.OK if successful.
 			 *      - An error status otherwise

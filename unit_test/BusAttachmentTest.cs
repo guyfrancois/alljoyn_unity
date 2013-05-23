@@ -247,6 +247,38 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
+		[Fact]
+		public void DBusProxyObj()
+		{
+			AllJoyn.BusAttachment busAttachment = new AllJoyn.BusAttachment("BusAttachmentTest", true);
+
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Start());
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Connect());
+
+			AllJoyn.ProxyBusObject dbusBusObj = busAttachment.DBusProxyObj;
+
+			String wellKnownName = "org.alljoyn.test.BusAttachment";
+			AllJoyn.MsgArg msgArg = new AllJoyn.MsgArg(2);
+			msgArg[0] = wellKnownName;
+			msgArg[1] = (uint)(AllJoyn.DBus.NameFlags.AllowReplacement | AllJoyn.DBus.NameFlags.DoNotQueue | AllJoyn.DBus.NameFlags.ReplaceExisting);
+
+			AllJoyn.Message replyMsg = new AllJoyn.Message(busAttachment);
+
+			Assert.Equal(AllJoyn.QStatus.OK, dbusBusObj.MethodCall("org.freedesktop.DBus", "RequestName", msgArg, replyMsg, 5000, 0));
+			// TODO this keeps returning 4 which is DBUS_REQUEST_NAME_REPLY_EXISTS when it should return 1 DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER
+			// unknown if this is an error only in Unity or in core code.  I suspect this issue is also in alljoyn_core code.
+
+			AllJoyn.MsgArg nho_msgArg = new AllJoyn.MsgArg();
+			nho_msgArg = wellKnownName;
+			Assert.Equal(AllJoyn.QStatus.OK, dbusBusObj.MethodCall("org.freedesktop.DBus", "NameHasOwner", nho_msgArg, replyMsg, 5000, 0));
+			Assert.True((bool)replyMsg[0]);
+
+			Assert.Equal(AllJoyn.QStatus.OK, dbusBusObj.MethodCall("org.freedesktop.DBus", "ListNames", AllJoyn.MsgArg.Zero, replyMsg, 5000, 0));
+			string[] sa = (string[])replyMsg[0];
+			//the wellknown Name should be found in the list of strings returned.
+			Assert.True(Array.IndexOf(sa, wellKnownName) > -1);
+		}
+
 		//[Fact]
 		public void UnregisterSignalHandler()
 		{
