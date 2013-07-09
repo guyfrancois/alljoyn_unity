@@ -18,61 +18,56 @@ import sys
 
 Import('env')
 
-vars = Variables();
-#TODO place any environment vars here
-vars.Update(env)
-
-Help(vars.GenerateHelpText(env))
-
-sys.path.append('../build_core/tools/scons')
-
 # Dependent Projects
-if not env.has_key('_ALLJOYNCORE_'):
-    #alljoyn_c is required for the unity_bindings
+if not env.has_key('_ALLJOYNC_'):
+    # alljoyn_c is required for the unity_bindings
     env.SConscript('../alljoyn_c/SConscript')
 
+unityenv = env.Clone()
+
+vars = Variables();
+#TODO place any environment vars here
+vars.Update(unityenv)
+Help(vars.GenerateHelpText(unityenv))
+
+sys.path.append(str(unityenv.Dir('../build_core/tools/scons').srcnode()))
+
 # Make alljoyn_unity dist a sub-directory of the alljoyn dist.  This avoids any conflicts with alljoyn dist targets.
-env['UNITY_DISTDIR'] = env['DISTDIR'] + '/unity'
-env['UNITY_TESTDIR'] = env['TESTDIR'] + '/unity'
+unityenv['UNITY_DISTDIR'] = unityenv['DISTDIR'] + '/unity'
+unityenv['UNITY_TESTDIR'] = unityenv['TESTDIR'] + '/unity'
 
 # Add support for multiple build targets in the same workset
-env.VariantDir('$OBJDIR', 'src', duplicate = 0)
-env.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
-
-# The return value is the collection of files installed in the build destination.
-returnValue = []
+unityenv.VariantDir('$OBJDIR', 'src', duplicate = 0)
+unityenv.VariantDir('$OBJDIR/samples', 'samples', duplicate = 0)
 
 #alljoyn_unity.dll
-env['ALLJOYN_UNITY_LIB'] = env.SConscript('src/SConscript')
+unityenv['ALLJOYN_UNITY_LIB'] = unityenv.SConscript('src/SConscript', exports = {'env':unityenv})
 
 # Sample programs
-progs = env.SConscript('samples/SConscript')
-returnValue += progs
+progs = unityenv.SConscript('samples/SConscript', exports = {'env':unityenv})
 
 #install Package support files
-package_support_dir = env.Dir('package_support/UnityPackage')
-returnValue += env.Install('$UNITY_DISTDIR/package_support', package_support_dir)
+package_support_dir = unityenv.Dir('package_support/UnityPackage')
+unityenv.Install('$UNITY_DISTDIR/package_support', package_support_dir)
 
 #install libraries into the package support directory
-if env['OS_GROUP'] == 'windows':
+if unityenv['OS_GROUP'] == 'windows':
     #place alljoyn_unity.dll into the samples
-    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+    unityenv.Install('package_support/UnityPackage/Assets/Plugins', unityenv['ALLJOYN_UNITY_LIB'])
 
     #place alljoyn_c.dll into the samples
     liballjoyn_c = '$DISTDIR/c/lib/alljoyn_c.dll'
-    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
+    unityenv.Install('package_support/UnityPackage/Assets/Plugins', liballjoyn_c)
 
-if env['OS'] == 'android':
+if unityenv['OS'] == 'android':
     #place alljoyn_unity.dll into the samples
-    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins', env['ALLJOYN_UNITY_LIB'])
+    unityenv.Install('package_support/UnityPackage/Assets/Plugins', unityenv['ALLJOYN_UNITY_LIB'])
 
     #place liballjoyn_c.so into the samples
     liballjoyn_c = '$DISTDIR/c/lib/liballjoyn_c.so'
-    returnValue += env.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
+    unityenv.Install('package_support/UnityPackage/Assets/Plugins/Android', liballjoyn_c)
 
 #Build unit tests
-env.SConscript('unit_test/SConscript')
+unityenv.SConscript('unit_test/SConscript', exports = {'env':unityenv})
 # Build docs
-returnValue += env.SConscript('docs/SConscript')
-
-Return('returnValue')
+unityenv.SConscript('docs/SConscript', exports = {'env':unityenv})

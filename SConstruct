@@ -20,5 +20,3 @@ env = SConscript(['../build_core/SConscript'])
 
 # Add/remove projects from build
 env.SConscript(['SConscript'])
-
-
