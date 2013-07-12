@@ -27,8 +27,8 @@ namespace AllJoynUnityTest
 	public class BusAttachmentTest
 	{
 
-		//AutoResetEvent notifyEventOne = new AutoResetEvent(false);
-		//AutoResetEvent notifyEventTwo = new AutoResetEvent(false);
+		AutoResetEvent notifyEventOne = new AutoResetEvent(false);
+		AutoResetEvent notifyEventTwo = new AutoResetEvent(false);
 
 		private bool handledSignalsOne;
 		private bool handledSignalsTwo;
@@ -174,7 +174,7 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
-		//[Fact]
+		[Fact]
 		public void RegisterSignalHandler()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
@@ -229,19 +229,20 @@ namespace AllJoynUnityTest
 			testBusObject.SendTestSignal("test msg");
 
 			//wait to see if we receive the signal
-			for (int i = 0; i < 1000; i++)
-			{
-				if (handledSignalsOne)
-				{
-					break;
-				}
-				Thread.Sleep(5);
-			}
-			//WaitEventOne(TimeSpan.FromSeconds(2));
+			WaitEventOne(TimeSpan.FromSeconds(2));
 
 			Assert.Equal(true, handledSignalsOne);
 			Assert.Equal("test msg", signalOneMsg);
 
+			handledSignalsOne = false;
+			signalOneMsg = "";
+
+			testBusObject.SendTestSignal2("test msg");
+
+			WaitEventOne(TimeSpan.FromSeconds(2));
+
+			Assert.Equal(true, handledSignalsOne);
+			Assert.Equal("test msg", signalOneMsg);
 
 			// TODO: move these into a teardown method?
 			bus.Dispose();
@@ -279,7 +280,7 @@ namespace AllJoynUnityTest
 			Assert.True(Array.IndexOf(sa, wellKnownName) > -1);
 		}
 
-		//[Fact]
+		[Fact]
 		public void UnregisterSignalHandler()
 		{
 			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
@@ -336,25 +337,8 @@ namespace AllJoynUnityTest
 			// send a signal
 			testBusObject.SendTestSignal("test msg");
 
-			// wait to see if we receive the signal
-			for (int i = 0; i < 1000; i++)
-			{
-				if (handledSignalsOne)
-				{
-					break;
-				}
-				Thread.Sleep(5);
-			}
-			for (int i = 0; i < 1000; i++)
-			{
-				if (handledSignalsTwo)
-				{
-					break;
-				}
-				Thread.Sleep(5);
-			}
-			//WaitEventOne(TimeSpan.FromSeconds(2));
-			//WaitEventTwo(TimeSpan.FromSeconds(2));
+			WaitEventOne(TimeSpan.FromSeconds(2));
+			WaitEventTwo(TimeSpan.FromSeconds(2));
 
 			// make sure that both handlers got the signal
 			Assert.Equal(true, handledSignalsOne);
@@ -375,15 +359,7 @@ namespace AllJoynUnityTest
 			testBusObject.SendTestSignal("test msg");
 
 			// wait to see if we receive the signal
-			//WaitEventTwo(TimeSpan.FromSeconds(2));
-			for (int i = 0; i < 1000; i++)
-			{
-				if (handledSignalsTwo)
-				{
-					break;
-				}
-				Thread.Sleep(5);
-			}
+			WaitEventTwo(TimeSpan.FromSeconds(2));
 
 			// make sure that only the second handler got the signal
 			Assert.Equal(false, handledSignalsOne);
@@ -395,34 +371,34 @@ namespace AllJoynUnityTest
 			bus.Dispose();
 		}
 
-		//private void WaitEventOne(TimeSpan timeout)
-		//{
-		//	notifyEventOne.WaitOne(timeout);
-		//	notifyEventOne.Reset();
-		//}
+		private void WaitEventOne(TimeSpan timeout)
+		{
+			notifyEventOne.WaitOne(timeout);
+			notifyEventOne.Reset();
+		}
 
-		//private void WaitEventTwo(TimeSpan timeout)
-		//{
-		//	notifyEventTwo.WaitOne(timeout);
-		//	notifyEventTwo.Reset();
-		//}
+		private void WaitEventTwo(TimeSpan timeout)
+		{
+			notifyEventTwo.WaitOne(timeout);
+			notifyEventTwo.Reset();
+		}
 
-		//private void NotifyEventOne()
-		//{
-		//	notifyEventOne.Set();
-		//}
+		private void NotifyEventOne()
+		{
+			notifyEventOne.Set();
+		}
 
-		//private void NotifyEventTwo()
-		//{
-		//	notifyEventTwo.Set();
-		//}
+		private void NotifyEventTwo()
+		{
+			notifyEventTwo.Set();
+		}
 
 		public void TestSignalHandlerOne(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
 		{
 			signalOneMsg = message[0];
 			// mark that the signal was received
 			handledSignalsOne = true;
-			//NotifyEventOne();
+			NotifyEventOne();
 		}
 
 		public void TestSignalHandlerTwo(AllJoyn.InterfaceDescription.Member member, string srcPath, AllJoyn.Message message)
@@ -430,7 +406,7 @@ namespace AllJoynUnityTest
 			signalTwoMsg = message[0];
 			// mark that the signal was received
 			handledSignalsTwo = true;
-			//NotifyEventTwo();
+			NotifyEventTwo();
 		}
 
 		class TestBusObject : AllJoyn.BusObject
