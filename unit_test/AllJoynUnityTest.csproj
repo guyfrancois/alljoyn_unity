@@ -45,6 +45,7 @@
     <Compile Include="BusAttachmentTest.cs" />
     <Compile Include="BusListenerTest.cs" />
     <Compile Include="BusObjectTest.cs" />
+    <Compile Include="ObjectSecurityTest.cs" />
     <Compile Include="PasswordManagerTest.cs" />
     <Compile Include="ConcurrentCallbackTest.cs" />
     <Compile Include="MessageTest.cs" />

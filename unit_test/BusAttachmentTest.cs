@@ -58,7 +58,7 @@ namespace AllJoynUnityTest
 			Assert.NotNull(bus);
 
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -147,7 +147,7 @@ namespace AllJoynUnityTest
 			Assert.NotNull(bus);
 
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 			status = bus.DeleteInterface(testIntf);
@@ -186,7 +186,7 @@ namespace AllJoynUnityTest
 
 			// create the interface description
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -292,7 +292,7 @@ namespace AllJoynUnityTest
 
 			// create the interface description
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", false, out testIntf);
+			status = bus.CreateInterface("org.alljoyn.test.BusAttachment", out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 

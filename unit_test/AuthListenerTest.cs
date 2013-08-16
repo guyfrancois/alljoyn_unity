@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="AuthListenerTest.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.Connect(AllJoynTestCommon.GetConnectSpec()));
 
 			AllJoyn.InterfaceDescription service_intf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, true, out service_intf));
+			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out service_intf));
 			Assert.Equal(AllJoyn.QStatus.OK, service_intf.AddMethod("ping", "s", "s", "in,out"));
 			service_intf.Activate();
 
@@ -296,7 +296,7 @@ namespace AllJoynUnityTest
 			// create+activate the interface
 			AllJoyn.QStatus status;
 			AllJoyn.InterfaceDescription iFace = null;
-			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, true, out iFace));
+			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out iFace));
 			Assert.NotNull(iFace);
 
 			Assert.Equal(AllJoyn.QStatus.OK, iFace.AddMethod("ping", "s", "s", "in,out"));
@@ -445,7 +445,7 @@ namespace AllJoynUnityTest
 			// create+activate the interface
 			AllJoyn.QStatus status;
 			AllJoyn.InterfaceDescription iFace = null;
-			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, true, out iFace));
+			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out iFace));
 			Assert.NotNull(iFace);
 
 			Assert.Equal(AllJoyn.QStatus.OK, iFace.AddMethod("ping", "s", "s", "in,out"));
@@ -587,7 +587,7 @@ namespace AllJoynUnityTest
 			// create+activate the interface
 			AllJoyn.QStatus status;
 			AllJoyn.InterfaceDescription iFace = null;
-			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, true, out iFace));
+			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out iFace));
 			Assert.NotNull(iFace);
 
 			Assert.Equal(AllJoyn.QStatus.OK, iFace.AddMethod("ping", "s", "s", "in,out"));
@@ -831,7 +831,7 @@ namespace AllJoynUnityTest
 			// create+activate the interface
 			AllJoyn.QStatus status;
 			AllJoyn.InterfaceDescription iFace = null;
-			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, true, out iFace));
+			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out iFace));
 			Assert.NotNull(iFace);
 
 			Assert.Equal(AllJoyn.QStatus.OK, iFace.AddMethod("ping", "s", "s", "in,out"));
@@ -960,7 +960,7 @@ namespace AllJoynUnityTest
 			// create+activate the interface
 			AllJoyn.QStatus status;
 			AllJoyn.InterfaceDescription iFace = null;
-			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, true, out iFace));
+			Assert.Equal(AllJoyn.QStatus.OK, clientBus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out iFace));
 			Assert.NotNull(iFace);
 
 			Assert.Equal(AllJoyn.QStatus.OK, iFace.AddMethod("ping", "s", "s", "in,out"));

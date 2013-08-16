@@ -93,6 +93,53 @@ namespace AllJoynUnity
 			 * be unaccessible (via BusAttachment.GetInterfaces() or BusAttachment.GetInterface()) until
 			 * it is activated.
 			 *
+			 * Interfaces created using this Method will have an interface security policy of 'inherit'.
+			 *
+			 * @param interfaceName   The requested interface name.
+			 * @param[out] iface
+			 *      - Interface description
+			 *      - NULL if cannot be created.
+			 *
+			 * @return
+			 *      - QStatus.OK if creation was successful.
+			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if requested interface already exists
+			 * @see ProxyBusObject.IntrospectRemoteObject, InterfaceDescription.Activate, BusAttachment.GetInterface
+			 */
+			public QStatus CreateInterface(string interfaceName, out InterfaceDescription iface)
+			{
+				IntPtr interfaceDescription = new IntPtr();
+				int qstatus = alljoyn_busattachment_createinterface_secure(_busAttachment, interfaceName,
+					ref interfaceDescription,
+					InterfaceDescription.SecurityPolicy.Inherit);
+				if (qstatus == 0)
+				{
+					iface = new InterfaceDescription(interfaceDescription);
+				}
+				else
+				{
+					iface = null;
+				}
+				return qstatus;
+			}
+
+			/**
+			 * Create an interface description with a given name.
+			 *
+			 * Typically, interfaces that are implemented by BusObjects are created here.
+			 * Interfaces that are implemented by remote objects are added automatically by
+			 * the bus if they are not already present via ProxyBusObject.IntrospectRemoteObject().
+			 *
+			 * Because interfaces are added both explicitly (via this method) and implicitly
+			 * (via @c ProxyBusObject.IntrospectRemoteObject), there is the possibility that creating
+			 * an interface here will fail because the interface already exists. If this happens, the
+			 * QStatus.BUS_IFACE_ALREADY_EXISTS will be returned and NULL will be returned in the iface [OUT]
+			 * parameter.
+			 *
+			 * Interfaces created with this method need to be activated using InterfaceDescription.Activate()
+			 * once all of the methods, signals, etc have been added to the interface. The interface will
+			 * be unaccessible (via BusAttachment.GetInterfaces() or BusAttachment.GetInterface()) until
+			 * it is activated.
+			 *
 			 * @param interfaceName   The requested interface name.
 			 * @param secure If true the interface is secure and method calls and signals will be encrypted.
 			 * @param[out] iface
@@ -104,6 +151,7 @@ namespace AllJoynUnity
 			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if requested interface already exists
 			 * @see ProxyBusObject.IntrospectRemoteObject, InterfaceDescription.Activate, BusAttachment.GetInterface
 			 */
+			[Obsolete("Please us the CreateInterface function that takes aa Interface SecurityPolicy")]
 			public QStatus CreateInterface(string interfaceName, bool secure, out InterfaceDescription iface)
 			{
 				IntPtr interfaceDescription = new IntPtr();
@@ -111,13 +159,67 @@ namespace AllJoynUnity
 				if (secure == true)
 				{
 					qstatus = alljoyn_busattachment_createinterface_secure(_busAttachment,
-						interfaceName, ref interfaceDescription, 1/*AJ_IFC_SECURITY_REQUIRED*/);
+						interfaceName, ref interfaceDescription, InterfaceDescription.SecurityPolicy.Required);
 				}
 				else
 				{
 					qstatus = alljoyn_busattachment_createinterface(_busAttachment,
 						interfaceName, ref interfaceDescription);
 				}
+				if (qstatus == 0)
+				{
+					iface = new InterfaceDescription(interfaceDescription);
+				}
+				else
+				{
+					iface = null;
+				}
+				return qstatus;
+			}
+
+			/**
+			 * Create an interface description with a given name.
+			 *
+			 * Typically, interfaces that are implemented by BusObjects are created here.
+			 * Interfaces that are implemented by remote objects are added automatically by
+			 * the bus if they are not already present via ProxyBusObject.IntrospectRemoteObject().
+			 *
+			 * Because interfaces are added both explicitly (via this method) and implicitly
+			 * (via @c ProxyBusObject.IntrospectRemoteObject), there is the possibility that creating
+			 * an interface here will fail because the interface already exists. If this happens, the
+			 * QStatus.BUS_IFACE_ALREADY_EXISTS will be returned and NULL will be returned in the iface [OUT]
+			 * parameter.
+			 *
+			 * Interfaces created with this method need to be activated using InterfaceDescription.Activate()
+			 * once all of the methods, signals, etc have been added to the interface. The interface will
+			 * be unaccessible (via BusAttachment.GetInterfaces() or BusAttachment.GetInterface()) until
+			 * it is activated.
+			 *
+			 * @param interfaceName   The requested interface name.
+			 * @param secPolicy
+			 *                  security policy of this interface it can be:
+			 *                   - InterfaceDescription.SecurityPolicy.Inherit
+			 *                   - InterfaceDescription.SecurityPolicy.Required
+			 *                   - InterfaceDescription.SecurityPolicy.Off
+			 *                  If SecurityPolicy.Required the interface is secure and
+			 *                  method calls and signals will be encrypted.
+			 *                  If SecurityPolicy.Inherit the interface will gain the
+			 *                  security level of the BusObject implementing the interface
+			 *                  IF SecurityPolicy.Off authentication is not applicable to
+			 *                  the interface.
+			 * @param[out] iface
+			 *      - Interface description
+			 *      - NULL if cannot be created.
+			 *
+			 * @return
+			 *      - QStatus.OK if creation was successful.
+			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if requested interface already exists
+			 * @see ProxyBusObject.IntrospectRemoteObject, InterfaceDescription.Activate, BusAttachment.GetInterface
+			 */
+			public QStatus CreateInterface(string interfaceName, InterfaceDescription.SecurityPolicy secPolicy, out InterfaceDescription iface)
+			{
+				IntPtr interfaceDescription = new IntPtr();
+				int qstatus = alljoyn_busattachment_createinterface_secure(_busAttachment, interfaceName, ref interfaceDescription, secPolicy);
 				if (qstatus == 0)
 				{
 					iface = new InterfaceDescription(interfaceDescription);
@@ -510,7 +612,7 @@ namespace AllJoynUnity
 			}
 
 			/**
-			 * Register a BusObject
+			 * Register a BusObject.
 			 *
 			 * @param obj      BusObject to register.
 			 *
@@ -521,6 +623,29 @@ namespace AllJoynUnity
 			public QStatus RegisterBusObject(BusObject obj)
 			{
 				return alljoyn_busattachment_registerbusobject(_busAttachment, obj.UnmanagedPtr);
+			}
+
+			/**
+			 * Register a BusObject
+			 *
+			 * @param obj      BusObject to register.
+			 * @param secure   If true objects registered will require authentication
+			 *                 unless the interfaces security policy is 'Off'
+			 *
+			 * @return
+			 *      - QStatus.OK if successful.
+			 *      - QStatus.BUS_BAD_OBJ_PATH for a bad object path
+			 */
+			public QStatus RegisterBusObject(BusObject obj, bool secure)
+			{
+				if (secure)
+				{
+					return alljoyn_busattachment_registerbusobject_secure(_busAttachment, obj.UnmanagedPtr);
+				}
+				else
+				{
+					return alljoyn_busattachment_registerbusobject(_busAttachment, obj.UnmanagedPtr);
+				}
 			}
 
 			/**
@@ -1449,7 +1574,7 @@ namespace AllJoynUnity
 				IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref IntPtr iface,
-				[In]int secPolicy);
+				[In]InterfaceDescription.SecurityPolicy secPolicy);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_start(IntPtr bus);
@@ -1503,6 +1628,9 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_registerbusobject(IntPtr bus, IntPtr obj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_registerbusobject_secure(IntPtr bus, IntPtr obj);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static void alljoyn_busattachment_unregisterbusobject(IntPtr bus, IntPtr obj);

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="InterfaceDescriptionTest.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -65,7 +65,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -119,7 +119,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -163,7 +163,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 
 			// Test adding a MethodCall
@@ -200,7 +200,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -243,7 +243,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -280,7 +280,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -313,6 +313,58 @@ namespace AllJoynUnityTest
 
 			// create an insecure interface
 			AllJoyn.InterfaceDescription testIntf = null;
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			Assert.Equal(false, testIntf.IsSecure);
+
+			bus.DeleteInterface(testIntf);
+
+			// create a secure interface
+			status = bus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Inherit, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			Assert.Equal(false, testIntf.IsSecure);
+			Assert.Equal(AllJoyn.InterfaceDescription.SecurityPolicy.Inherit, testIntf.GetSecurityPolicy);
+			bus.DeleteInterface(testIntf);
+
+			// create a secure interface
+			status = bus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Off, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			Assert.Equal(false, testIntf.IsSecure);
+			Assert.Equal(AllJoyn.InterfaceDescription.SecurityPolicy.Off, testIntf.GetSecurityPolicy);
+
+			bus.DeleteInterface(testIntf);
+
+			// create a secure interface
+			status = bus.CreateInterface(INTERFACE_NAME, AllJoyn.InterfaceDescription.SecurityPolicy.Required, out testIntf);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			Assert.NotNull(testIntf);
+
+			Assert.Equal(true, testIntf.IsSecure);
+			Assert.Equal(AllJoyn.InterfaceDescription.SecurityPolicy.Required, testIntf.GetSecurityPolicy);
+
+			bus.Dispose();
+		}
+
+		//We are specifically testing an obsolete class
+		//don't warn about usage of obsolete classes.
+#pragma warning disable 618
+		[Fact]
+		public void IsSecure_DepricatedCreateInterface()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			AllJoyn.BusAttachment bus = null;
+			bus = new AllJoyn.BusAttachment("InterfaceDescriptionTest", true);
+			Assert.NotNull(bus);
+
+			// create an insecure interface
+			AllJoyn.InterfaceDescription testIntf = null;
 			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
@@ -330,6 +382,7 @@ namespace AllJoynUnityTest
 
 			bus.Dispose();
 		}
+#pragma warning restore 618
 
 		[Fact]
 		public void AddProperty()
@@ -342,7 +395,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -367,7 +420,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -398,7 +451,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -448,7 +501,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -486,7 +539,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, bus.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddProperty("prop1", "s", AllJoyn.InterfaceDescription.AccessFlags.Read));
@@ -514,7 +567,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -534,7 +587,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -568,7 +621,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("foo", "", "", ""));
@@ -610,7 +663,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -662,7 +715,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -729,7 +782,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 			// Test adding a Signal
@@ -787,7 +840,7 @@ namespace AllJoynUnityTest
 
 			// create the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = bus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -845,7 +898,7 @@ namespace AllJoynUnityTest
 
 			// create the interface one
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMethod("ping", "s", "s", "in,out"));
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddSignal("chirp", "s", "chirp"));
@@ -877,7 +930,7 @@ namespace AllJoynUnityTest
 
 			// create the interface three
 			AllJoyn.InterfaceDescription testIntf3 = null;
-			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME + ".three", false, out testIntf3));
+			Assert.Equal(AllJoyn.QStatus.OK, servicebus.CreateInterface(INTERFACE_NAME + ".three", out testIntf3));
 			Assert.NotNull(testIntf3);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf3.AddMethod("ping", "s", "s", "in,out"));
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf3.AddMethod("pong", "s", "s", "in,out"));

@@ -1,6 +1,6 @@
 ﻿//-----------------------------------------------------------------------
 // <copyright file="BusObjectTest.cs" company="Qualcomm Innovation Center, Inc.">
-// Copyright 2012, Qualcomm Innovation Center, Inc.
+// Copyright 2012-2013, Qualcomm Innovation Center, Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ namespace AllJoynUnityTest
 
 			// create+activate the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = servicebus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = servicebus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -134,7 +134,7 @@ namespace AllJoynUnityTest
 
 			// create+activate the interface
 			AllJoyn.InterfaceDescription iFace = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out iFace);
+			status = bus.CreateInterface(INTERFACE_NAME, out iFace);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(iFace);
 
@@ -223,7 +223,7 @@ namespace AllJoynUnityTest
 
 			// create+activate the interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			status = servicebus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			status = servicebus.CreateInterface(INTERFACE_NAME, out testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(testIntf);
 
@@ -266,7 +266,7 @@ namespace AllJoynUnityTest
 
 			// create+activate the interface
 			AllJoyn.InterfaceDescription iFace = null;
-			status = bus.CreateInterface(INTERFACE_NAME, false, out iFace);
+			status = bus.CreateInterface(INTERFACE_NAME, out iFace);
 			Assert.Equal(AllJoyn.QStatus.OK, status);
 			Assert.NotNull(iFace);
 

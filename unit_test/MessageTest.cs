@@ -118,7 +118,7 @@ namespace AllJoynUnityTest
 
 			//Create and activate the service Interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "ping", "s", "s", "in,out"));
 			testIntf.Activate();
@@ -196,7 +196,7 @@ namespace AllJoynUnityTest
 
 			//Create and activate the service Interface
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, serviceBus.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "ping", "s", "s", "in,out"));
 			testIntf.Activate();

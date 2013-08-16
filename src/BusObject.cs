@@ -338,6 +338,22 @@ namespace AllJoynUnity
 					}
 				}
 			}
+
+			/**
+			 * Indicates if this object is secure.
+			 *
+			 * @param bus    The busobject we want to check for security
+			 *
+			 * @return Return QCC_TRUE if authentication is required to emit signals or
+			 *                call methods on this object.
+			 */
+			public bool IsSecure
+			{
+				get
+				{
+					return alljoyn_busobject_issecure(_busObject);
+				}
+			}
 			#endregion
 
 			#region Delegates
@@ -485,6 +501,9 @@ namespace AllJoynUnity
 				IntPtr msgArgs, UIntPtr numArgs,
 				ushort timeToLive, byte flags, IntPtr msg);
 
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private extern static bool alljoyn_busobject_issecure(IntPtr bus);
 			#endregion
 
 			#region IDisposable

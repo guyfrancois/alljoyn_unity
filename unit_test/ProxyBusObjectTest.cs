@@ -163,7 +163,7 @@ namespace AllJoynUnityTest
 			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.Connect(AllJoynTestCommon.GetConnectSpec()));
 
 			AllJoyn.InterfaceDescription testIntf = null;
-			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.CreateInterface(INTERFACE_NAME, false, out testIntf));
+			Assert.Equal(AllJoyn.QStatus.OK, busAttachment.CreateInterface(INTERFACE_NAME, out testIntf));
 			Assert.NotNull(testIntf);
 			Assert.Equal(AllJoyn.QStatus.OK, testIntf.AddMember(AllJoyn.Message.Type.MethodCall, "ping", "s", "s", "in,out"));
 			testIntf.Activate();

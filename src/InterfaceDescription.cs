@@ -68,6 +68,21 @@ namespace AllJoynUnity
 				ReadWrite = 3 /**< Read-Write Access type */
 			}
 
+			/**
+			 * The interface security policy can be inherit, required, or off. If security is
+			 * required on an interface, methods on that interface can only be called by an authenticated peer
+			 * and signals emitted from that interfaces can only be received by an authenticated peer. If
+			 * security is not specified for an interface the interface inherits the security of the objects
+			 * that implement it.  If security is not applicable (off) to an interface, authentication is never
+			 * required even when implemented by a secure object. For example, security does not apply to
+			 * the Introspection interface otherwise secure objects would not be introspectable.
+			 */
+			public enum SecurityPolicy : int
+			{
+				Inherit = 0, /**< Inherit the security of the object that implements the interface */
+				Required = 1,/**< Security is required for an interface */
+				Off = 2      /**< Security does not apply to this interface */
+			}
 			/** @cond ALLJOYN_DEV */
 			/**
 			 * @internal
@@ -201,6 +216,20 @@ namespace AllJoynUnity
 					return alljoyn_interfacedescription_issecure(_interfaceDescription);
 				}
 			}
+
+			/**
+			 * Get the security policy that applies to this interface.
+			 *
+			 * @return Returns the security policy for this interface.
+			 */
+			public SecurityPolicy GetSecurityPolicy
+			{
+				get
+				{
+					return alljoyn_interfacedescription_getsecuritypolicy(_interfaceDescription);
+				}
+			}
+
 			#endregion
 			/**
 			 * Add an annotation to the interface.
@@ -1158,6 +1187,9 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			[return: MarshalAs(UnmanagedType.U1)]
 			private extern static bool alljoyn_interfacedescription_issecure(IntPtr iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static SecurityPolicy alljoyn_interfacedescription_getsecuritypolicy(IntPtr iface);
 			#endregion
 
 			#region Internal Structures

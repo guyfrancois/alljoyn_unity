@@ -57,6 +57,29 @@ namespace AllJoynUnity
 				_proxyBusObject = alljoyn_proxybusobject_create(bus.UnmanagedPtr, service, path, sessionId);
 			}
 
+			/**
+			 * Create an empty proxy object that refers to an object at given remote service name. Note
+			 * that the created proxy object does not contain information about the interfaces that the
+			 * actual remote object implements with the exception that org.freedesktop.DBus.Peer
+			 * interface is special-cased (per the DBus spec) and can always be called on any object. Nor
+			 * does it contain information about the child objects that the actual remote object might
+			 * contain.
+			 *
+			 * To fill in this object with the interfaces and child object names that the actual remote
+			 * object describes in its introspection data, call IntrospectRemoteObject() or
+			 * IntrospectRemoteObjectAsync().
+			 *
+			 * @param bus        The bus.
+			 * @param service    The remote service name (well-known or unique).
+			 * @param path       The absolute (non-relative) object path for the remote object.
+			 * @param sessionId  The session id the be used for communicating with remote object.
+			 * @param secure     The security mode for the remote object.
+			 */
+			public ProxyBusObject(BusAttachment bus, string service, string path, uint sessionId, bool secure)
+			{
+				_proxyBusObject = alljoyn_proxybusobject_create_secure(bus.UnmanagedPtr, service, path, sessionId);
+			}
+
 			internal ProxyBusObject(IntPtr busObject)
 			{
 				_proxyBusObject = busObject;
@@ -383,11 +406,29 @@ namespace AllJoynUnity
 				}
 			}
 
+			/**
+			 * Indicates if the remote object for this proxy bus object is secure.
+			 *
+			 * @return  true if the object is secure
+			 */
+			public bool IsSecure
+			{
+				get
+				{
+					return alljoyn_proxybusobject_issecure(_proxyBusObject);
+				}
+			}
 			#endregion
 
 			#region DLL Imports
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern IntPtr alljoyn_proxybusobject_create(IntPtr proxyObj,
+				[MarshalAs(UnmanagedType.LPStr)] string service,
+				[MarshalAs(UnmanagedType.LPStr)] string path,
+				uint sessionId);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private static extern IntPtr alljoyn_proxybusobject_create_secure(IntPtr proxyObj,
 				[MarshalAs(UnmanagedType.LPStr)] string service,
 				[MarshalAs(UnmanagedType.LPStr)] string path,
 				uint sessionId);
@@ -433,6 +474,10 @@ namespace AllJoynUnity
 			[DllImport(DLL_IMPORT_TARGET)]
 			[return: MarshalAs(UnmanagedType.U1)]
 			private static extern bool alljoyn_proxybusobject_isvalid(IntPtr proxyObj);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			[return: MarshalAs(UnmanagedType.U1)]
+			private static extern bool alljoyn_proxybusobject_issecure(IntPtr proxyObj);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private static extern int alljoyn_proxybusobject_parsexml(IntPtr proxyObj,
