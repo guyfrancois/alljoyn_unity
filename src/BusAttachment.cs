@@ -107,8 +107,17 @@ namespace AllJoynUnity
 			public QStatus CreateInterface(string interfaceName, bool secure, out InterfaceDescription iface)
 			{
 				IntPtr interfaceDescription = new IntPtr();
-				int qstatus = alljoyn_busattachment_createinterface(_busAttachment,
-					interfaceName, ref interfaceDescription, secure ? 1 : 0);
+				int qstatus = 1;
+				if (secure == true)
+				{
+					qstatus = alljoyn_busattachment_createinterface_secure(_busAttachment,
+						interfaceName, ref interfaceDescription, 1/*AJ_IFC_SECURITY_REQUIRED*/);
+				}
+				else
+				{
+					qstatus = alljoyn_busattachment_createinterface(_busAttachment,
+						interfaceName, ref interfaceDescription);
+				}
 				if (qstatus == 0)
 				{
 					iface = new InterfaceDescription(interfaceDescription);
@@ -1433,8 +1442,14 @@ namespace AllJoynUnity
 			private extern static int alljoyn_busattachment_createinterface(
 				IntPtr bus,
 				[MarshalAs(UnmanagedType.LPStr)] string name,
+				ref IntPtr iface);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_createinterface_secure(
+				IntPtr bus,
+				[MarshalAs(UnmanagedType.LPStr)] string name,
 				ref IntPtr iface,
-				int secure);
+				[In]int secPolicy);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_start(IntPtr bus);
