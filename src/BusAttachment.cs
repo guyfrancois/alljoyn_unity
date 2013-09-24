@@ -151,7 +151,7 @@ namespace AllJoynUnity
 			 *      - QStatus.BUS_IFACE_ALREADY_EXISTS if requested interface already exists
 			 * @see ProxyBusObject.IntrospectRemoteObject, InterfaceDescription.Activate, BusAttachment.GetInterface
 			 */
-			[Obsolete("Please us the CreateInterface function that takes aa Interface SecurityPolicy")]
+			[Obsolete("Please us the CreateInterface function that takes an Interface SecurityPolicy")]
 			public QStatus CreateInterface(string interfaceName, bool secure, out InterfaceDescription iface)
 			{
 				IntPtr interfaceDescription = new IntPtr();
