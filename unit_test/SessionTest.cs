@@ -30,7 +30,7 @@ namespace AllJoynUnityTest
 		const string OBJECT_PATH = "/org/alljoyn/test/SessionTest";
 		const ushort SERVICE_PORT = 25;
 
-		public TimeSpan MaxWaitTime = TimeSpan.FromSeconds(5);
+		public TimeSpan MaxWaitTime = TimeSpan.FromSeconds(10);
 
 		AllJoyn.BusAttachment hostBus;
 		AllJoyn.BusAttachment memberOneBus;
@@ -42,6 +42,8 @@ namespace AllJoynUnityTest
 		bool sessionMemberAddedFlag;
 		bool sessionMemberRemovedFlag;
 		bool sessionLostFlag;
+		bool sessionLostReasonFlag;
+		AllJoyn.SessionListener.SessionLostReason reasonMarker;
 
 		[Fact]
 		public void TestSessionJoined()
@@ -160,7 +162,7 @@ namespace AllJoynUnityTest
 			AllJoyn.BusListener busListenerMemberOne = new TestBusListener(this);
 			memberOneBus.RegisterBusListener(busListenerMemberOne);
 			// create the session listener
-			AllJoyn.SessionListener sessionListener = new TestSessionListener(this);
+			AllJoyn.SessionListener sessionListener = new TestSessionListener2(this);
 
 			///////////////////////////////////////////////////////////
 			// Setup session member two
@@ -327,6 +329,92 @@ namespace AllJoynUnityTest
 			hostBus.Dispose();
 		}
 
+		[Fact]
+		public void TestSessionLostWithReason()
+		{
+			AllJoyn.QStatus status = AllJoyn.QStatus.FAIL;
+
+			///////////////////////////////////////////////////////////
+			// Setup the session host
+			///////////////////////////////////////////////////////////
+			SetupHost();
+			// Create session
+			AllJoyn.SessionOpts opts = new AllJoyn.SessionOpts(
+				AllJoyn.SessionOpts.TrafficType.Messages, true,
+				AllJoyn.SessionOpts.ProximityType.Any, AllJoyn.TransportMask.Any);
+			ushort sessionPort = SERVICE_PORT;
+
+			// create the session port listener
+			AllJoyn.SessionPortListener sessionPortListener = new TestSessionPortListener(this);
+
+			// bind to the session port
+			status = hostBus.BindSessionPort(ref sessionPort, opts, sessionPortListener);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// request name
+			status = hostBus.RequestName(OBJECT_NAME, AllJoyn.DBus.NameFlags.ReplaceExisting | AllJoyn.DBus.NameFlags.DoNotQueue);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			// Advertise name
+			status = hostBus.AdvertiseName(OBJECT_NAME, opts.Transports);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+
+			///////////////////////////////////////////////////////////
+			// Setup session member one
+			///////////////////////////////////////////////////////////
+			SetupMemberOne();
+			// register sessionMemberOne's bus listener
+			AllJoyn.BusListener busListenerMemberOne = new TestBusListener(this);
+			memberOneBus.RegisterBusListener(busListenerMemberOne);
+			// create the session listener
+			AllJoyn.SessionListener sessionListener = new TestSessionListener2(this);
+
+			///////////////////////////////////////////////////////////
+			// have sessionMemberOne find and join the session  
+			foundAdvertisedNameFlag = false;
+			status = memberOneBus.FindAdvertisedName(OBJECT_NAME);  // find the advertised name from the "hostbus"
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "FoundAdvertisedName");
+			ewh.WaitOne(MaxWaitTime);
+			Assert.Equal(true, foundAdvertisedNameFlag);
+
+			uint sSessionId;
+			acceptSessionJoinerFlag = false;
+			sessionJoinedFlag = false;
+			status = memberOneBus.JoinSession(OBJECT_NAME, SERVICE_PORT, sessionListener, out sSessionId, opts);
+			Assert.Equal(AllJoyn.QStatus.OK, status);
+			ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "SessionJoined");
+			ewh.WaitOne(MaxWaitTime);
+
+			// verify that sessionMemberOne joined by checking that the sessionedJoined callback was called
+			Assert.Equal(true, acceptSessionJoinerFlag);
+			Assert.Equal(true, sessionJoinedFlag);
+
+			///////////////////////////////////////////////////////////
+			// Now have the host leave & verify SessionLost callback is triggered
+			sessionLostReasonFlag = false;
+			reasonMarker = AllJoyn.SessionListener.SessionLostReason.ALLJOYN_SESSIONLOST_INVALID;
+			sessionMemberRemovedFlag = false;
+			hostBus.Stop();
+			hostBus.Join();
+			ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "SessionLostReason");
+			ewh.WaitOne(MaxWaitTime);
+			Assert.Equal(true, sessionLostReasonFlag);
+			Assert.Equal(AllJoyn.SessionListener.SessionLostReason.ALLJOYN_SESSIONLOST_REMOTE_END_CLOSED_ABRUPTLY, reasonMarker);
+
+			// SessionMemberRemoved should also be triggered
+			ewh = new EventWaitHandle(false, EventResetMode.AutoReset, "SessionMemberRemoved");
+			ewh.WaitOne(MaxWaitTime);
+			Assert.Equal(true, sessionMemberRemovedFlag);
+
+			hostBus.ReleaseName(OBJECT_NAME);
+
+			memberOneBus.Stop();
+			memberOneBus.Join();
+
+			memberOneBus.Dispose();
+			hostBus.Dispose();
+		}
 
 		private void SetupHost()
 		{
@@ -387,14 +475,12 @@ namespace AllJoynUnityTest
 
 			protected override bool AcceptSessionJoiner(ushort sessionPort, string joiner, AllJoyn.SessionOpts opts)
 			{
-				Console.WriteLine("AcceptSessionJoiner called");
 				_sessionTest.acceptSessionJoinerFlag = true;
 				return true;
 			}
 
 			protected override void SessionJoined(ushort sessionPort, uint sessionId, string joiner)
 			{
-				Console.WriteLine("SessionJoined called");
 				_sessionTest.sessionJoinedFlag = true;
 				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionJoined");
 				ewh.Set();
@@ -402,6 +488,9 @@ namespace AllJoynUnityTest
 
 		}
 
+		/*
+		 * This SessionListener uses the obsolite SessionLost callback
+		 */
 		class TestSessionListener : AllJoyn.SessionListener
 		{
 			SessionTest _sessionTest;
@@ -413,7 +502,6 @@ namespace AllJoynUnityTest
 
 			protected override void SessionMemberAdded(uint sessionId, string uniqueName)
 			{
-				Console.WriteLine("SessionMemberAdded called");
 				_sessionTest.sessionMemberAddedFlag = true;
 				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionMemberAdded");
 				ewh.Set();
@@ -421,17 +509,53 @@ namespace AllJoynUnityTest
 
 			protected override void SessionMemberRemoved(uint sessionId, string uniqueName)
 			{
-				Console.WriteLine("SessionMemberRemoved called");
+				_sessionTest.sessionMemberRemovedFlag = true;
+				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionMemberRemoved");
+				ewh.Set();
+			}
+			/*
+			 * Disable warning stating that this overrides an obsolete member we
+			 * are testing that the obsolete member still functions till it is removed
+			 */
+#pragma warning disable 672
+			protected override void SessionLost(uint sessionId)
+			{
+				_sessionTest.sessionLostFlag = true;
+				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionLost");
+				ewh.Set();
+			}
+#pragma warning restore 672
+		}
+
+		class TestSessionListener2 : AllJoyn.SessionListener
+		{
+			SessionTest _sessionTest;
+
+			public TestSessionListener2(SessionTest sessionTest)
+			{
+				this._sessionTest = sessionTest;
+			}
+
+			protected override void SessionMemberAdded(uint sessionId, string uniqueName)
+			{
+				_sessionTest.sessionMemberAddedFlag = true;
+				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionMemberAdded");
+				ewh.Set();
+			}
+
+			protected override void SessionMemberRemoved(uint sessionId, string uniqueName)
+			{
 				_sessionTest.sessionMemberRemovedFlag = true;
 				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionMemberRemoved");
 				ewh.Set();
 			}
 
-			protected override void SessionLost(uint sessionId)
+			protected override void SessionLost(uint sessionId, SessionLostReason reason)
 			{
-				Console.WriteLine("SessionLost called");
-				_sessionTest.sessionLostFlag = true;
-				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionLost");
+				Console.WriteLine("SessionLost called with reason " + reason.ToString());
+				_sessionTest.sessionLostReasonFlag = true;
+				_sessionTest.reasonMarker = reason;
+				EventWaitHandle ewh = new EventWaitHandle(true, EventResetMode.AutoReset, "SessionLostReason");
 				ewh.Set();
 			}
 		}

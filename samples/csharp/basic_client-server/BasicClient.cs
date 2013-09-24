@@ -77,7 +77,7 @@ namespace basic_clientserver
 
 			// Add org.alljoyn.Bus.method_sample interface
 			AllJoyn.InterfaceDescription testIntf;
-			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, out testIntf);
 			if(status)
 			{
 				Console.WriteLine("Client Interface Created.");

@@ -109,7 +109,7 @@ namespace basic_server
 
 			// Add org.alljoyn.Bus.method_sample interface
 			AllJoyn.InterfaceDescription testIntf;
-			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, false, out testIntf);
+			AllJoyn.QStatus status = sMsgBus.CreateInterface(INTERFACE_NAME, out testIntf);
 			if(status)
 			{
 				Console.WriteLine("Interface Created.");

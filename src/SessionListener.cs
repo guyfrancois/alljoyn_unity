@@ -32,6 +32,15 @@ namespace AllJoynUnity
 		 */
 		public class SessionListener : IDisposable
 		{
+			/** Reason for the session being lost */
+			public enum SessionLostReason{
+				ALLJOYN_SESSIONLOST_INVALID                      = 0x00, /**< Invalid */
+				ALLJOYN_SESSIONLOST_REMOTE_END_LEFT_SESSION      = 0x01, /**< Remote end called LeaveSession */
+				ALLJOYN_SESSIONLOST_REMOTE_END_CLOSED_ABRUPTLY   = 0x02, /**< Remote end closed abruptly */
+				ALLJOYN_SESSIONLOST_REMOVED_BY_BINDER            = 0x03, /**< Session binder removed this endpoint by calling RemoveSessionMember */
+				ALLJOYN_SESSIONLOST_LINK_TIMEOUT                 = 0x04, /**< Link was timed-out */
+				ALLJOYN_SESSIONLOST_REASON_OTHER                 = 0x05 /**< Unspecified reason for session loss */
+			};
 		    /**
 		     * Constructor for a SessionListener.
 		     */
@@ -62,13 +71,27 @@ namespace AllJoynUnity
 
 			#region Virtual Methods
 			/**
-			 * Called by the bus when an existing session becomes disconnected.
+			 * Called by the bus when an existing session becomes disconnected.(Deprecated)
+			 *
+			 * @see SessionLost(uint sessionId, SessionLostReason reason)
 			 *
 			 * @param sessionId     Id of session that was lost.
 			 */
+			[System.Obsolete("SessionLost callback that only returns sessionId has been depricated in favor of the SessionLost that returns the SessionLostReason.")]
 			protected virtual void SessionLost(uint sessionId)
 			{
 			
+			}
+
+			/**
+			 * Called by the bus when an existing session becomes disconnected.
+			 *
+			 * @param sessionId     Id of session that was lost.
+			 * @param reason        The reason for the session being lost
+			 */
+			protected virtual void SessionLost(uint sessionId, SessionLostReason reason)
+			{
+
 			}
 
 			/**
@@ -95,13 +118,20 @@ namespace AllJoynUnity
 			#endregion
 
 			#region Callbacks
-			private void _SessionLost(IntPtr context, uint sessionId)
+			private void _SessionLost(IntPtr context, uint sessionId, SessionLostReason reason)
 			{
 				uint _sessionId = sessionId;
+				SessionLostReason _reason = reason;
 				System.Threading.Thread callIt = new System.Threading.Thread((object o) =>
-					{
-						SessionLost(_sessionId);
-					});
+				{
+				/* SessionLost must be called here for the obsolite callback function to
+				 * continue to work
+				 */
+#pragma warning disable 618
+					SessionLost(_sessionId);
+#pragma warning restore 618
+					SessionLost(_sessionId, _reason);
+				});
 				callIt.Start();
 			}
 
@@ -130,7 +160,7 @@ namespace AllJoynUnity
 
 			#region Delegates
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-			private delegate void InternalSessionLost(IntPtr context, uint sessionId);
+			private delegate void InternalSessionLost(IntPtr context, uint sessionId, SessionLostReason reason);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 			private delegate void InternalSessionMemberAdded(IntPtr context, uint sessionId, IntPtr uniqueName);
 			[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
