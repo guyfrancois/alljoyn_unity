@@ -55,6 +55,7 @@
     <Compile Include="ProxyBusObjectTest.cs" />
     <Compile Include="SessionOptsTest.cs" />
     <Compile Include="SessionTest.cs" />
+    <Compile Include="SignalsTest.cs" />
     <Compile Include="VersionTest.cs" />
   </ItemGroup>
   <ItemGroup>
