@@ -1158,6 +1158,30 @@ namespace AllJoynUnity
 			}
 
 			/**
+			 * Remove a member from an existing multipoint session.
+			 * This function may be called by the binder of the session to forcefully
+			 * remove a member from a session.
+			 *
+			 * This method is a shortcut/helper that issues an
+			 * org.alljoyn.Bus.RemoveSessionMember method call to the local daemon and
+			 * interprets the response.
+			 *
+			 * @param[in]  sessionId     Session id.
+			 * @param[in]  memberName    Member to remove.
+			 *
+			 * @return
+			 *      - QStatus.OK iff daemon response was received and the remove member
+			 *        operation was successfully completed.
+			 *      - QStatus.ER_BUS_NOT_CONNECTED if a connection has not been made with a
+			 *        local bus.
+			 *      - Other error status codes indicating a failure.
+			 */
+			public QStatus RemoveSessionMember(uint sessionId, string memberName)
+			{
+				return alljoyn_busattachment_removesessionmember(_busAttachment, sessionId, memberName);
+			}
+
+			/**
 			 * Set the link timeout for a session.
 			 *
 			 * Link timeout is the maximum number of seconds that an unresponsive daemon-to-daemon connection
@@ -1749,6 +1773,10 @@ namespace AllJoynUnity
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_leavesession(IntPtr bus, uint sessionId);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busattachment_removesessionmember(IntPtr bus, uint sessionid,
+				[MarshalAs(UnmanagedType.LPStr)] string memberName);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			private extern static int alljoyn_busattachment_setlinktimeout(IntPtr bus, uint sessionid, ref uint linkTimeout);
