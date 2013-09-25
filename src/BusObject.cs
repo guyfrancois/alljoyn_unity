@@ -250,6 +250,23 @@ namespace AllJoynUnity
 			 * @param sessionId        A unique SessionId for this AllJoyn session instance
 			 * @param signal           Interface member of signal being emitted.
 			 * @param args             The arguments for the signal (can be NULL)
+			 * @param msg              The sent signal message is returned to the caller
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - An error status otherwise
+			 */
+			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal, MsgArg args, Message msg)
+			{
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, 0, 0, msg.UnmanagedPtr);
+			}
+
+			/**
+			 * Send a signal.
+			 *
+			 * @param destination      The unique or well-known bus name or the signal recipient (NULL for broadcast signals)
+			 * @param sessionId        A unique SessionId for this AllJoyn session instance
+			 * @param signal           Interface member of signal being emitted.
+			 * @param args             The arguments for the signal (can be NULL)
 			 * @param timeToLife       If non-zero this specifies the useful lifetime for this signal.
 			 *                         The units are milliseconds for non-sessionless signals and seconds for 
 			 *                         sessionless signals. If delivery of the signal is delayed beyond the 
@@ -285,9 +302,12 @@ namespace AllJoynUnity
 			 *                         no guarantee that expired signals will not still be delivered.
 			 * @param flags            Logical OR of the message flags for this signals. The following flags apply to signals:
 			 *                         - If ALLJOYN_FLAG_SESSIONLESS is set the signal will be sent out to any listener without requireing a connected session
-			 *                         - If ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be forwarded across bus-to-bus connections.
-			 *                         - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can handle header compression.
-			 *                         - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any is encrypted.
+			 *                         - If ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be
+			 *                           forwarded across bus-to-bus connections.
+			 *                         - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can
+			 *                           handle header compression.
+			 *                         - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any
+			 *                           is encrypted.
 			 * @return
 			 *      - QStatus.OK if successful
 			 *      - An error status otherwise
@@ -296,6 +316,61 @@ namespace AllJoynUnity
 				MsgArg args, ushort timeToLife, byte flags)
 			{
 				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, IntPtr.Zero);
+			}
+
+			/**
+			 * Send a signal.
+			 *
+			 * @param destination      The unique or well-known bus name or the signal recipient (NULL for broadcast signals)
+			 * @param sessionId        A unique SessionId for this AllJoyn session instance
+			 * @param signal           Interface member of signal being emitted.
+			 * @param args             The arguments for the signal (can be NULL)
+			 * @param timeToLife       If non-zero this specifies in milliseconds the useful lifetime for this
+			 *                         signal. If delivery of the signal is delayed beyond the timeToLive due to
+			 *                         network congestion or other factors the signal may be discarded. There is
+			 *                         no guarantee that expired signals will not still be delivered.
+			 * @param flags            Logical OR of the message flags for this signals. The following flags apply to signals:
+			 *                         - If ALLJOYN_FLAG_SESSIONLESS is set the signal will be sent out to any listener without
+			 *                           requireing a connected session
+			 *                         - If ALLJOYN_FLAG_GLOBAL_BROADCAST is set broadcast signal (null destination) will be
+			 *                           forwarded across bus-to-bus connections.
+			 *                         - If ALLJOYN_FLAG_COMPRESSED is set the header is compressed for destinations that can
+			 *                           handle header compression.
+			 *                         - If ALLJOYN_FLAG_ENCRYPTED is set the message is authenticated and the payload if any
+			 *                           is encrypted.
+			 * @param msg              The sent signal message is returned to the caller.
+			 * @return
+			 *      - QStatus.OK if successful
+			 *      - An error status otherwise
+			 */
+			protected QStatus Signal(string destination, uint sessionId, InterfaceDescription.Member signal,
+				MsgArg args, ushort timeToLife, byte flags, Message msg)
+			{
+				return alljoyn_busobject_signal(_busObject, destination, sessionId, signal._member, args.UnmanagedPtr, (UIntPtr)args.Length, timeToLife, flags, msg.UnmanagedPtr);
+			}
+
+			/**
+			 * Remove sessionless message sent from this object from local daemon's
+			 * store/forward cache.
+			 *
+			 * @param serialNumber    Serial number of previously sent sessionless signal.
+			 * @return  QStatus.OK if successful.
+			 */
+			public QStatus CancelSessionlessMessage(uint serialNumber)
+			{
+				return alljoyn_busobject_cancelsessionlessmessage_serial(_busObject, serialNumber);
+			}
+
+			/**
+			 * Remove sessionless message sent from this object from local daemon's
+			 * store/forward cache.
+			 *
+			 * @param msg    Message to be removed.
+			 * @return   QStatus.OK if successful.
+			 */
+			public QStatus CancelSessionlessMessage(Message msg)
+			{
+				return alljoyn_busobject_cancelsessionlessmessage(_busObject, msg.UnmanagedPtr);
 			}
 			#region Properties
 			/**
@@ -500,6 +575,12 @@ namespace AllJoynUnity
 				InterfaceDescription._Member signal,
 				IntPtr msgArgs, UIntPtr numArgs,
 				ushort timeToLive, byte flags, IntPtr msg);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busobject_cancelsessionlessmessage_serial(IntPtr bus, uint serialNumber);
+
+			[DllImport(DLL_IMPORT_TARGET)]
+			private extern static int alljoyn_busobject_cancelsessionlessmessage(IntPtr bus, IntPtr msg);
 
 			[DllImport(DLL_IMPORT_TARGET)]
 			[return: MarshalAs(UnmanagedType.U1)]

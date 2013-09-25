@@ -45,6 +45,10 @@ namespace AllJoynUnity
 				DoNotQueue = 0x04 /**< RequestName input flag: Fail if name cannot be immediately obtained */
 			}
 
+			/**
+			 * DBus RequestName return values
+			 * org.freedesktop.DBus.RequestName return values (see DBus spec)
+			 */
 			public enum RequestNameReply : uint
 			{
 				PrimaryOwner = 1, /**< The caller is now the primary owner of the name, replacing any previous owner. */
