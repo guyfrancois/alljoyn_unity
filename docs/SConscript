@@ -24,9 +24,6 @@ installDocs = []
 
 # Build docs
 if env['DOCS'] == 'html':
-    generateDocs = docenv.Doxygen(source=['Doxygen_html', '../src/Status.cs'], target=[Dir('tmp'),Dir('html')])
-    installDocs = docenv.Install('$UNITY_DISTDIR/docs', Dir('html'))
-    docenv.Clean('Doxygen_html', Dir('html'))
-    docenv.Depends(installDocs, generateDocs)
-
+    installDocs = docenv.Doxygen(source=['Doxygen_html'])
+    docenv.Depends(installDocs, '../src/Status.cs')
 Return('installDocs')
